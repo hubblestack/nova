@@ -14,7 +14,8 @@ def __virtual__():
     return False
 
 
-def audit(): ret = _grep('"/tmp"', '/etc/fstab')
+def audit():
+    ret = _grep('"/tmp"', '/etc/fstab')
     if 'nosuid' in ret:
         return True
     else:

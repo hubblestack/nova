@@ -15,7 +15,8 @@ def __virtual__():
     return False
 
 
-def audit(): ret = _grep('"/dev/shm"', '/etc/fstab')
+def audit():
+    ret = _grep('"/dev/shm"', '/etc/fstab')
     if 'noexec' in ret:
         return True
     else:

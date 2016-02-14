@@ -14,7 +14,7 @@ import logging
 
 def __virtual__():
     if 'Linux' in __salt__['grains.get']('kernel'):
-	return __virtualname__
+        return __virtualname__
     return False
 
 
