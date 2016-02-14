@@ -50,7 +50,7 @@ include full documentation
         return False
 
 
-All Nova plugins require a `__virtual__()` function to determine module compatibility.
+All Nova plugins require a ``__virtual__()`` function to determine module compatibility.
 
 
 .. code-block:: python
@@ -65,5 +65,5 @@ All Nova plugins require a `__virtual__()` function to determine module compatib
         else:
             return False
 
-All Nova plugins require an `audit()` function, which will auto-execute when
-called through Nova. return `True` for pass and return `False` for fail.
+All Nova plugins require an ``audit()`` function, which will auto-execute when
+called through Nova. return ``True`` for pass and return ``False`` for fail.
