@@ -18,7 +18,7 @@ def __virtual__():
 
 
 def audit():
-	ret = _sysctl('kernel.randomize_va_space')
+    ret = _sysctl('kernel.randomize_va_space')
     if '2' in ret:
         return True
     return False

@@ -21,8 +21,8 @@ def __virtual__():
 
 
 def audit():
-	ret = _rpmquery('ypbind')
+    ret = _rpmquery('ypbind')
     if 'not installed' in ret:
-		return True
+        return True
     return False
 

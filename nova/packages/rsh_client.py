@@ -21,8 +21,8 @@ def virtual():
 
 
 def audit():
-	ret = _rpmquery('rsh')
+    ret = _rpmquery('rsh')
     if 'not installed' in ret:
-		return True
+        return True
     return False
 
