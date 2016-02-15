@@ -22,6 +22,5 @@ def audit():
 
     if '0 0' in ret:
         return True
-    else:
-        return False
+    return False
 

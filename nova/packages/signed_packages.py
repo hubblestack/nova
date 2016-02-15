@@ -19,6 +19,5 @@ def audit():
     ret = _grep('gpgcheck=0', '/etc/yum.repos.d/*.repo', shell=True)
     if ret:
         return False
-    else:
-        return True
+    return True
 

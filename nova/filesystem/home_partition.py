@@ -19,6 +19,5 @@ def audit():
     ret = _grep('"/home"', '/etc/fstab')
     if ret:
         return True
-    else:
-        return False
+    return False
 

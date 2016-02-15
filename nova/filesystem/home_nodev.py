@@ -19,5 +19,5 @@ def audit():
     ret = _grep('"/home"', '/etc/fstab')
     if 'nodev' in ret:
         return True
-    else:
-        return False
+    return False
+

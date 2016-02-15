@@ -24,6 +24,5 @@ def audit():
     ret2 = _sysctl('fs.suid_dumpable')
     if (ret1 and (ret2 == '0')):
         return True
-    else:
-        return False
+    return False
 

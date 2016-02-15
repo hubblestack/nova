@@ -24,6 +24,5 @@ def audit():
 
     if '600' in ret:
         return True
-    else:
-        return False
+    return False
 

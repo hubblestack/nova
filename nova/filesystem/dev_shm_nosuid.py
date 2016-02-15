@@ -18,5 +18,5 @@ def audit():
     ret = _grep('"/dev/shm"', '/etc/fstab')
     if 'nosuid' in ret:
         return True
-    else:
-        return False
+    return False
+

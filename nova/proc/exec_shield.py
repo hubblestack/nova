@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 '''
-Randomly placing virtual memory regions will make it difficult for to write
-memory page exploits as the memory placement will be consistently shifting.
+Enabling any feature that can protect against buffer overflow attacks enhances
+the security of the system.
 '''
 from __future__ import absolute_import
 from audit import *
@@ -18,9 +18,8 @@ def __virtual__():
 
 
 def audit():
-	ret = _sysctl('kernel.randomize_va_space')
-    if '2' in ret:
+    ret = _sysctl('kernel.exec-shield')
+    if '1' in ret:
         return True
-    else:
-        return False
+    return False
 
