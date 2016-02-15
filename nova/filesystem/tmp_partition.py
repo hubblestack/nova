@@ -9,6 +9,13 @@ system setuid program and wait for it to be updated. Once the program was
 updated, the hardlink would be broken and the attacker would have his own copy
 of the program. If the program happened to have a security vulnerability, the
 attacker could continue to exploit the known flaw.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: all
+
 '''
 from __future__ import absolute_import
 from audit import *
@@ -17,7 +24,7 @@ import logging
 
 def __virtual__():
     if 'Linux' in __salt__['grains.get']('kernel'):
-	return __virtualname__
+        return True
     return False
 
 
@@ -25,6 +32,4 @@ def audit():
     ret = _grep('"/tmp"', '/etc/fstab')
     if ret:
         return True
-    else:
-        return False
-
+    return False

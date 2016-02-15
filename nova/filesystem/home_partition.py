@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 '''
-If the system is intended to support local users, create a separate partition
-for the /home directory to protect against resource exhaustion and restrict the
-type of files that can be stored under /home.
+:rational: If the system is intended to support local users, create a separate
+partition for the /home directory to protect against resource exhaustion and
+restrict the type of files that can be stored under /home.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: all
+
 '''
 from __future__ import absolute_import
 from audit import *

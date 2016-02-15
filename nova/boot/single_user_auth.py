@@ -1,8 +1,15 @@
 # -*- encoding: utf-8 -*-
 '''
-Requiring authentication in single user mode prevents an unauthorized user from
-rebooting the system into single user to gain root privileges without
+:rational: Requiring authentication in single user mode prevents an unauthorized
+user from rebooting the system into single user to gain root privileges without
 credentials.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: RedHat
+
 '''
 from __future__ import absolute_import
 from audit import *

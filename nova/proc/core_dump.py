@@ -1,9 +1,16 @@
 # -*- encoding: utf-8 -*-
 '''
-Setting a hard limit on core dumps prevents users from overriding the soft
-variable. If core dumps are required, consider setting limits for user groups
-(see limits.conf(5)). In addition, setting the fs.suid_dumpable variable to 0
-will prevent setuid programs from dumping core.
+:rational: Setting a hard limit on core dumps prevents users from overriding the
+soft variable. If core dumps are required, consider setting limits for user
+groups (see limits.conf(5)). In addition, setting the fs.suid_dumpable variable
+to 0 will prevent setuid programs from dumping core.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: all
+
 '''
 from __future__ import absolute_import
 from audit import *
@@ -25,4 +32,3 @@ def audit():
     if (ret1 and (ret2 == '0')):
         return True
     return False
-

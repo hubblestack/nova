@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 '''
-Setting this option on a file system prevents users from introducing privileged
-programs onto the system and allowing non-root users to execute them.
+:rational: Setting this option on a file system prevents users from introducing
+privileged programs onto the system and allowing non-root users to execute them.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: all
+
 '''
 from __future__ import absolute_import
 from audit import *

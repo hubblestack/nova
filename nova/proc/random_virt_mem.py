@@ -1,7 +1,14 @@
 # -*- encoding: utf-8 -*-
 '''
-Randomly placing virtual memory regions will make it difficult for to write
-memory page exploits as the memory placement will be consistently shifting.
+:rational: Randomly placing virtual memory regions will make it difficult for to
+write memory page exploits as the memory placement will be consistently
+shifting.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: all
 '''
 from __future__ import absolute_import
 from audit import *
@@ -22,4 +29,3 @@ def audit():
     if '2' in ret:
         return True
     return False
-

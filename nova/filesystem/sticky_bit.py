@@ -1,7 +1,14 @@
 # -*- encoding: utf-8 -*-
 '''
-This feature prevents the ability to delete or rename files in world writable
-directories (such as /tmp) that are owned by another user.
+:rational: This feature prevents the ability to delete or rename files in world
+writable directories (such as /tmp) that are owned by another user.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: all
+
 '''
 from __future__ import absolute_import
 from audit import *
@@ -10,7 +17,7 @@ import logging
 
 def __virtual__():
     if 'Linux' in __salt__['grains.get']('kernel'):
-	return __virtualname__
+        return True
     return False
 
 
@@ -19,5 +26,4 @@ def audit():
     ret = __salt__['cmd.run'](cmd, python_shell=True)
     if not ret:
         return True
-    else:
-        return False
+    return False

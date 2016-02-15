@@ -6,6 +6,13 @@ the audit.log file can grow quite large) and protection of audit data. The
 audit daemon calculates how much free space is left and performs actions based
 on the results. If other processes (such as syslog) consume space in the same
 partition as auditd, it may not perform as desired.
+
+:maintainer: HubbleStack
+:maturity: 20160212
+:depends: SaltStack
+:platform: Linux
+:compatibility: all
+
 '''
 from __future__ import absolute_import
 from audit import *
@@ -14,7 +21,7 @@ import logging
 
 def __virtual__():
     if 'Linux' in __salt__['grains.get']('kernel'):
-        return __virtualname__
+        return True
     return False
 
 
@@ -22,6 +29,4 @@ def audit():
     ret = _grep('"/var/log/audit"', '/etc/fstab')
     if ret:
         return True
-    else:
-        return False
-
+    return False
