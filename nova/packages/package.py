@@ -1,10 +1,7 @@
 # -*- encoding: utf-8 -*-
 '''
-:rational: Disabling this service will reduce the remote attack surface of the
-system.
-
 :maintainer: HubbleStack
-:maturity: 20160216
+:maturity: 20160217
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -25,6 +22,8 @@ def __virtual__():
 
 
 def audit():
-    if not _service('chargen-dgram'):
-        return True
-    return False
+    packages = __salt__['photon.get']('package:deny', [])
+    for pkg in packages:
+        if not _package_check(pkg):
+            return True
+        return False

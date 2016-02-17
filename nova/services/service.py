@@ -1,10 +1,8 @@
 # -*- encoding: utf-8 -*-
 '''
-:rational: These legacy service contain numerous security exposures and have
-been replaced with the more secure SSH package.
 
 :maintainer: HubbleStack
-:maturity: 20160216
+:maturity: 20160217
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -16,12 +14,17 @@ import logging
 
 
 def __virtual__():
+    '''
+    Compatibility Check
+    '''
     if not salt.utils.is_windows():
         return True
     return False
 
 
 def audit():
-    if not _package('rsh-server'):
-        return True
-    return False
+    service = __salt__['photon.get']('services:deny', [])
+    for svc in service:
+        if not _service():
+            return True
+        return False
