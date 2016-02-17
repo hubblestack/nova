@@ -6,10 +6,10 @@ unless there is a specific need for TFTP. In that case, extreme caution must be
 used when configuring the services.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
-:compatibility: RedHat
+:compatibility: all
 
 '''
 from __future__ import absolute_import
@@ -21,13 +21,12 @@ def __virtual__():
     '''
     Compatibility Check
     '''
-    if 'RedHat' in __salt__['grains.get']('os_family'):
+    if not salt.utils.is_windows():
         return True
     return False
 
 
 def audit():
-    ret = _rpmquery('tftp-server')
-    if 'not installed' in ret:
+    if not _package('tftp-server'):
         return True
     return False

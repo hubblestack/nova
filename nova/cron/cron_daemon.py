@@ -5,7 +5,7 @@ the system does have maintenance jobs that may include security monitoring that
 have to run and crond is used to execute them.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: RedHat
@@ -26,11 +26,7 @@ def __virtual__():
 
 
 def audit():
-    ret = _chkconfig('crond')
-    if '3:on' in ret:
+    ret = _service('crond')
+    if 'True' in ret:
         return True
-    elif 'enabled' in ret:
-        return True
-    elif 'No such file or directory' in ret:
-        return False
     return False

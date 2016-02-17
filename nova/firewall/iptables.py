@@ -4,9 +4,9 @@
 communications in and out of the box to specific IPv4 addresses and ports.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
-:platform: Linux
+:platform: Linux / FreeBSD
 :compatibility: RedHat
 
 '''
@@ -19,21 +19,16 @@ def __virtual__():
     '''
     Compatibility Check
     '''
-    if 'RedHat' in __salt__['grains.get']('os_family'):
+    if 'RedHat' or 'FreeBSD' in __salt__['grains.get']('os_family'):
         return True
     return False
 
 
 def audit():
-    if 'systemctl' in CHKCONFIG:
-        ret = _chkconfig('firewalld')
-    if 'chkconfig' in CHKCONFIG:
-        ret = _chkconfig('iptables')
-
-    if '3:on' in ret:
+    if _service('firewalld'):
         return True
-    elif 'enabled' in ret:
+    if _service('iptables'):
         return True
-    elif 'No such file or directory' in ret:
-        return False
+    if _service('pf'):
+        return True
     return False

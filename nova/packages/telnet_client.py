@@ -6,10 +6,10 @@ credentials. The ssh package provides an encrypted session and stronger security
 and is included in most Linux distributions.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
-:compatibility: RedHat
+:compatibility: all
 
 '''
 from __future__ import absolute_import
@@ -21,13 +21,12 @@ def __virtual__():
     '''
     Compatibility Check
     '''
-    if 'Linux' in __salt__['grains.get']('kernel'):
+    if not salt.utils.is_windows():
         return True
     return False
 
 
 def audit():
-    ret = _rpmquery('telnet')
-    if 'not installed' in ret:
+    if not _package('telnet'):
         return True
     return False

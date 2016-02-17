@@ -8,10 +8,10 @@ credentials. Note that removing the rsh package removes the clients for rsh, rcp
 and rlogin.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
-:compatibility: RedHat
+:compatibility: all
 
 '''
 from __future__ import absolute_import
@@ -23,13 +23,12 @@ def virtual():
     '''
     Compatibility Check
     '''
-    if 'RedHat' in __salt__['grains.get']('os_family'):
+    if not salt.utils.is_windows():
         return True
     return False
 
 
 def audit():
-    ret = _rpmquery('rsh')
-    if 'not installed' in ret:
+    if not _package('rsh'):
         return True
     return False
