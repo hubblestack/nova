@@ -9,7 +9,7 @@ and configuring the package.
 :maturity: 20160216
 :depends: SaltStack
 :platform: Linux
-:compatibility: RedHat
+:compatibility: all
 
 '''
 from __future__ import absolute_import
@@ -21,7 +21,7 @@ def __virtual__():
     '''
     Compatibility Check
     '''
-    if 'RedHat' in __salt__['grains.get']('os_family'):
+    if not salt.utils.is_windows():
         return True
     return False
 
