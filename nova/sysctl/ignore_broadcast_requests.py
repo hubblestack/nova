@@ -31,7 +31,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _sysctl('net.ipv4.icmp_echo_ignore_broadcasts')
-    if '1' in ret:
+    if '1' in _sysctl('net.ipv4.icmp_echo_ignore_broadcasts'):
         return True
     return False

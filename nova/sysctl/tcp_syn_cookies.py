@@ -8,7 +8,7 @@ allow the server to keep accepting valid connections, even if under a denial of
 service attack.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -29,7 +29,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _sysctl('net.ipv4.tcp_syncookies')
-    if '1' in ret:
+    if '1' in _sysctl('net.ipv4.tcp_syncookies'):
         return True
     return False

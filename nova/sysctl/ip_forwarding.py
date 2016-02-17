@@ -5,7 +5,7 @@
 therefore, never serve as a router.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -26,7 +26,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _sysctl('net.ipv4.ip_forward')
-    if '0' in ret:
+    if '0' in _sysctl('net.ipv4.ip_forward'):
         return True
     return False

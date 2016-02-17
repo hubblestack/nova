@@ -7,10 +7,10 @@ required on the server, follow the recommendations in sub-sections 3.2.1 - 3.2.5
 to secure it.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
-:compatibility: RedHat
+:compatibility: all
 
 '''
 from __future__ import absolute_import
@@ -22,17 +22,12 @@ def __virtual__():
     '''
     Compatibility Check
     '''
-    if 'RedHat' in __salt__['grains.get']('os_family'):
+    if not salt.utils.is_windows():
         return True
     return False
 
 
 def audit():
-    ret = _chkconfig('avahi-daemon')
-    if 'No such file or directory' in ret:
+    if not _service('avahi-daemon'):
         return True
-    elif 'on' in ret:
-        return False
-    elif 'enabled' in ret:
-        return False
     return False

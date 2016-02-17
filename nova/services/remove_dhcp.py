@@ -4,7 +4,7 @@
 recommended that this service be deleted to reduce the potential attack surface.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: RedHat
@@ -25,7 +25,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _rpmquery('dhcp')
-    if 'not installed' in ret:
+    if not _package('dhcp'):
         return True
     return False

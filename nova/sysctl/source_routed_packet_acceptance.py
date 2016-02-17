@@ -13,7 +13,7 @@ as the route could be specified, rather than rely on routing protocols that did
 not allow this routing.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: all

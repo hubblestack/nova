@@ -6,7 +6,7 @@ encryption of log data en route to a central logging server) justify installing
 and configuring the package.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: RedHat
@@ -27,7 +27,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _rpmquery('rsyslog')
-    if 'not installed' in ret:
-        return False
-    return True
+    if not _package('rsyslog'):
+        return True
+    return False

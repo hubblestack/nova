@@ -26,7 +26,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _sysctl('net.ipv4.icmp_ignore_bogus_error_response')
-    if '1' in ret:
+    if '1' in _sysctl('net.ipv4.icmp_ignore_bogus_error_response'):
         return True
     return False
