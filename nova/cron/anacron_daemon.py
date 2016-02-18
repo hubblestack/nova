@@ -27,7 +27,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _package('cronie-anacron')
-    if 'not installed' in ret:
-        return False
-    return True
+    if _package('cronie-anacron'):
+        return True
+    return False

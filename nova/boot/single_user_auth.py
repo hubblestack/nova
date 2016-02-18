@@ -5,7 +5,7 @@ user from rebooting the system into single user to gain root privileges without
 credentials.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: RedHat
@@ -31,6 +31,4 @@ def audit():
         return True
     elif 'sushell' in ret:
         return False
-    else:
-        return False
-
+    return False

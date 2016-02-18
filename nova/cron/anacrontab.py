@@ -7,7 +7,7 @@ users with the ability to gain insight on system jobs that run on the system and
 could provide them a way to gain unauthorized privileged access.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -28,7 +28,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _stat('/etc/anacrontab')
-    if '600 0 0' in ret:
+    if '600 0 0' in _stat('/etc/anacrontab'):
         return True
     return False

@@ -6,7 +6,7 @@ Granting read access to this directory could give an unprivileged user insight
 in how to gain elevated privileges or circumvent auditing controls.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -27,7 +27,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _stat('/etc/cron.d')
-    if '600 0 0' in ret:
+    if '600 0 0' in _stat('/etc/cron.d'):
         return True
     return False

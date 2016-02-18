@@ -5,7 +5,7 @@ unauthorized user from rebooting the system into single user to gain root
 privileges without credentials.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: RedHat
@@ -18,7 +18,7 @@ import logging
 
 def __virtual__():
     '''
-    Compatibility Check'
+    Compatibility Check
     '''
     if 'RedHat' in __salt__['grains.get']('os_family'):
         return True
@@ -31,4 +31,4 @@ def audit():
         return True
     elif ('yes' or 'YES') in ret:
         return False
-
+    return False

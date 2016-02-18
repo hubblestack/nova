@@ -10,7 +10,7 @@ always know who can create jobs and does not have to worry about remembering to
 add a user to the blacklist when a new user id is created.
 
 :maintainer: HubbleStack
-:maturity: 20160212
+:maturity: 20160216
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -31,7 +31,6 @@ def __virtual__():
 
 
 def audit():
-    ret = _stat('/etc/at.allow')
-    if '600 0 0' in ret:
+    if '600 0 0' in _stat('/etc/at.allow'):
         return True
     return False
