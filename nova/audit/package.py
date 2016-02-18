@@ -11,6 +11,10 @@ from __future__ import absolute_import
 from nova import *
 import logging
 
+NOVA = {}
+NOVA['Success'] = []
+NOVA['Failure'] = []
+
 
 def __virtual__():
     '''
@@ -21,9 +25,8 @@ def __virtual__():
     return False
 
 
-def audit():
-    packages = __salt__['photon.get']('package:deny', [])
-    for pkg in packages:
-        if not _package_check(pkg):
-            return True
-        return False
+def audit(tag=None):
+    for name, meta in pillar.get('pkg:blacklist'):
+        if not _package_check(name):
+            return NOVA['Success'].append(meta['tag'])
+        return NOVA['Failure'].append(meta['tag'])
