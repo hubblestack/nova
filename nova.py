@@ -66,7 +66,7 @@ def sync(saltenv='base'):
         salt '*' nova.sync
         salt '*' nova.sync saltenv=hubble
     '''
-    nova_dir = __salt__['cp.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
 
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
