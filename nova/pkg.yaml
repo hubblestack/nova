@@ -1,0 +1,101 @@
+pkg:
+  blacklist:
+    telnet_server:
+      name:
+        CentOS Linux-6: telnet-server
+        CentOS Linux-7: telnet-server
+      description:
+      tags:
+        CentOS Linux-6: CIS-2.1.1
+        CentOS Linux-7: CIS-2.1.1
+
+    telnet_client:
+      name:
+        CentOS Linux-6: telnet
+        CentOS Linux-7: telnet
+      description:
+      tags:
+        CentOS Linux-6: CIS-2.1.2
+        CentOS Linux-7: CIS-2.1.2
+
+    rsh_server:
+      name:
+        CentOS Linux-6: rsh-server
+        CentOS Linux-7: rsh-server
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.3
+        CentOS Linux-7: CIS-2.1.3
+
+    rsh_client:
+      name:
+        CentOS Linux-6: rsh
+        CentOS Linux-7: rsh
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.4
+        CentOS Linux-7: CIS-2.1.4
+
+    nis_client:
+      name:
+        CentOS Linux-6: ypbind
+        CentOS Linux-7: ypbind
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.5
+        CentOS Linux-7: CIS-2.1.5
+
+    nis_server:
+      name:
+        CentOS Linux-6: ypserv
+        CentOS Linux-7: ypserv
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.6
+        CentOS Linux-7: CIS-2.1.6
+
+    tftp_client:
+      name:
+        CentOS Linux-6: tftp
+        CentOS Linux-7: tftp
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.7
+        CentOS Linux-7: CIS-2.1.7
+
+    tftp_server:
+      name:
+        CentOS Linux-6: tftp-server
+        CentOS Linux-7: tftp-server
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.8
+        CentOS Linux-7: CIS-2.1.8
+
+    talk_client:
+      name:
+        CentOS Linux-6: talk
+        CentOS Linux-7: talk
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.9
+        CentOS Linux-7: CIS-2.1.9
+
+    talk_server:
+      name:
+        CentOS Linux-6: talk-server
+        CentOS Linux-7: talk-server
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.10
+        CentOS Linux-7: CIS-2.1.10
+
+    xinetd:
+      name:
+        CentOS Linux-6: xinetd
+        CentOS Linux-7: xinetd
+      description: 
+      tags:
+        CentOS Linux-6: CIS-2.1.11
+        CentOS Linux-7: CIS-2.1.11
+
