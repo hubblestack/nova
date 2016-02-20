@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 '''
 :maintainer: HubbleStack
-:maturity: 20160217
+:maturity: 20160219
 :depends: SaltStack
 :platform: Linux
 :compatibility: all
@@ -26,7 +26,8 @@ def __virtual__():
 
 
 def audit(tag=None):
-    for name, meta in pillar.get('pkg:blacklist'):
+    for name, meta in __nova__.get('pkg').get('blacklist'):
         if not _package_check(name):
-            return NOVA['Success'].append(meta['tag'])
-        return NOVA['Failure'].append(meta['tag'])
+            NOVA['Success'].append(meta['tag'])
+        NOVA['Failure'].append(meta['tag'])
+    return NOVA

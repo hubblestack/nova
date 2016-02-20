@@ -23,7 +23,7 @@ def __virtual__():
 
 
 def audit():
-    service = __salt__['photon.get']('services:deny', [])
+    service = __nova__.get('service').get('blacklist', [])
     for svc in service:
         if not _service():
             return True
