@@ -1,58 +1,38 @@
 service:
   blacklist:
-    chargen_dgram:
-      name:
-        CentOS Linux-6: chargen-dgram
-        CentOS Linux-7: chargen-dgram
-      description:
-      tags:
-        CentOS Linux-6: CIS-2.1.12
-        CentOS Linux-7: CIS-2.1.12
 
-    chargen_stream:
+    chargen:
       name:
-        CentOS Linux-6: chargen-stream
-        CentOS Linux-7: chargen-stream
+        Debian-8: chargen
+        CentOS Linux-6: ['chargen-dgram', 'chargen-stream']
+        CentOS Linux-7: ['chargen-dgram', 'chargen-stream']
       description:
       tags:
-        CentOS Linux-6: CIS-2.1.13
-        CentOS Linux-7: CIS-2.1.13
+        Debian-8: CIS-5.2
+        CentOS Linux-6: ['CIS-2.1.12', 'CIS-2.1.13']
+        CentOS Linux-7: ['CIS-2.1.12', 'CIS-2.1.13']
 
-    daytime_dgram:
+    daytime:
       name:
-        CentOS Linux-6: daytime_dgram
-        CentOS Linux-7: daytime_dgram
+        Debian-8: daytime
+        CentOS Linux-6: ['daytime-dgram', 'daytime-stream']
+        CentOS Linux-7: ['daytime-dgram', 'daytime-stream']
       description:
       tags:
-        CentOS Linux-6: CIS-2.1.14
-        CentOS Linux-7: CIS-2.1.14
+        Debian-8: CIS-5.3
+        CentOS Linux-6: ['CIS-2.1.14', 'CIS-2.1.15']
+        CentOS Linux-7: ['CIS-2.1.14', 'CIS-2.1.15']
 
-    daytime_stream:
+    echo:
       name:
-        CentOS Linux-6: daytime-stream
-        CentOS Linux-7: daytime-stream
+        Debian-8: echo
+        CentOS Linux-6: ['echo-dgram', 'echo-stream']
+        CentOS Linux-7: ['echo-dgram', 'echo-stream']
       description:
       tags:
-        CentOS Linux-6: CIS-2.1.15
-        CentOS Linux-7: CIS-2.1.15
-
-    echo_dgram:
-      name:
-        CentOS Linux-6: echo-dgram
-        CentOS Linux-7: echo-dgram
-      description:
-      tags:
-        CentOS Linux-6: CIS-2.1.16
-        CentOS Linux-7: CIS-2.1.16
-
-    echo_stream:
-      name:
-        CentOS Linux-6: echo-stream
-        CentOS Linux-7: echo-stream
-      description:
-      tags:
-        CentOS Linux-6: CIS-2.1.17
-        CentOS Linux-7: CIS-2.1.17
+        Debian-8: CIS-5.4
+        CentOS Linux-6: ['CIS-2.1.16', 'CIS-2.1.17']
+        CentOS Linux-7: ['CIS-2.1.16', 'CIS-2.1.17']
 
     tcpmux_server:
       name:
@@ -65,19 +45,37 @@ service:
 
     avahi:
       name:
+        Debian-8: avahi-daemon
         CentOS Linux-6: avahi-daemon
         CentOS Linux-7: avahi-daemon
       description:
       tags:
+        Debian-8: CIS-6.2
         CentOS Linux-6: CIS-3.3
         CentOS Linux-7: CIS-3.3
 
     dhcp_server:
       name:
-        CentOS Linux-6: dhcpd
-        CentOS Linux-7: dhcpd
+        Debian-8: isc-dhcp-server
+        CentOS Linux-6: dhcp
+        CentOS Linux-7: dhcp
       description:
       tags:
+        Debian-8: CIS-6.4
         CentOS Linux-6: CIS-3.5
         CentOS Linux-7: CIS-3.5
+
+    discard:
+      name:
+        Debian-8: discard
+      description:
+      tags:
+        Debian-8: CIS-5.5
+
+    time:
+      name:
+        Debian-8: time
+      description:
+      tags:
+        Debian-8: CIS-5.6
 

@@ -1,7 +1,9 @@
 stat:
-  - some_file:
-      - name: /etc/some/file
-      - pattern: '.40' # I'm assuming regex here. So this enforces group/other, but not user
-      - tags:
-          CentOS 6: CIS.Cent6.1_1
-          CentOS 7: CIS.Cent7.1_1
+  grub_conf:
+    name:
+      CentOS Linux-6: /etc/grub.conf
+      CentOS Linux-7: /boot/grub2/grub.cfg
+    pattern: '600 0 0'
+    tags:
+      CentOS Linux-6: ['CIS-1.5.1', '1.5.2']
+      CentOS Linux-7: ['CIS-1.5.1', '1.5.2']
