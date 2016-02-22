@@ -2,65 +2,87 @@ pkg:
   blacklist:
 
     telnet:
-      name:
-        CentOS Linux-6: ['telnet-client', 'telnet-server']
-        CentOS Linux-7: ['telnet-client', 'telnet-server']
-        Debian-8: ['telnet', 'telnet-server']
-      description:
-      tags:
-        CentOS Linux-6: ['CIS-2.1.1', 'CIS-2.1.2']
-        CentOS Linux-7: ['CIS-2.1.1', 'CIS-2.1.2']
-        Debian-8: 5.1.6
+      data:
+        CentOS Linux-6:
+          - 'telnet-client': 'CIS-2.1.1'
+          - 'telnet-server': 'CIS-2.1.2'
+        CentOS Linux-7:
+          - 'telnet-client': 'CIS-2.1.1'
+          - 'telnet-server': 'CIS-2.1.2'
+        Debian-8:
+          - 'telnet': 'CIS-5.1.6'
+          - 'telnet-server': 'CIS-5.1.6'
+      description: 'Telnet is evil'
+      alert: email
+      trigger: state
 
     rsh:
-      name:
-        CentOS Linux-6: ['rsh', 'rsh-server']
-        CentOS Linux-7: ['rsh', 'rsh-server']
-        Debian-8: ['rsh-client', 'rsh-redone-client', 'rsh-server', 'rsh-redone-server']
-      description: 
-      tags:
-        CentOS Linux-6: ['CIS-2.1.3', 'CIS-2.1.4']
-        CentOS Linux-7: ['CIS-2.1.3', 'CIS-2.1.4']
-        Debian-8: ['CIS-5.1.2', 'CIS-5.1.2', 'CIS-5.1.3', 'CIS-5.1.3']
+      data:
+        CentOS Linux-6:
+          - 'rsh': 'CIS-2.1.3'
+          - 'rsh-server': 'CIS-2.1.4'
+        CentOS Linux-7:
+          - 'rsh': 'CIS-2.1.3'
+          - 'rsh-server': 'CIS-2.1.4'
+        Debian-8:
+          - 'rsh-client': 'CIS-5.1.2'
+          - 'rsh-redone-client': 'CIS-5.1.2'
+          - 'rsh-server': 'CIS-5.1.3'
+          - 'rsh-redone-server': 'CIS-5.1.3'
+      description: 'RSH is evil'
+      alert: email
+      trigger: state
 
     nis:
-      name:
-        CentOS Linux-6: ['ypbind', 'ypserv']
-        CentOS Linux-7: ['ypbind', 'ypserv']
-        Debian-8: nis
-      description: 
-      tags:
-        CentOS Linux-6: ['CIS-2.1.5', 'CIS-2.1.6']
-        CentOS Linux-7: ['CIS-2.1.5', 'CIS-2.1.6']
-        Debian-8: CIS-5.1.1
+      data:
+        CentOS Linux-6:
+          - 'ypbind': 'CIS-2.1.5'
+          - 'ypserv': 'CIS-2.1.6'
+        CentOS Linux-7:
+          - 'ypbind': 'CIS-2.1.5'
+          - 'ypserv': 'CIS-2.1.6'
+        Debian-8:
+          - 'nis': 'CIS-5.1.1'
+      description:
+      alert: email
+      trigger: state
 
     tftp:
-      name:
-        CentOS Linux-6: ['tftp', 'tftp-server']
-        CentOS Linux-7: ['tftp', 'tftp-server']
-        Debian-8: ['tftp', 'aftp']
-      description: 
-      tags:
-        CentOS Linux-6: ['CIS-2.1.7', 'CIS-2.1.8']
-        CentOS Linux-7: ['CIS-2.1.7', 'CIS-2.1.8']
-        Debian-8: ['CIS-5.1.7', 'CIS-5.1.7']
+      data:
+        CentOS Linux-6:
+          - 'tftp': 'CIS-2.1.7'
+          - 'tftp-server': 'CIS-2.1.8'
+        CentOS Linux-7:
+          - 'tftp': 'CIS-2.1.7'
+          - 'tftp-server': 'CIS-2.1.8'
+        Debian-8:
+          - 'tftp': 'CIS-5.1.7'
+          - 'aftp': 'CIS-5.1.7'
+      description:
+      alert: email
+      trigger: state
 
     talk:
-      name:
-        CentOS Linux-6: ['talk', 'talk-server']
-        CentOS Linux-7: ['talk', 'talk-server']
-      description: 
-      tags:
-        CentOS Linux-6: ['CIS-2.1.9', 'CIS-2.1.10']
-        CentOS Linux-7: ['CIS-2.1.9', 'CIS-2.1.10']
+      data:
+        CentOS Linux-6:
+          - 'talk': 'CIS-2.1.9'
+          - 'talk-server': 'CIS-2.1.10'
+        CentOS Linux-7:
+          - 'talk': 'CIS-2.1.9'
+          - 'talk-server': 'CIS-2.1.10'
+      description:
+      alert: email
+      trigger: state
 
     xinetd:
-      name:
-        CentOS Linux-6: xinetd
-        CentOS Linux-7: xinetd
-        Debian-8: xinetd
-      description: 
-      tags:
-        CentOS Linux-6: CIS-2.1.11
-        CentOS Linux-7: CIS-2.1.11
-        Debian-8: CIS-5.1.8
+      data:
+        CentOS Linux-6:
+          - 'xinetd': 'CIS-2.1.11'
+        CentOS Linux-7:
+          - 'xinetd': 'CIS-2.1.11'
+        Debian-8:
+          - 'xinetd': 'CIS-5.1.8'
+      description:
+      alert: email
+      trigger: state
+
