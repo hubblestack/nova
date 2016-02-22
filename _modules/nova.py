@@ -82,7 +82,7 @@ def sync(saltenv='base'):
         # Success! Double check that it synced to the path we expect
         cachedir = os.path.join(__opts__.get('cachedir'), 'files', saltenv)
         ret = [relative.partition(cachedir)[2] for relative in cached]
-        return cached
+        return ret
     else:
         if isinstance(cached, list):
             # Nothing was found
