@@ -84,7 +84,7 @@ def sync(nova_dir=None, saltenv=None):
 
     if cached and isinstance(cached, list):
         # Success! Double check that it synced to the path we expect
-        cachedir = os.path.join(__opts__.get('cachedir'), 'files', saltenv)
+        cachedir = _hubble_dir(nova_dir, saltenv)
         ret = [relative.partition(cachedir)[2] for relative in cached]
         return ret
     else:
@@ -96,6 +96,17 @@ def sync(nova_dir=None, saltenv=None):
             # of cache_dir
             raise CommandExecutionError('An error occurred while syncing: {0}'
                                         .format(cached))
+
+
+def _hubble_dir(nova_dir, saltenv):
+    '''
+    Generate the local minion directory to which nova modules are synced
+    '''
+    cachedir = os.path.join(__opts__.get('cachedir'),
+                            'files',
+                            saltenv,
+                            nova_dir)
+    return cachedir
 
 
 def load(sync=False):
