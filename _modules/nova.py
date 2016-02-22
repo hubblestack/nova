@@ -44,7 +44,7 @@ def audit(modules=None, tag=None):
     pass
 
 
-def sync(nova_dir=None, saltenv=None):
+def sync():
     '''
     Sync the nove audit modules from the saltstack fileserver.
 
@@ -67,10 +67,8 @@ def sync(nova_dir=None, saltenv=None):
         salt '*' nova.sync
         salt '*' nova.sync saltenv=hubble
     '''
-    if nova_dir is None:
-        nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
-    if saltenv is None:
-        saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
 
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
@@ -98,10 +96,12 @@ def sync(nova_dir=None, saltenv=None):
                                         .format(cached))
 
 
-def _hubble_dir(nova_dir, saltenv):
+def _hubble_dir():
     '''
     Generate the local minion directory to which nova modules are synced
     '''
+    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
     cachedir = os.path.join(__opts__.get('cachedir'),
                             'files',
                             saltenv,
