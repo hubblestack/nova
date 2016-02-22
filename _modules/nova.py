@@ -51,14 +51,11 @@ def sync():
     The modules should be stored in the salt fileserver. By default nova will
     search the base environment for a top level ``hubblestack-nova`` directory,
     unless otherwise specified via pillar or minion config
-    (`hubblestack.nova.dir`)
+    (``hubblestack.nova.dir``)
 
     Modules will just be cached in the normal minion cachedir
 
     Returns the minion's path to the cached directory
-
-    saltenv
-        Override the environment in which we should search for the nova modules
 
     CLI Examples:
 
