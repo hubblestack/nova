@@ -11,6 +11,7 @@ TODO: High level documentation
 
 Configuration:
     - hubblestack.nova.dir
+    - hubblestack.nova.saltenv
 '''
 from __future__ import absolute_import
 import logging
@@ -43,7 +44,7 @@ def audit(modules=None, tag=None):
     pass
 
 
-def sync(saltenv='base'):
+def sync(nova_dir=None, saltenv=None):
     '''
     Sync the nove audit modules from the saltstack fileserver.
 
@@ -66,7 +67,10 @@ def sync(saltenv='base'):
         salt '*' nova.sync
         salt '*' nova.sync saltenv=hubble
     '''
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    if nova_dir is None:
+        nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    if saltenv is None:
+        saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
 
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
