@@ -79,7 +79,7 @@ def sync():
 
     if cached and isinstance(cached, list):
         # Success! Double check that it synced to the path we expect
-        cachedir = _hubble_dir(nova_dir, saltenv)
+        cachedir = _hubble_dir()
         ret = [relative.partition(cachedir)[2] for relative in cached]
         return ret
     else:
