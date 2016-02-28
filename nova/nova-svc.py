@@ -5,8 +5,6 @@ pkg auditing
 import logging
 import yaml
 
-DISTRO = 'CentOS Linux-7'
-
 __virtualname__ = 'hubble.svc'
 log = logging.getLogger(__name__)
 
@@ -18,10 +16,15 @@ def __virtual__():
 
 
 def audit():
+    '''
+    Run the checks
+    '''
+    DISTRO = __salt__['grains.get']('osfinger')
+    filename = __salt__['config.get']('hubble:nova:svc')
 
     ret = {}
 
-    with open('/srv/salt/_nova/nova-svc.yaml') as fh_:
+    with open(filename) as fh_:
         audit = yaml.safe_load(fh_)
     
     for k,v in audit['service']['blacklist'].iteritems():
