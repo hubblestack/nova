@@ -4,10 +4,10 @@ pkg:
     telnet:
       data:
         CentOS Linux-6:
-          - 'telnet-client': 'CIS-2.1.1'
+          - 'telnet': 'CIS-2.1.1'
           - 'telnet-server': 'CIS-2.1.2'
         CentOS Linux-7:
-          - 'telnet-client': 'CIS-2.1.1'
+          - 'telnet': 'CIS-2.1.1'
           - 'telnet-server': 'CIS-2.1.2'
         Debian-8:
           - 'telnet': 'CIS-5.1.6'

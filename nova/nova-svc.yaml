@@ -2,7 +2,7 @@ service:
   blacklist:
 
     chargen:
-      name:
+      data:
         Debian-8:
           - 'chargen': 'CIS-5.2'
         CentOS Linux-6:
@@ -11,26 +11,26 @@ service:
         CentOS Linux-7:
           - 'chargen-dgram': 'CIS-2.1.12'
           - 'chargen-stream': 'CIS-2.1.13'
-      description:
+      description: []
       alert: email
       trigger: state
 
     daytime:
-      name:
+      data:
         Debian-8:
           - 'daytime': 'CIS-5.3'
         CentOS Linux-6:
           - 'daytime-dgram': 'CIS-2.1.14'
-          - 'daytime-stream':: 'CIS-2.1.15'
+          - 'daytime-stream': 'CIS-2.1.15'
         CentOS Linux-7:
           - 'daytime-dgram': 'CIS-2.1.14'
-          - 'daytime-stream':: 'CIS-2.1.15'
-      description:
+          - 'daytime-stream': 'CIS-2.1.15'
+      description: []
       alert: email
       trigger: state
 
     echo:
-      name:
+      data:
         Debian-8:
           - 'echo': 'CIS-5.4'
         CentOS Linux-6:
@@ -39,57 +39,57 @@ service:
         CentOS Linux-7:
           - 'echo-dgram': 'CIS-2.1.16'
           - 'echo-stream': 'CIS-2.1.17'
-      description:
+      description: []
       alert: email
       trigger: state
 
     tcpmux_server:
-      name:
+      data:
         CentOS Linux-6:
           - 'tcpmux-server': 'CIS-2.1.18'
         CentOS Linux-7:
           - 'tcpmux-server': 'CIS-2.1.18'
-      description:
+      description: []
       alert: email
       trigger: state
 
     avahi:
-      name:
+      data:
         Debian-8:
           - 'avahi-daemon': 'CIS-6.2'
         CentOS Linux-6:
           - 'avahi-daemon': 'CIS-3.3'
         CentOS Linux-7:
           - 'avahi-daemon': 'CIS-3.3'
-      description:
+      description: []
       alert: email
       trigger: state
 
     dhcp_server:
-      name:
+      data:
         Debian-8:
           - 'isc-dhcp-server': 'CIS-6.4'
         CentOS Linux-6:
           - 'dhcp': 'CIS-3.5'
         CentOS Linux-7:
           - 'dhcp': 'CIS-3.5'
-      description:
+      description: []
       alert: email
       trigger: state
 
     discard:
-      name:
+      data:
         Debian-8:
           - 'discard': 'CIS-5.5'
-      description:
+      description: []
       alert: email
       trigger: state
 
     time:
-      name:
+      data:
         Debian-8:
           - 'time': 'CIS-5.6'
-      description:
+      description: []
       alert: email
       trigger: state
 
