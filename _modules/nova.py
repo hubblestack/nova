@@ -18,9 +18,11 @@ import logging
 
 log = logging.getLogger(__name__)
 
+import imp
 import os
 
 from salt.exceptions import CommandExecutionError
+from salt.loader import LazyLoader
 
 
 def audit(modules=None, tag=None):
@@ -78,7 +80,7 @@ def sync():
     cached = __salt__['cp.cache_dir'](path, saltenv=saltenv)
 
     if cached and isinstance(cached, list):
-        # Success! Double check that it synced to the path we expect
+        # Success! Trim the paths
         cachedir = _hubble_dir()
         ret = [relative.partition(cachedir)[2] for relative in cached]
         return ret
@@ -114,4 +116,71 @@ def load(sync=False):
         Whether to do a fresh sync before loading the modules. Defaults to
         False
     '''
-    pass
+    if not os.path.isdir(_hubble_dir()):
+        if sync:
+            sync_ret = sync()
+        else:
+            return False, 'No synced nova modules found, and sync=False'
+
+
+class NovaLazyLoader(LazyLoader):
+    '''
+    Leverage the SaltStack LazyLoader so we don't have to reimplement
+    everything. Note that in general, we'll just call _load_all, so this
+    will not actually be a lazy loader, but leveraging the existing code is
+    worth it.
+    '''
+
+    def __init__(self):
+        super(NovaLazyLoader, self).__init__([_hubble_dir()],
+                                             opts=__opts__,
+                                             tag='nova')
+
+    def refresh_file_mapping():
+        '''
+        Override the default refresh_file_mapping to look for nova files
+        recursively, rather than only in a top-level directory
+        '''
+        # map of suffix to description for imp
+        self.suffix_map = {}
+        suffix_order = []  # local list to determine precedence of extensions
+        for (suffix, mode, kind) in imp.get_suffixes():
+            self.suffix_map[suffix] = (suffix, mode, kind)
+            suffix_order.append(suffix)
+
+        # create mapping of filename (without suffix) to (path, suffix)
+        self.file_mapping = {}
+
+        for mod_dir in self.module_dirs:
+            for dirname, _, files in os.walk(mod_dir):
+                for filename in files:
+                    try:
+                        if filename.startswith('_'):
+                            # skip private modules
+                            # log messages omitted for obviousness
+                            continue
+                        _, ext = os.path.splitext(filename)
+                        fpath = os.path.join(dirname, filename)
+                        f_noext = os.path.splitext(fpath.partition(mod_dir)[-1])
+                        # Nova only supports .py
+                        if ext not in ['.py']:
+                            continue
+                        if f_noext in self.disabled:
+                            log.trace(
+                                'Skipping {0}, it is disabled by configuration'.format(
+                                filename
+                                )
+                            )
+                            continue
+
+                        # if we don't have it, we want it
+                        elif f_noext not in self.file_mapping:
+                            self.file_mapping[f_noext] = (fpath, ext)
+                        # if we do, we want it if we have a higher precidence ext
+                        else:
+                            curr_ext = self.file_mapping[f_noext][1]
+                            #log.debug("****** curr_ext={0} ext={1} suffix_order={2}".format(curr_ext, ext, suffix_order))
+                            if curr_ext and suffix_order.index(ext) < suffix_order.index(curr_ext):
+                                self.file_mapping[f_noext] = (fpath, ext)
+                    except OSError:
+                        continue
