@@ -20,7 +20,12 @@ log = logging.getLogger(__name__)
 
 import imp
 import os
+import sys
+import six
+import inspect
 
+import salt
+import salt.utils
 from salt.exceptions import CommandExecutionError
 from salt.loader import LazyLoader
 
@@ -136,7 +141,7 @@ class NovaLazyLoader(LazyLoader):
                                              opts=__opts__,
                                              tag='nova')
 
-    def refresh_file_mapping():
+    def refresh_file_mapping(self):
         '''
         Override the default refresh_file_mapping to look for nova files
         recursively, rather than only in a top-level directory
@@ -161,7 +166,7 @@ class NovaLazyLoader(LazyLoader):
                             continue
                         _, ext = os.path.splitext(filename)
                         fpath = os.path.join(dirname, filename)
-                        f_noext = os.path.splitext(fpath.partition(mod_dir)[-1])
+                        f_noext, _ = os.path.splitext(fpath.partition(mod_dir)[-1])
                         # Nova only supports .py
                         if ext not in ['.py']:
                             continue
@@ -194,42 +199,16 @@ class NovaLazyLoader(LazyLoader):
         self.loaded_files.add(name)
         try:
             sys.path.append(os.path.dirname(fpath))
-            if suffix == '.pyx':
-                mod = pyximport.load_module(name, fpath, tempfile.gettempdir())
-            elif suffix == '.o':
-                top_mod = __import__(fpath, globals(), locals(), [])
-                comps = fpath.split('.')
-                if len(comps) < 2:
-                    mod = top_mod
-                else:
-                    mod = top_mod
-                    for subname in comps[1:]:
-                        mod = getattr(mod, subname)
-            elif suffix == '.zip':
-                mod = zipimporter(fpath).load_module(name)
-            else:
-                desc = self.suffix_map[suffix]
-                # if it is a directory, we don't open a file
-                if suffix == '':
-                    mod = imp.load_module(
-                        '{0}.{1}.{2}.{3}'.format(
-                            self.loaded_base_name,
-                            self.mod_type_check(fpath),
-                            self.tag,
-                            name
-                        ), None, fpath, desc)
-                    # reload all submodules if necessary
-                    if not self.initial_load:
-                        self._reload_submodules(mod)
-                else:
-                    with salt.utils.fopen(fpath, desc[1]) as fn_:
-                        mod = imp.load_module(
-                            '{0}.{1}.{2}.{3}'.format(
-                                self.loaded_base_name,
-                                self.mod_type_check(fpath),
-                                self.tag,
-                                name
-                            ), fn_, fpath, desc)
+            desc = self.suffix_map[suffix]
+            # if it is a directory, we don't open a file
+            with salt.utils.fopen(fpath, desc[1]) as fn_:
+                mod = imp.load_module(
+                    '{0}.{1}.{2}.{3}'.format(
+                        self.loaded_base_name,
+                        self.mod_type_check(fpath),
+                        self.tag,
+                        name
+                    ), fn_, fpath, desc)
 
         except IOError:
             raise
@@ -273,7 +252,7 @@ class NovaLazyLoader(LazyLoader):
         for p_name, p_value in six.iteritems(self.pack):
             setattr(mod, p_name, p_value)
 
-        module_name = mod.__name__.rsplit('.', 1)[-1]
+        module_name = name
 
         # Call a module's initialization method if it exists
         module_init = getattr(mod, '__init__', None)
@@ -338,34 +317,15 @@ class NovaLazyLoader(LazyLoader):
                 )
             )
         mod_dict = salt.utils.odict.OrderedDict()
+        # In nova we only care about the audit() function, and we want to
+        # store it with directory structure in the name.
         for attr in getattr(mod, '__load__', dir(mod)):
-            if attr.startswith('_'):
-                # private functions are skipped
+            if attr != 'audit':
                 continue
             func = getattr(mod, attr)
-            if not inspect.isfunction(func):
-                # Not a function!? Skip it!!!
-                continue
-            # Let's get the function name.
-            # If the module has the __func_alias__ attribute, it must be a
-            # dictionary mapping in the form of(key -> value):
-            #   <real-func-name> -> <desired-func-name>
-            #
-            # It default's of course to the found callable attribute name
-            # if no alias is defined.
-            funcname = getattr(mod, '__func_alias__', {}).get(attr, attr)
             # Save many references for lookups
-            self._dict['{0}.{1}'.format(module_name, funcname)] = func
-            setattr(mod_dict, funcname, func)
-            mod_dict[funcname] = func
-            self._apply_outputter(func, mod)
-
-        # enforce depends
-        try:
-            Depends.enforce_dependencies(self._dict, self.tag)
-        except RuntimeError as e:
-            log.info('Depends.enforce_dependencies() failed '
-                     'for reasons: {0}'.format(e))
+            self._dict[name] = func
+            mod_dict[name] = func
 
         self.loaded_modules[module_name] = mod_dict
         return True
