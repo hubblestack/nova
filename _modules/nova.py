@@ -112,19 +112,6 @@ def sync():
                                         .format(cached))
 
 
-def _hubble_dir():
-    '''
-    Generate the local minion directory to which nova modules are synced
-    '''
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
-    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
-    cachedir = os.path.join(__opts__.get('cachedir'),
-                            'files',
-                            saltenv,
-                            nova_dir)
-    return cachedir
-
-
 def load(first_sync=True, sync=False):
     '''
     Load the synced audit modules.
@@ -144,6 +131,19 @@ def load(first_sync=True, sync=False):
 
     global __nova__
     __nova__ = NovaLazyLoader()
+
+
+def _hubble_dir():
+    '''
+    Generate the local minion directory to which nova modules are synced
+    '''
+    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    cachedir = os.path.join(__opts__.get('cachedir'),
+                            'files',
+                            saltenv,
+                            nova_dir)
+    return cachedir
 
 
 class NovaLazyLoader(LazyLoader):
