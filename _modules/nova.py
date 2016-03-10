@@ -29,8 +29,10 @@ import salt.utils
 from salt.exceptions import CommandExecutionError
 from salt.loader import LazyLoader
 
+__nova__ = {}
 
-def audit(modules=None, tag=None):
+
+def audit(modules=None, tag=None, first_load=True, load=False):
     '''
     Primary entry point for audit calls.
 
@@ -47,8 +49,18 @@ def audit(modules=None, tag=None):
         Glob pattern string for tags to include in the audit. This way you can
         give a directory, and tell the system to only run the `CIS*`-tagged
         audit modules, for example.
+
+    first_load
+        If set to True and no modules have been loaded, will load before
+        auditing. Default is True.
+
+    load
+        If set to True, always do a fresh load before auditing. Default
+        is False
     '''
-    pass
+    if (not __nova__ and first_load) or load:
+        load()
+    raise NotImplementedError()
 
 
 def sync():
@@ -113,19 +125,25 @@ def _hubble_dir():
     return cachedir
 
 
-def load(sync=False):
+def load(first_sync=True, sync=False):
     '''
     Load the synced audit modules.
 
+    first_sync
+        If set to True and there are no modules synced, sync before loading.
+        Default is True.
+
     sync
-        Whether to do a fresh sync before loading the modules. Defaults to
-        False
+        If set to True, always do a fresh sync before loading. Default is
+        False.
     '''
+    if not (os.path.isdir(_hubble_dir()) and first_sync) or sync:
+        sync()
     if not os.path.isdir(_hubble_dir()):
-        if sync:
-            sync_ret = sync()
-        else:
-            return False, 'No synced nova modules found, and sync=False'
+        return False, 'No synced nova modules found'
+
+    global __nova__
+    __nova__ = NovaLazyLoader()
 
 
 class NovaLazyLoader(LazyLoader):
@@ -140,6 +158,7 @@ class NovaLazyLoader(LazyLoader):
         super(NovaLazyLoader, self).__init__([_hubble_dir()],
                                              opts=__opts__,
                                              tag='nova')
+        self._load_all()
 
     def refresh_file_mapping(self):
         '''
