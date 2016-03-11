@@ -132,6 +132,10 @@ def load(first_sync=True, sync=False):
     global __nova__
     __nova__ = NovaLazyLoader()
 
+    ret = {'loaded': __nova__._dict.keys(),
+           'missing': __nova__.missing_modules}
+    return ret
+
 
 def _hubble_dir():
     '''
@@ -231,13 +235,14 @@ class NovaLazyLoader(LazyLoader):
 
         except IOError:
             raise
-        except ImportError:
+        except ImportError as error:
             log.debug(
                 'Failed to import {0} {1}:\n'.format(
                     self.tag, name
                 ),
                 exc_info=True
             )
+            self.missing_modules[name] = str(error)
             return False
         except Exception as error:
             log.error(
@@ -247,14 +252,16 @@ class NovaLazyLoader(LazyLoader):
                 ),
                 exc_info=True
             )
+            self.missing_modules[name] = str(error)
             return False
-        except SystemExit:
+        except SystemExit as error:
             log.error(
                 'Failed to import {0} {1} as the module called exit()\n'.format(
                     self.tag, name
                 ),
                 exc_info=True
             )
+            self.missing_modules[name] = str(error)
             return False
         finally:
             sys.path.pop()
@@ -288,7 +295,6 @@ class NovaLazyLoader(LazyLoader):
                         module_name,
                         err_string),
                     exc_info=True)
-                self.missing_modules[module_name] = err_string
                 self.missing_modules[name] = err_string
                 return False
 
@@ -309,7 +315,6 @@ class NovaLazyLoader(LazyLoader):
             # supposed to not process this module
             if virtual_ret is not True:
                 # If a module has information about why it could not be loaded, record it
-                self.missing_modules[module_name] = virtual_err
                 self.missing_modules[name] = virtual_err
                 return False
 
@@ -324,7 +329,6 @@ class NovaLazyLoader(LazyLoader):
                         (self.opts['proxy']['proxytype'] not in mod.__proxyenabled__ and
                             '*' not in mod.__proxyenabled__):
                     err_string = 'not a proxy_minion enabled module'
-                    self.missing_modules[module_name] = err_string
                     self.missing_modules[name] = err_string
                     return False
 
