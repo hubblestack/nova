@@ -83,6 +83,7 @@ def sync():
         salt '*' nova.sync
         salt '*' nova.sync saltenv=hubble
     '''
+    log.debug('syncing nova modules')
     nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
     saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
 
@@ -128,6 +129,8 @@ def load(first_sync=True, sync=False):
         sync()
     if not os.path.isdir(_hubble_dir()):
         return False, 'No synced nova modules found'
+
+    log.debug('loading nova modules')
 
     global __nova__
     __nova__ = NovaLazyLoader()
