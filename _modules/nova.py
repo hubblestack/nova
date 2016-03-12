@@ -269,13 +269,10 @@ class NovaLazyLoader(LazyLoader):
         finally:
             sys.path.pop()
 
-        if hasattr(mod, '__opts__'):
-            mod.__opts__.update(self.opts)
-        else:
-            mod.__opts__ = self.opts
-
-        mod.__grains__ = self._grains
-        mod.__pillar__ = self._pillar
+        mod.__grains__ = __grains__
+        mod.__pillar__ = __pillar__
+        mod.__opts__ = __opts__
+        mod.__salt__ = __salt__
 
         # pack whatever other globals we were asked to
         for p_name, p_value in six.iteritems(self.pack):
