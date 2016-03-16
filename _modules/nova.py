@@ -37,13 +37,13 @@ def audit(modules=None, tag=None, first_load=True, load=False):
     Primary entry point for audit calls.
 
     modules
-        Comma-separated list of modules/directories to search for audit
-        modules. Directories are dot-separated, much in the same way as Salt
-        states. For individual module names, leave the .py extension off.  If a
-        given path resolves to a python file, it will be treated as a single
-        module. Otherwise it will be treated as a directory. All modules found
-        in a recursive search of the specified directories will be included in
-        the audit.
+        List (comma-separated or python list) of modules/directories to search
+        for audit modules. Directories are dot-separated, much in the same way
+        as Salt states. For individual module names, leave the .py extension
+        off.  If a given path resolves to a python file, it will be treated as
+        a single module. Otherwise it will be treated as a directory. All
+        modules found in a recursive search of the specified directories will
+        be included in the audit.
 
     tags
         Glob pattern string for tags to include in the audit. This way you can
@@ -60,7 +60,29 @@ def audit(modules=None, tag=None, first_load=True, load=False):
     '''
     if (not __nova__ and first_load) or load:
         load()
-    raise NotImplementedError()
+    if not __nova__:
+        return False, 'No nova modules have been loaded.'
+
+    if not isinstance(modules, list):
+        # Convert string
+        modules = modules.split(',')
+
+    # Convert module list to paths
+    modules = [os.path.join(*mod.split('.')) for mod in modules]
+
+    results = {'Success': [], 'Failure': []}
+    # This is a pretty terrible way to iterate, performance-wise
+    # However, the data sets should be relatively small, so I don't anticipate
+    # issues.
+    for module in modules():
+        for key, func in __nova__._dict.iteritems():
+            if key.startswith(module):
+                # Found a match, run the audit
+                ret = func(tag)
+                results['Success'].extend(ret.get('Success', []))
+                results['Failure'].extend(ret.get('Failure', []))
+
+    return results
 
 
 def sync():
@@ -350,5 +372,5 @@ class NovaLazyLoader(LazyLoader):
             self._dict[name] = func
             mod_dict[name] = func
 
-        self.loaded_modules[module_name] = mod_dict
+        self.loaded_modules[name] = mod_dict
         return True
