@@ -41,29 +41,38 @@ include full documentation
 
 .. code-block:: python
 
-    def virtual():
-        '''
-        Compatibility Test
-        '''
-        if 'RedHat' in __salt__['grains.get']('os_family'):
-            return True
-        return False
+    import fnmatch
+    import salt.utils
+
+    __tags__ = []
+
+    def __virtual__():
+        if salt.utils.is_windows():
+            return False, 'This audit module only runs on linux'
+        global __tags__
+        __tags__ = ['cis-foo', 'cis-bar', 'cis-baz']
+        return True
 
 
-All Nova plugins require a ``__virtual__()`` function to determine module compatibility.
+    def audit(tags):
+        ret = {'Success': [], 'Failure': []}
+        for tag in __tags__:
+            if fnmatch.fnmatch(tag, tags):
+                # We should run this tag
+                # <do audit stuff here>
+                ret['Success'].append(tag)
+        return ret
 
 
-.. code-block:: python
+All Nova plugins require a ``__virtual__()`` function to determine module
+compatibility, and an ``audit()`` function to perform the actual audit
+functionality
 
-    def audit():
-        '''
-        Security check; return True or False
-        '''
-        ret = _grep('"/dev/shm"', '/etc/fstab')
-        if 'noexec' in ret:
-            return True
-        else:
-            return False
+The ``audit()`` function must take a single argument, ``tags``, which is a glob
+expression for which tags the audit function should run. It is the job of the
+audit module to compare the ``tags`` glob with all tags supported by this
+module and only run the audits which match.
 
-All Nova plugins require an ``audit()`` function, which will auto-execute when
-called through Nova. return ``True`` for pass and return ``False`` for fail.
+The return value should be a dictionary, with two keys, "Success" and
+"Failure".  The values for these keys should be a list of tags as strings, or a
+list of dictionaries containing tags and other information for the audit.
