@@ -32,18 +32,18 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(modules=None, tag=None, first_load=True, load=False):
+def audit(modules=None, tag='*', first_load=True, always_load=False):
     '''
     Primary entry point for audit calls.
 
     modules
-        Comma-separated list of modules/directories to search for audit
-        modules. Directories are dot-separated, much in the same way as Salt
-        states. For individual module names, leave the .py extension off.  If a
-        given path resolves to a python file, it will be treated as a single
-        module. Otherwise it will be treated as a directory. All modules found
-        in a recursive search of the specified directories will be included in
-        the audit.
+        List (comma-separated or python list) of modules/directories to search
+        for audit modules. Directories are dot-separated, much in the same way
+        as Salt states. For individual module names, leave the .py extension
+        off.  If a given path resolves to a python file, it will be treated as
+        a single module. Otherwise it will be treated as a directory. All
+        modules found in a recursive search of the specified directories will
+        be included in the audit.
 
     tags
         Glob pattern string for tags to include in the audit. This way you can
@@ -54,13 +54,41 @@ def audit(modules=None, tag=None, first_load=True, load=False):
         If set to True and no modules have been loaded, will load before
         auditing. Default is True.
 
-    load
+    always_load
         If set to True, always do a fresh load before auditing. Default
         is False
     '''
-    if (not __nova__ and first_load) or load:
+    if (not __nova__ and first_load) or always_load:
         load()
-    raise NotImplementedError()
+    if not __nova__:
+        return False, 'No nova modules have been loaded.'
+
+    if not isinstance(modules, list):
+        # Convert string
+        modules = modules.split(',')
+
+    # Convert module list to paths, with leading slashes
+    modules = [os.path.join('/', os.path.join(*mod.split('.'))) for mod in modules]
+
+    results = {'Success': [], 'Failure': []}
+    already_run = set()
+    # This is a pretty terrible way to iterate, performance-wise
+    # However, the data sets should be relatively small, so I don't anticipate
+    # issues.
+    for module in modules:
+        for key, func in __nova__._dict.iteritems():
+            if key not in already_run and key.startswith(module):
+                # Found a match, run the audit
+                ret = func(tag)
+
+                # Make sure we don't run the same audit twice
+                already_run.add(key)
+
+                # Compile the results
+                results['Success'].extend(ret.get('Success', []))
+                results['Failure'].extend(ret.get('Failure', []))
+
+    return results
 
 
 def sync():
@@ -75,6 +103,9 @@ def sync():
     Modules will just be cached in the normal minion cachedir
 
     Returns the minion's path to the cached directory
+
+    NOTE: This function will also clean out existing files at the cached
+    location, as cp.cache_dir doesn't clean out old files
 
     CLI Examples:
 
@@ -94,6 +125,8 @@ def sync():
     else:
         path = 'salt://{0}'.format(nova_dir)
 
+    # Clean previously synced files
+    __salt__['file.remove'](_hubble_dir())
     # Sync the files
     cached = __salt__['cp.cache_dir'](path, saltenv=saltenv)
 
@@ -113,7 +146,7 @@ def sync():
                                         .format(cached))
 
 
-def load(first_sync=True, sync=False):
+def load(first_sync=True, always_sync=False):
     '''
     Load the synced audit modules.
 
@@ -121,11 +154,11 @@ def load(first_sync=True, sync=False):
         If set to True and there are no modules synced, sync before loading.
         Default is True.
 
-    sync
+    always_sync
         If set to True, always do a fresh sync before loading. Default is
         False.
     '''
-    if not (os.path.isdir(_hubble_dir()) and first_sync) or sync:
+    if not (os.path.isdir(_hubble_dir()) and first_sync) or always_sync:
         sync()
     if not os.path.isdir(_hubble_dir()):
         return False, 'No synced nova modules found'
@@ -183,7 +216,9 @@ class NovaLazyLoader(LazyLoader):
         self.file_mapping = {}
 
         for mod_dir in self.module_dirs:
-            for dirname, _, files in os.walk(mod_dir):
+            for dirname, dirs, files in os.walk(mod_dir):
+                if '.git' in dirs:
+                    dirs.remove('.git')
                 for filename in files:
                     try:
                         if filename.startswith('_'):
@@ -350,5 +385,5 @@ class NovaLazyLoader(LazyLoader):
             self._dict[name] = func
             mod_dict[name] = func
 
-        self.loaded_modules[module_name] = mod_dict
+        self.loaded_modules[name] = mod_dict
         return True
