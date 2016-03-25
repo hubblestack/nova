@@ -96,7 +96,7 @@ def sync():
     Sync the nove audit modules from the saltstack fileserver.
 
     The modules should be stored in the salt fileserver. By default nova will
-    search the base environment for a top level ``hubblestack-nova`` directory,
+    search the base environment for a top level ``hubblestack_nova`` directory,
     unless otherwise specified via pillar or minion config
     (``hubblestack.nova.dir``)
 
@@ -115,7 +115,7 @@ def sync():
         salt '*' nova.sync saltenv=hubble
     '''
     log.debug('syncing nova modules')
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack_nova')
     saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
 
     # Support optional salt:// in config
@@ -177,7 +177,7 @@ def _hubble_dir():
     '''
     Generate the local minion directory to which nova modules are synced
     '''
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack-nova')
+    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack_nova')
     saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
     cachedir = os.path.join(__opts__.get('cachedir'),
                             'files',
