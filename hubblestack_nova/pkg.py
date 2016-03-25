@@ -1,3 +1,50 @@
+# -*- encoding: utf-8 -*-
+'''
+A simple Nova plugin
+
+:maintainer: HubbleStack
+:maturity: 20160325
+:platform: All
+:requires: SaltStack
+
+This audit module requires yaml data to execute. It will search the local
+directory for any .yaml files, and if it finds a top-level 'pkg' key, it will
+use that data.
+
+Sample YAML data, with inline comments:
+
+
+pkg:
+  blacklist:  # Must not be installed
+    telnet:  # Unique ID for this set of audits
+      data:  # 'data' is required
+        CentOS Linux-6:  # 'osfinger' grain, for multiplatform support
+          - 'telnet': 'CIS-2.1.1'  # pkg name : tag
+        '*':  # Catch-all, if no osfinger match was found
+          - 'telnet': 'telnet-bad'  # pkg name : tag
+      description: 'Telnet is evil'  # Currently unimplemented, will be ignored
+      alert: email  # Currently unimplemented, will be ignored
+      trigger: state  # Currently unimplemented, will be ignored
+
+  whitelist:  # Must be installed, no version checking (yet)
+    rsh:
+      data:
+        CentOS Linux-6:
+          - 'rsh': 'CIS-2.1.3'
+          - 'rsh-server': 'CIS-2.1.4'
+        CentOS Linux-7:
+          - 'rsh': 'CIS-2.1.3'
+          - 'rsh-server': 'CIS-2.1.4'
+        Debian-8:
+          - 'rsh-client': 'CIS-5.1.2'
+          - 'rsh-redone-client': 'CIS-5.1.2'
+          - 'rsh-server': 'CIS-5.1.3'
+          - 'rsh-redone-server': 'CIS-5.1.3'
+      description: 'RSH is evil'
+      alert: email
+      trigger: state
+
+'''
 from __future__ import absolute_import
 import logging
 
