@@ -6,8 +6,11 @@ import yaml
 import os
 import salt.utils
 
+log = logging.getLogger(__name__)
+
 __tags__ = None
 __data__ = None
+
 
 def __virtual__():
     if salt.utils.is_windows():
@@ -48,7 +51,7 @@ def _get_yaml(dirname):
     try:
         for yamlpath in os.listdir(dirname):
             if yamlpath.endswith('.yaml'):
-                with open(yamlpath) as fh_:
+                with open(os.path.join(dirname, yamlpath)) as fh_:
                     data = yaml.safe_load(fh_)
                 _merge_yaml(ret, data)
     except:
