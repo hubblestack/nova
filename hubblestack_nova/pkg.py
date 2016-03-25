@@ -30,12 +30,12 @@ def audit(tags):
             name = __tags__[tag]['name']
             audittype = __tags__[tag]['type']
             if audittype == 'blacklist':
-                if __salt__['pkg.version']:
+                if __salt__['pkg.version'](name):
                     ret['Failure'].append(tag)
                 else:
                     ret['Success'].append(tag)
             elif audittype == 'whitelist':
-                if __salt__['pkg.version']:
+                if __salt__['pkg.version'](name):
                     ret['Success'].append(tag)
                 else:
                     ret['Failure'].append(tag)
