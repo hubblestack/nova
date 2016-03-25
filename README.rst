@@ -10,15 +10,55 @@ running systems.
 Installation
 ============
 
+Place ``_modules/nova.py`` in your ``_modules/`` directory in your Salt
+fileserver (whether roots or gitfs) and sync it to the minion.
+
+Create a ``hubblestack_nova`` directory in your Salt fileserver's ``base``
+environment. Inside of this directory, create a directory tree to organize your
+audit modules. Place any desired audit modules into this directory tree, along
+with any supporting files (yaml files, etc).
+
+The directory in which nova searches for audit modules, and the Salt
+environment, are both configurable via pillar:
+
+.. code-block:: yaml
+
+    hubblestack.nova.dir: my/hubble/path
+    hubblestack.nova.saltenv: hubble
+
+You're now ready to run audits!
+
+Usage
+=====
+
+There are three functions in the nova.py module. ``nova.sync`` will sync the
+configured ``hubblestack_nova/`` directory to the minion. ``nova.load`` will
+load the audit modules, syncing if a sync has never happened (by default).
+
+Finally, ``nova.audit`` will run the audits, loading if a load has never
+happened (by default).
+
+It takes a couple of arguments. The first is a comma-separated list of paths.
+These paths can be files or directories. If a path is a directory, all modules
+below that directory will be run. If it is a file, that file will be run.
+
+The second argument is a glob pattern, against which audit tags will be
+matched. All audits have an accompanying tag. Nova modules are designed to take
+this argument, compare it to each tag that module handles, and only run those
+which match the argument (using ``fnmatch``).
+
+``nova.audit`` will return a list of audits which were successful, and a list
+of audits which failed.
+
 
 Development
 ===========
 
 If you're interested in contributing to this project this section outlines the
-structure and requirements for Nova plugin development.
+structure and requirements for Nova audit module development.
 
-Anatomy of a Nova plugin
-------------------------
+Anatomy of a Nova audit module
+------------------------------
 
 .. code-block:: python
 
