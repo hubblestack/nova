@@ -32,7 +32,7 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(modules=None, tag='*', first_load=True, always_load=False):
+def audit(modules='', tag='*', first_load=True, always_load=False):
     '''
     Primary entry point for audit calls.
 
