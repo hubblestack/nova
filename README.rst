@@ -117,7 +117,7 @@ include full documentation
         return True
 
 
-    def audit(tags):
+    def audit(tags, verbose_failures=False):
         ret = {'Success': [], 'Failure': []}
         for tag in __tags__:
             if fnmatch.fnmatch(tag, tags):
@@ -131,11 +131,15 @@ All Nova plugins require a ``__virtual__()`` function to determine module
 compatibility, and an ``audit()`` function to perform the actual audit
 functionality
 
-The ``audit()`` function must take a single argument, ``tags``, which is a glob
-expression for which tags the audit function should run. It is the job of the
-audit module to compare the ``tags`` glob with all tags supported by this
-module and only run the audits which match.
+The ``audit()`` function must take two arguments, ``tags`` and
+``verbose_failures``. The ``tags`` argument is a glob expression for which tags
+the audit function should run. It is the job of the audit module to compare the
+``tags`` glob with all tags supported by this module and only run the audits
+which match. The ``verbose_failures`` argument defines whether additional
+information should be returned for failures, such as description and
+remediation instructions.
 
 The return value should be a dictionary, with two keys, "Success" and
 "Failure".  The values for these keys should be a list of tags as strings, or a
-list of dictionaries containing tags and other information for the audit.
+list of dictionaries containing tags and other information for the audit (in
+the case of ``verbose_failures``).

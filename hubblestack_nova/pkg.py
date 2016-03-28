@@ -77,7 +77,10 @@ def __virtual__():
     return True
 
 
-def audit(tags):
+def audit(tags, verbose_failures=False):
+    '''
+    Run the pkg audits contained in the YAML files processed by __virtual__
+    '''
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
@@ -93,12 +96,19 @@ def audit(tags):
                     ret['Success'].append(tag)
                 else:
                     ret['Failure'].append(tag)
+    if verbose_failures:
+        ret_extra = {'Success': {}, 'Failure': {}}
+        for tag in ret['Success']:
+            ret_extra['Success'][tag] = __tags__[tag]
+        for tag in ret['Failure']:
+            ret_extra['Failure'][tag] = __tags__[tag]
+        return ret_extra
     return ret
 
 
 def _get_yaml(dirname):
     '''
-    Iterate over teh current directory for all yaml files, read them in,
+    Iterate over the current directory for all yaml files, read them in,
     merge them, and return the __data__
     '''
     ret = {}
