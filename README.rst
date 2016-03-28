@@ -10,37 +10,45 @@ running systems.
 Installation
 ============
 
-Place ``_modules/nova.py`` in your ``_modules/`` directory in your Salt
+Place `nova.py <_modules/nova.py>`_ in your ``_modules/`` directory in your Salt
 fileserver (whether roots or gitfs) and sync it to the minion.
 
-Create a ``hubblestack_nova`` directory in your Salt fileserver's ``base``
-environment. Inside of this directory, create a directory tree to organize your
-audit modules. Place any desired audit modules into this directory tree, along
-with any supporting files (yaml files, etc).
+Create a ``hubblestack_nova`` directory in the root of your Salt fileserver's
+``base`` environment. Inside of this directory, create a directory tree to
+organize your audit modules. Place any desired audit modules into this
+directory tree, along with any supporting files (yaml files, etc). Nova audits
+are targeted via this directory structure, with an optional filter on tags
 
-The directory in which nova searches for audit modules, and the Salt
-environment, are both configurable via pillar:
+The directory/environment in which nova searches for audit modules are
+configurable via pillar. The defaults are shown below:
 
 .. code-block:: yaml
 
-    hubblestack.nova.dir: my/hubble/path
-    hubblestack.nova.saltenv: hubble
-
-You're now ready to run audits!
+    hubblestack.nova.dir: salt://hubblestack_nova
+    hubblestack.nova.saltenv: base
 
 Usage
 =====
 
 There are three functions in the nova.py module. ``nova.sync`` will sync the
 configured ``hubblestack_nova/`` directory to the minion. ``nova.load`` will
-load the audit modules, syncing if a sync has never happened (by default).
+load the synced audit modules.  Finally, ``nova.audit`` will run the audits.
 
-Finally, ``nova.audit`` will run the audits, loading if a load has never
-happened (by default).
+By default, ``nova.audit`` will call ``nova.load`` (which in turn calls
+``nova.sync``) (in order to ensure that it is auditing with the most up-to-date
+information. These operations are fairly fast, but if you want to avoid the
+additional overhead, you can disable these behaviors via pillar (defaults are
+shown, change to False to disable behaviors):
 
-It takes a couple of arguments. The first is a comma-separated list of paths.
-These paths can be files or directories. If a path is a directory, all modules
-below that directory will be run. If it is a file, that file will be run.
+.. code-block:: yaml
+
+    hubblestack.nova.autosync: True
+    hubblestack.nova.autoload: True
+
+``nova.audit`` takes two optional arguments. The first is a comma-separated
+list of paths.  These paths can be files or directories. If a path is a
+directory, all modules below that directory will be run. If it is a file, that
+file will be run.
 
 The second argument is a glob pattern, against which audit tags will be
 matched. All audits have an accompanying tag. Nova modules are designed to take
@@ -50,6 +58,21 @@ which match the argument (using ``fnmatch``).
 ``nova.audit`` will return a list of audits which were successful, and a list
 of audits which failed.
 
+Here are some example calls:
+
+.. code-block:: bash
+
+    # Run all modules and tags under salt://hubblestack_nova/
+    salt '*' nova.audit
+
+    # Run all modules and tags under salt://hubblestack_nova/foo/
+    # Will also run salt://hubblestack_nova/foo.py if it exists
+    salt '*' nova.audit modules=foo
+
+    # Run all modules and tags under salt://hubblestack_nova/foo/ and
+    # salt://hubblestack_nova/bar, but only run audits with tags starting
+    # with "CIS"
+    salt '*' nova.audit modules=foo,bar tags='CIS*'
 
 Development
 ===========

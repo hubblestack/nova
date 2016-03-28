@@ -32,7 +32,7 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(modules='', tag='*', first_load=True, always_load=False):
+def audit(modules='', tag='*'):
     '''
     Primary entry point for audit calls.
 
@@ -49,16 +49,8 @@ def audit(modules='', tag='*', first_load=True, always_load=False):
         Glob pattern string for tags to include in the audit. This way you can
         give a directory, and tell the system to only run the `CIS*`-tagged
         audit modules, for example.
-
-    first_load
-        If set to True and no modules have been loaded, will load before
-        auditing. Default is True.
-
-    always_load
-        If set to True, always do a fresh load before auditing. Default
-        is False
     '''
-    if (not __nova__ and first_load) or always_load:
+    if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
     if not __nova__:
         return False, 'No nova modules have been loaded.'
@@ -115,7 +107,7 @@ def sync():
         salt '*' nova.sync saltenv=hubble
     '''
     log.debug('syncing nova modules')
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack_nova')
+    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'salt://hubblestack_nova')
     saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
 
     # Support optional salt:// in config
@@ -146,19 +138,11 @@ def sync():
                                         .format(cached))
 
 
-def load(first_sync=True, always_sync=False):
+def load():
     '''
     Load the synced audit modules.
-
-    first_sync
-        If set to True and there are no modules synced, sync before loading.
-        Default is True.
-
-    always_sync
-        If set to True, always do a fresh sync before loading. Default is
-        False.
     '''
-    if not (os.path.isdir(_hubble_dir()) and first_sync) or always_sync:
+    if __salt__['config.get']('hubblestack.nova.autosync', True):
         sync()
     if not os.path.isdir(_hubble_dir()):
         return False, 'No synced nova modules found'
