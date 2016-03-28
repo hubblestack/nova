@@ -7,11 +7,13 @@ Loader and primary interface for nova modules
 :platform: All
 :requires: SaltStack
 
-TODO: High level documentation
+See README for documentation
 
 Configuration:
     - hubblestack.nova.dir
     - hubblestack.nova.saltenv
+    - hubblestack.nova.autoload
+    - hubblestack.nova.autosync
 '''
 from __future__ import absolute_import
 import logging
