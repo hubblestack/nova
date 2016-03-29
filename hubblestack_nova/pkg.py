@@ -37,7 +37,15 @@ pkg:
     rsh:
       data:
         CentOS Linux-6:
-          - 'rsh': 'CIS-2.1.3'
+          # Use dict format to define specific version
+          - 'rsh':
+              tag: 'CIS-2.1.3'
+              version: '4.3.2'
+          # Dict format can also define ranges (only >= and <= supported)
+          - 'rsh-client':
+              tag: 'CIS-2.1.3'
+              version: '>=4.3.2'
+          # String format says "package must be installed, at any version"
           - 'rsh-server': 'CIS-2.1.4'
         CentOS Linux-7:
           - 'rsh': 'CIS-2.1.3'
