@@ -34,7 +34,7 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(modules='', tag='*'):
+def audit(modules='', tag='*', verbose=False, show_success=True):
     '''
     Primary entry point for audit calls.
 
@@ -51,6 +51,15 @@ def audit(modules='', tag='*'):
         Glob pattern string for tags to include in the audit. This way you can
         give a directory, and tell the system to only run the `CIS*`-tagged
         audit modules, for example.
+
+    verbose
+        Whether to show additional information about audits, including
+        description, remediation instructions, etc. The data returned depends
+        on the audit module. Defaults to False.
+
+    show_success
+        Whether to show successful audits in addition to failed audits.
+        Defaults to True.
     '''
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
@@ -73,7 +82,7 @@ def audit(modules='', tag='*'):
         for key, func in __nova__._dict.iteritems():
             if key not in already_run and key.startswith(module):
                 # Found a match, run the audit
-                ret = func(tag)
+                ret = func(tag, verbose=verbose)
 
                 # Make sure we don't run the same audit twice
                 already_run.add(key)
@@ -81,6 +90,9 @@ def audit(modules='', tag='*'):
                 # Compile the results
                 results['Success'].extend(ret.get('Success', []))
                 results['Failure'].extend(ret.get('Failure', []))
+
+    if not show_success:
+        results.pop('Success')
 
     return results
 
