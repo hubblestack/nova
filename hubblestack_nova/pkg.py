@@ -15,18 +15,25 @@ Sample YAML data, with inline comments:
 
 
 pkg:
-  blacklist:  # Must not be installed
-    telnet:  # Unique ID for this set of audits
-      data:  # 'data' is required
-        CentOS Linux-6:  # 'osfinger' grain, for multiplatform support
-          - 'telnet': 'CIS-2.1.1'  # pkg name : tag
-        '*':  # Catch-all, if no osfinger match was found
-          - 'telnet': 'telnet-bad'  # pkg name : tag
-      description: 'Telnet is evil'  # Currently unimplemented, will be ignored
-      alert: email  # Currently unimplemented, will be ignored
-      trigger: state  # Currently unimplemented, will be ignored
-
-  whitelist:  # Must be installed, no version checking (yet)
+  # Must not be installed
+  blacklist:
+    # Unique ID for this set of audits
+    telnet:
+      data:
+        # 'osfinger' grain, for multiplatform support
+        CentOS Linux-6:
+          # pkg name : tag
+          - 'telnet': 'CIS-2.1.1'
+        # Catch-all, if no osfinger match was found
+        '*':
+          # pkg name : tag
+          - 'telnet': 'telnet-bad'
+      # description/alert/trigger are currently ignored, but may be used in the future
+      description: 'Telnet is evil'
+      alert: email
+      trigger: state
+  # Must be installed, no version checking (yet)
+  whitelist:
     rsh:
       data:
         CentOS Linux-6:
@@ -35,7 +42,7 @@ pkg:
         CentOS Linux-7:
           - 'rsh': 'CIS-2.1.3'
           - 'rsh-server': 'CIS-2.1.4'
-        Debian-8:
+        '*':
           - 'rsh-client': 'CIS-5.1.2'
           - 'rsh-redone-client': 'CIS-5.1.2'
           - 'rsh-server': 'CIS-5.1.3'
@@ -70,7 +77,10 @@ def __virtual__():
     return True
 
 
-def audit(tags):
+def audit(tags, verbose_failures=False):
+    '''
+    Run the pkg audits contained in the YAML files processed by __virtual__
+    '''
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
@@ -86,12 +96,19 @@ def audit(tags):
                     ret['Success'].append(tag)
                 else:
                     ret['Failure'].append(tag)
+    if verbose_failures:
+        ret_extra = {'Success': {}, 'Failure': {}}
+        for tag in ret['Success']:
+            ret_extra['Success'][tag] = __tags__[tag]
+        for tag in ret['Failure']:
+            ret_extra['Failure'][tag] = __tags__[tag]
+        return ret_extra
     return ret
 
 
 def _get_yaml(dirname):
     '''
-    Iterate over teh current directory for all yaml files, read them in,
+    Iterate over the current directory for all yaml files, read them in,
     merge them, and return the __data__
     '''
     ret = {}
