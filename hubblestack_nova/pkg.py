@@ -58,6 +58,7 @@ import logging
 import fnmatch
 import yaml
 import os
+import copy
 import salt.utils
 
 log = logging.getLogger(__name__)
@@ -77,32 +78,47 @@ def __virtual__():
     return True
 
 
-def audit(tags, verbose_failures=False):
+def audit(tags, verbose=False):
     '''
     Run the pkg audits contained in the YAML files processed by __virtual__
     '''
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
-            name = __tags__[tag]['name']
-            audittype = __tags__[tag]['type']
-            if audittype == 'blacklist':
-                if __salt__['pkg.version'](name):
-                    ret['Failure'].append(tag)
-                else:
-                    ret['Success'].append(tag)
-            elif audittype == 'whitelist':
-                if __salt__['pkg.version'](name):
-                    ret['Success'].append(tag)
-                else:
-                    ret['Failure'].append(tag)
-    if verbose_failures:
-        ret_extra = {'Success': {}, 'Failure': {}}
-        for tag in ret['Success']:
-            ret_extra['Success'][tag] = __tags__[tag]
-        for tag in ret['Failure']:
-            ret_extra['Failure'][tag] = __tags__[tag]
-        return ret_extra
+            for tag_data in __tags__[tag]:
+                name = tag_data['name']
+                audittype = tag_data['type']
+
+                # Blacklisted packages (must not be installed)
+                if audittype == 'blacklist':
+                    if __salt__['pkg.version'](name):
+                        ret['Failure'].append(tag_data)
+                    else:
+                        ret['Success'].append(tag_data)
+
+                # Whitelisted packages (must be installed)
+                elif audittype == 'whitelist':
+                    if __salt__['pkg.version'](name):
+                        ret['Success'].append(tag_data)
+                    else:
+                        ret['Failure'].append(tag_data)
+
+    if not verbose:
+        failure = set()
+        success = set()
+
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            failure.add(tag)
+
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            if tag not in failure:
+                success.add(tag)
+
+        ret['Success'] = list(success)
+        ret['Failure'] = list(failure)
+
     return ret
 
 
@@ -153,8 +169,12 @@ def _get_tags(data):
             # pkg:blacklist:telnet:data:Debian-8
             for item in tags:
                 for name, tag in item.iteritems():
-                    ret[tag] = {'name': name,
-                                'tag': tag,
-                                'type': toplist,
-                                'data': audit_data}
+                    if tag not in ret:
+                        ret[tag] = []
+                    formatted_data = {'name': name,
+                                      'tag': tag,
+                                      'type': toplist}
+                    formatted_data.update(audit_data)
+                    formatted_data.pop('data')
+                    ret[tag].append(formatted_data)
     return ret
