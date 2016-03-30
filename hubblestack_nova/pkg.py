@@ -110,6 +110,9 @@ def audit(tags, verbose=False):
                 elif audittype == 'whitelist':
                     if 'version' in tag_data:
                         mod, _, version = tag_data['version'].partition('=')
+                        if not version:
+                            version = mod
+                            mod = ''
 
                         if mod == '<':
                             if (LooseVersion(__salt__['pkg.version'](name)) <=
@@ -213,13 +216,13 @@ def _get_tags(data):
             # pkg:blacklist:telnet:data:Debian-8
             for item in tags:
                 for name, tag in item.iteritems():
-                    if tag not in ret:
-                        ret[tag] = []
                     tag_data = {}
                     # Whitelist could have a dictionary, not a string
                     if isinstance(tag, dict):
                         tag_data = copy.deepcopy(tag)
                         tag = tag_data.pop('tag')
+                    if tag not in ret:
+                        ret[tag] = []
                     formatted_data = {'name': name,
                                       'tag': tag,
                                       'type': toplist}
