@@ -58,6 +58,7 @@ import logging
 import fnmatch
 import yaml
 import os
+import copy
 import salt.utils
 
 log = logging.getLogger(__name__)
@@ -118,8 +119,6 @@ def audit(tags, verbose=False):
         ret['Success'] = list(success)
         ret['Failure'] = list(failure)
 
-    if not show_success:
-        ret.pop('Success')
     return ret
 
 
@@ -172,8 +171,10 @@ def _get_tags(data):
                 for name, tag in item.iteritems():
                     if tag not in ret:
                         ret[tag] = []
-                    ret[tag].append({'name': name,
-                                     'tag': tag,
-                                     'type': toplist,
-                                     'data': audit_data})
+                    formatted_data = {'name': name,
+                                      'tag': tag,
+                                      'type': toplist}
+                    formatted_data.update(audit_data)
+                    formatted_data.pop('data')
+                    ret[tag].append(formatted_data)
     return ret
