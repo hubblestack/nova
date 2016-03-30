@@ -69,6 +69,8 @@ import os
 import copy
 import salt.utils
 
+from distutils.version import LooseVersion
+
 log = logging.getLogger(__name__)
 
 __tags__ = None
@@ -106,10 +108,44 @@ def audit(tags, verbose=False):
 
                 # Whitelisted packages (must be installed)
                 elif audittype == 'whitelist':
-                    if __salt__['pkg.version'](name):
-                        ret['Success'].append(tag_data)
-                    else:
-                        ret['Failure'].append(tag_data)
+                    if 'version' in tag_data:
+                        mod, _, version = tag_data['version'].partition('=')
+
+                        if mod == '<':
+                            if (LooseVersion(__salt__['pkg.version'](name)) <=
+                                    LooseVersion(version)):
+                                ret['Success'].append(tag_data)
+                            else:
+                                ret['Failure'].append(tag_data)
+
+                        elif mod == '>':
+                            if (LooseVersion(__salt__['pkg.version'](name)) >=
+                                    LooseVersion(version)):
+                                ret['Success'].append(tag_data)
+                            else:
+                                ret['Failure'].append(tag_data)
+
+                        elif not mod:
+                            # Just peg to the version, no > or <
+                            if __salt__['pkg.version'](name) == version:
+                                ret['Success'].append(tag_data)
+                            else:
+                                ret['Failure'].append(tag_data)
+
+                        else:
+                            # Invalid modifier
+                            log.error('Invalid modifier in version {0} for pkg {1} audit {2}'
+                                      .format(tag_data['version'], name, tag))
+                            tag_data = copy.deepcopy(tag_data)
+                            # Include an error in the failure
+                            tag_data['error'] = 'Invalid modifier {0}'.format(mod)
+                            ret['Failure'].append(tag_data)
+
+                    else:  # No version checking
+                        if __salt__['pkg.version'](name):
+                            ret['Success'].append(tag_data)
+                        else:
+                            ret['Failure'].append(tag_data)
 
     if not verbose:
         failure = set()
@@ -179,9 +215,15 @@ def _get_tags(data):
                 for name, tag in item.iteritems():
                     if tag not in ret:
                         ret[tag] = []
+                    tag_data = {}
+                    # Whitelist could have a dictionary, not a string
+                    if isinstance(tag, dict):
+                        tag_data = copy.deepcopy(tag)
+                        tag = tag_data.pop('tag')
                     formatted_data = {'name': name,
                                       'tag': tag,
                                       'type': toplist}
+                    formatted_data.update(tag_data)
                     formatted_data.update(audit_data)
                     formatted_data.pop('data')
                     ret[tag].append(formatted_data)
