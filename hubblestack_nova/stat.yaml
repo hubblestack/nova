@@ -84,4 +84,40 @@ stat:
     description: '/etc/cron.daily must be owned by root and have permissions 700'
     alert: email
     trigger: state
-        
+
+  cron_weekly:
+    data:
+      '*':
+        - '/etc/cron.weekly':
+            tag: ['CIS-6.1.7']
+            mode: 700
+            user: 0
+            group: 0
+    description: '/etc/cron.weekly must be own by root and have permissions 700'
+    alert: email
+    trigger: state
+
+  cron_monthly:
+    data:
+      '*':
+        - '/etc/cron.monthly':
+            tag: ['CIS-6.1.8']
+            mode: 700
+            user: 0
+            group: 0
+    description: '/etc/cron.monthly must be own by root and have permissions 700'
+    alert: email
+    trigger: state
+
+  cron_d:
+    data:
+      '*':
+        - '/etc/cron.d':
+            tag: ['CIS-6.1.9']
+            mode: 700
+            user: 0
+            group: 0
+    description: '/etc/cron.d must be own by root and have permissions 700'
+    alert: email
+    trigger: state
+
