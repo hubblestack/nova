@@ -1,0 +1,87 @@
+stat:
+  grub_conf:
+    data:
+      CentOS_Linux_6:
+        - '/etc/grub.conf':
+            tag: ['CIS-1.5.1', 'CIS-1.5.2']
+            mode: 600
+            user: 0
+            group: 0
+      CentOS_Linux_7:
+        - '/etc/grub2/grub.cfg':
+            tag: ['CIS-1.5.1', 'CIS-1.5.2']
+            mode: 600
+            user: 0
+            group: 0
+    description: 'Grub must be owned by root and have permissions 600'
+    alert: email
+    trigger: state
+
+  hosts_allow:
+    data:
+      '*':
+        - '/etc/hosts.allow':
+            tag: ['CIS-4.5.3']
+            mode: 644
+    description: '/etc/hosts.allow must have permissions 644'
+    alert: email
+    trigger: state
+
+  hosts_deny:
+    data:
+      '*':
+        - '/etc/hosts.deny':
+            tag: ['CIS-4.5.5']
+            mode: 644
+    description: '/etc/hosts.deny must have persmissions 644'
+    alert: email
+    trigger: state
+
+  anacrontab:
+    data:
+      '*':
+        - '/etc/anacrontab':
+            tag: ['CIS-6.1.3']:
+            mode: 600
+            user: 0
+            group: 0
+    description: '/etc/anacrontab file be owned by root and have permissions 600'
+    alert: email
+    trigger: state
+
+  crontab:
+    data:
+      '*':
+        - '/etc/crontab':
+            tag: ['CIS-6.1.4']
+            mode: 600
+            user: 0
+            group: 0
+    description: '/etc/crontab must be owned by root and have persmissions 600'
+    alert: email
+    trigger: state
+
+  cron_hourly:
+    data:
+      '*':
+        - 'etc/cron.hourly':
+            tag: ['CIS-6.1.5']
+            mode: 700
+            user: 0
+            group: 0
+    description: '/etc/cron.hourly must be owned by root and have permissions 700'
+    alert: email
+    trigger: state
+
+  cron_daily:
+    data:
+      '*':
+        - '/etc/cron.daily':
+            tag: ['CIS-6.1.6']
+            mode: 700
+            user: 0
+            group: 0
+    description: '/etc/cron.daily must be owned by root and have permissions 700'
+    alert: email
+    trigger: state
+        
