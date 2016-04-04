@@ -13,7 +13,7 @@ stat:
             mode: 600
             user: 0
             group: 0
-    description: 'Grub must be owned by root and have permissions 600'
+    description: 'Grub must be owned by root and must have permissions 600'
     alert: email
     trigger: state
 
@@ -45,7 +45,7 @@ stat:
             mode: 600
             user: 0
             group: 0
-    description: '/etc/anacrontab file be owned by root and have permissions 600'
+    description: '/etc/anacrontab file be owned by root and must have permissions 600'
     alert: email
     trigger: state
 
@@ -69,7 +69,7 @@ stat:
             mode: 700
             user: 0
             group: 0
-    description: '/etc/cron.hourly must be owned by root and have permissions 700'
+    description: '/etc/cron.hourly must be owned by root and must have permissions 700'
     alert: email
     trigger: state
 
@@ -81,7 +81,7 @@ stat:
             mode: 700
             user: 0
             group: 0
-    description: '/etc/cron.daily must be owned by root and have permissions 700'
+    description: '/etc/cron.daily must be owned by root and must have permissions 700'
     alert: email
     trigger: state
 
@@ -93,7 +93,7 @@ stat:
             mode: 700
             user: 0
             group: 0
-    description: '/etc/cron.weekly must be own by root and have permissions 700'
+    description: '/etc/cron.weekly must be owned by root and must have permissions 700'
     alert: email
     trigger: state
 
@@ -105,7 +105,7 @@ stat:
             mode: 700
             user: 0
             group: 0
-    description: '/etc/cron.monthly must be own by root and have permissions 700'
+    description: '/etc/cron.monthly must be owned by root and must have permissions 700'
     alert: email
     trigger: state
 
@@ -117,7 +117,127 @@ stat:
             mode: 700
             user: 0
             group: 0
-    description: '/etc/cron.d must be own by root and have permissions 700'
+    description: '/etc/cron.d must be owned by root and must have permissions 700'
     alert: email
     trigger: state
 
+  at_allow:
+    data:
+      '*':
+        - '/etc/at.allow':
+            tag: ['CIS-6.1.10']
+            mode: 600
+            user: 0
+            group: 0
+    description: '/etc/at.allow must be owned by root and have persmissions 600'
+    alert: email
+    trigger: state
+
+  at_cron_allow:
+    data:
+      '*':
+        - '/etc/cron.deny':
+            tag: ['CIS-6.1.11']
+            mode: 'cannot stat'
+            user: 'cannot stat'
+            group: 'cannot stat'
+        - '/etc/at.deny':
+            tag: ['CIS-6.1.11']
+            mode: 'cannot stat'
+            user: 'cannot stat'
+            group: 'cannot stat'
+        - '/etc/cron.allow':
+            tag: ['CIS-6.1.11']
+            mode: 600
+            user: 0
+            group: 0
+        - '/etc/at/allow':
+            tag: ['CIS-6.1.11']
+            mode: 600
+            user: 0
+            group: 0
+    description: 'Restrict at/cron to authorized users'
+    alert: email
+    trigger: state
+
+  sshd_config:
+    data:
+      '*':
+        - '/etc/ssh/sshd_config':
+            tag: ['CIS-6.2.3']
+            mode: 600
+            user: 0
+            group: 0
+    description: '/etc/ssh/sshd_config must be owned by root and must have permissions 600'
+    alert: email
+    trigger: state
+
+  warning_banner:
+    data:
+      '*':
+        - '/etc/motd':
+            tag: ['CIS-8.1']
+            mode: 644
+            user: 0
+            group: 0
+        - '/etc/issue':
+            tag: ['CIS-8.1']
+            mode: 644
+            user: 0
+            group: 0
+        - '/etc/issue.net':
+            tag: ['CIS-8.1']
+            mode: 644
+            user: 0
+            group: 0
+    description: 'Files containing the warning banners must be owned by root and must have permissions 644'
+    alert: email
+    trigger: state
+
+  passwd:
+    data:
+      '*':
+        - '/etc/passwd':
+            tag: ['CIS-9.1.2', 'CIS-9.1.6']
+            mode: 644
+            user: 0
+            group: 0
+    description: '/etc/passwd must be owned by root and must have permissions 644'
+    alert: email
+    trigger: state
+
+  shadow:
+    data:
+      '*':
+        - '/etc/shadow':
+            tag: ['CIS-9.1.3', 'CIS-9.1.7']
+            mode: 000
+            user: 0
+            group: 0
+    description: '/etc/shadow must be owned by root and must have permissions 000'
+    alert: email
+    trigger: state
+
+  gshadow:
+    data:
+      '*':
+        - '/etc/gshadow':
+            tag: ['CIS-9.1.4', 'CIS-9.1.8']
+            mode: 000
+            user: 0
+            group: 0
+    description: '/etc/gshadow must be owned by root and must have permissions 000'
+    alert: email
+    trigger: state
+
+  group:
+    data:
+      '*':
+        - '/etc/group'
+            tag: ['CIS-9.1.5', 'CIS-9.1.9']
+            mode: 644
+            user: 0
+            group: 0
+    description: '/etc/group must be owned by root and must have permissions 000'
+    alert: email
+    trigger: state
