@@ -1,6 +1,10 @@
 # -*- encoding: utf-8 -*-
 '''
-A simple Nova plugin
+Hubble Nova plugin for auditing packages.
+
+Supports both blacklisting and "whitelisting" pacakges. Blacklisted packages
+must not be installed. Whitelisted packages must be installed, with options for
+requiring a specific version or a minimum or maximum version.
 
 :maintainer: HubbleStack
 :maturity: 20160325
@@ -55,7 +59,7 @@ pkg:
           - 'rsh-redone-client': 'CIS-5.1.2'
           - 'rsh-server': 'CIS-5.1.3'
           - 'rsh-redone-server': 'CIS-5.1.3'
-      description: 'RSH is evil'
+      description: 'RSH is awesome'
       alert: email
       trigger: state
 
