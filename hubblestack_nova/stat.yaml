@@ -41,7 +41,7 @@ stat:
     data:
       '*':
         - '/etc/anacrontab':
-            tag: ['CIS-6.1.3']:
+            tag: ['CIS-6.1.3']
             mode: 600
             user: 0
             group: 0
@@ -233,7 +233,7 @@ stat:
   group:
     data:
       '*':
-        - '/etc/group'
+        - '/etc/group':
             tag: ['CIS-9.1.5', 'CIS-9.1.9']
             mode: 644
             user: 0
