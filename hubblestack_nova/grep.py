@@ -86,14 +86,14 @@ def audit(tags, verbose=False):
 
                 # Blacklisted packages (must not be installed)
                 if audittype == 'blacklist':
-                    if __salt__['file.grep'](name, tag_data['pattern']):
+                    if __salt__['file.grep'](name, tag_data['pattern']).get('stdout'):
                         ret['Failure'].append(tag_data)
                     else:
                         ret['Success'].append(tag_data)
 
                 # Whitelisted packages (must be installed)
                 elif audittype == 'whitelist':
-                    if __salt__['file.grep'](name, tag_data['pattern']):
+                    if __salt__['file.grep'](name, tag_data['pattern']).get('stdout'):
                         ret['Success'].append(tag_data)
                     else:
                         ret['Failure'].append(tag_data)
