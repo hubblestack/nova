@@ -1,0 +1,16 @@
+pkg:
+  blacklist:
+
+    telnet:
+      data:
+        CentOS Linux-6:
+          - 'telnet-server': 'CIS-2.1.25'
+        CentOS Linux-7:
+          - 'telnet-server': 'CIS-2.1.26'
+        Debian-8:
+          - 'telnet-server': 'CIS-5.1.8342'
+        '*':
+          - 'telnet-server': 'telnet-server-bad'
+      description: 'Telnet is evil'
+      alert: email
+      trigger: state
