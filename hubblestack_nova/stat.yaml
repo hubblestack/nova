@@ -3,12 +3,12 @@ stat:
     data:
       CentOS-6:
         - '/etc/grub.conf':
-            tag: ['CIS-1.5.1']
+            tag: 'CIS-1.5.1'
             user: 0
             group: 0
       CentOS-7:
         - '/etc/grub2/grub.cfg':
-            tag: ['CIS-1.5.1']
+            tag: 'CIS-1.5.1'
             user: 0
             group: 0
     description: 'Grub must be owned by root'
@@ -19,11 +19,11 @@ stat:
     data:
       CentOS-6:
         - '/etc/grub.conf':
-            tag: ['CIS-1.5.2']
+            tag: 'CIS-1.5.2'
             mode: 600 
       CentOS-7:
         - '/etc/grub2/grub.cfg':
-            tag: ['CIS-1.5.2']
+            tag: 'CIS-1.5.2'
             mode: 600 
     description: 'Grub must have permissions 600'
     alert: email
@@ -33,7 +33,7 @@ stat:
     data:
       '*':
         - '/etc/hosts.allow':
-            tag: ['CIS-4.5.3']
+            tag: 'CIS-4.5.3'
             mode: 644
     description: '/etc/hosts.allow must have permissions 644'
     alert: email
@@ -43,7 +43,7 @@ stat:
     data:
       '*':
         - '/etc/hosts.deny':
-            tag: ['CIS-4.5.5']
+            tag: 'CIS-4.5.5'
             mode: 644
     description: '/etc/hosts.deny must have persmissions 644'
     alert: email
@@ -53,7 +53,7 @@ stat:
     data:
       '*':
         - '/etc/anacrontab':
-            tag: ['CIS-6.1.3']
+            tag: 'CIS-6.1.3'
             mode: 600
             user: 0
             group: 0
@@ -65,7 +65,7 @@ stat:
     data:
       '*':
         - '/etc/crontab':
-            tag: ['CIS-6.1.4']
+            tag: 'CIS-6.1.4'
             mode: 600
             user: 0
             group: 0
@@ -77,7 +77,7 @@ stat:
     data:
       '*':
         - 'etc/cron.hourly':
-            tag: ['CIS-6.1.5']
+            tag: 'CIS-6.1.5'
             mode: 700
             user: 0
             group: 0
@@ -89,7 +89,7 @@ stat:
     data:
       '*':
         - '/etc/cron.daily':
-            tag: ['CIS-6.1.6']
+            tag: 'CIS-6.1.6'
             mode: 700
             user: 0
             group: 0
@@ -101,7 +101,7 @@ stat:
     data:
       '*':
         - '/etc/cron.weekly':
-            tag: ['CIS-6.1.7']
+            tag: 'CIS-6.1.7'
             mode: 700
             user: 0
             group: 0
@@ -113,7 +113,7 @@ stat:
     data:
       '*':
         - '/etc/cron.monthly':
-            tag: ['CIS-6.1.8']
+            tag: 'CIS-6.1.8'
             mode: 700
             user: 0
             group: 0
@@ -125,7 +125,7 @@ stat:
     data:
       '*':
         - '/etc/cron.d':
-            tag: ['CIS-6.1.9']
+            tag: 'CIS-6.1.9'
             mode: 700
             user: 0
             group: 0
@@ -137,7 +137,7 @@ stat:
     data:
       '*':
         - '/etc/at.allow':
-            tag: ['CIS-6.1.10']
+            tag: 'CIS-6.1.10'
             mode: 600
             user: 0
             group: 0
@@ -149,22 +149,22 @@ stat:
     data:
       '*':
         - '/etc/cron.deny':
-            tag: ['CIS-6.1.11']
+            tag: 'CIS-6.1.11'
             mode: 'cannot stat'
             user: 'cannot stat'
             group: 'cannot stat'
         - '/etc/at.deny':
-            tag: ['CIS-6.1.11']
+            tag: 'CIS-6.1.11'
             mode: 'cannot stat'
             user: 'cannot stat'
             group: 'cannot stat'
         - '/etc/cron.allow':
-            tag: ['CIS-6.1.11']
+            tag: 'CIS-6.1.11'
             mode: 600
             user: 0
             group: 0
         - '/etc/at/allow':
-            tag: ['CIS-6.1.11']
+            tag: 'CIS-6.1.11'
             mode: 600
             user: 0
             group: 0
@@ -176,7 +176,7 @@ stat:
     data:
       '*':
         - '/etc/ssh/sshd_config':
-            tag: ['CIS-6.2.3']
+            tag: 'CIS-6.2.3'
             mode: 600
             user: 0
             group: 0
@@ -188,17 +188,17 @@ stat:
     data:
       '*':
         - '/etc/motd':
-            tag: ['CIS-8.1']
+            tag: 'CIS-8.1'
             mode: 644
             user: 0
             group: 0
         - '/etc/issue':
-            tag: ['CIS-8.1']
+            tag: 'CIS-8.1'
             mode: 644
             user: 0
             group: 0
         - '/etc/issue.net':
-            tag: ['CIS-8.1']
+            tag: 'CIS-8.1'
             mode: 644
             user: 0
             group: 0
@@ -210,7 +210,7 @@ stat:
     data:
       '*':
         - '/etc/passwd':
-            tag: ['CIS-9.1.2']
+            tag: 'CIS-9.1.2'
             mode: 644
     description: '/etc/passwd must have permissions 644'
     alert: email
@@ -220,7 +220,7 @@ stat:
     data:   
       '*':  
         - '/etc/passwd':
-            tag: ['CIS-9.1.6']
+            tag: 'CIS-9.1.6'
             mode: 644
     description: '/etc/passwd must be owned by root'
     alert: email 
@@ -230,7 +230,7 @@ stat:
     data:
       '*':
         - '/etc/shadow':
-            tag: ['CIS-9.1.3']
+            tag: 'CIS-9.1.3'
             mode: 000
     description: '/etc/shadow must have permissions 000'
     alert: email
@@ -240,7 +240,7 @@ stat:
     data:
       '*':
         - '/etc/shadow':
-            tag: ['CIS-9.1.7']
+            tag: 'CIS-9.1.7'
             user: 0
             group: 0
     description: '/etc/shadow must be owned by root'
@@ -251,7 +251,7 @@ stat:
     data:
       '*':
         - '/etc/gshadow':
-            tag: ['CIS-9.1.4']
+            tag: 'CIS-9.1.4'
             mode: 000
     description: '/etc/gshadow must have permissions 000'
     alert: email
@@ -261,7 +261,7 @@ stat:
     data:
       '*':
         - '/etc/gshadow':
-            tag: ['CIS-9.1.8']
+            tag: 'CIS-9.1.8'
             user: 0
             group: 0
     description: '/etc/gshadow must be owned by root'
@@ -272,7 +272,7 @@ stat:
     data:
       '*':
         - '/etc/group':
-            tag: ['CIS-9.1.5']
+            tag: 'CIS-9.1.5'
             mode: 644
     description: '/etc/group must have permissions 000'
     alert: email
@@ -282,7 +282,7 @@ stat:
     data:
       '*':
         - '/etc/group':
-            tag: ['CIS-9.1.9']
+            tag: 'CIS-9.1.9'
             user: 0
             group: 0
     description: '/etc/group must be owned by root'
