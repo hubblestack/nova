@@ -4,13 +4,13 @@ stat:
       CentOS-6:
         - '/etc/grub.conf':
             tag: 'CIS-1.5.1'
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
       CentOS-7:
         - '/etc/grub2/grub.cfg':
             tag: 'CIS-1.5.1'
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: 'Grub must be owned by root'
     alert: email
     trigger: state
@@ -55,8 +55,8 @@ stat:
         - '/etc/anacrontab':
             tag: 'CIS-6.1.3'
             mode: 600
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/anacrontab file be owned by root and must have permissions 600'
     alert: email
     trigger: state
@@ -67,8 +67,8 @@ stat:
         - '/etc/crontab':
             tag: 'CIS-6.1.4'
             mode: 600
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/crontab must be owned by root and have persmissions 600'
     alert: email
     trigger: state
@@ -79,8 +79,8 @@ stat:
         - 'etc/cron.hourly':
             tag: 'CIS-6.1.5'
             mode: 700
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/cron.hourly must be owned by root and must have permissions 700'
     alert: email
     trigger: state
@@ -91,8 +91,8 @@ stat:
         - '/etc/cron.daily':
             tag: 'CIS-6.1.6'
             mode: 700
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/cron.daily must be owned by root and must have permissions 700'
     alert: email
     trigger: state
@@ -103,8 +103,8 @@ stat:
         - '/etc/cron.weekly':
             tag: 'CIS-6.1.7'
             mode: 700
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/cron.weekly must be owned by root and must have permissions 700'
     alert: email
     trigger: state
@@ -115,8 +115,8 @@ stat:
         - '/etc/cron.monthly':
             tag: 'CIS-6.1.8'
             mode: 700
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/cron.monthly must be owned by root and must have permissions 700'
     alert: email
     trigger: state
@@ -127,8 +127,8 @@ stat:
         - '/etc/cron.d':
             tag: 'CIS-6.1.9'
             mode: 700
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/cron.d must be owned by root and must have permissions 700'
     alert: email
     trigger: state
@@ -139,8 +139,8 @@ stat:
         - '/etc/at.allow':
             tag: 'CIS-6.1.10'
             mode: 600
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/at.allow must be owned by root and have persmissions 600'
     alert: email
     trigger: state
@@ -161,13 +161,13 @@ stat:
         - '/etc/cron.allow':
             tag: 'CIS-6.1.11'
             mode: 600
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
         - '/etc/at/allow':
             tag: 'CIS-6.1.11'
             mode: 600
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: 'Restrict at/cron to authorized users'
     alert: email
     trigger: state
@@ -178,8 +178,8 @@ stat:
         - '/etc/ssh/sshd_config':
             tag: 'CIS-6.2.3'
             mode: 600
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/ssh/sshd_config must be owned by root and must have permissions 600'
     alert: email
     trigger: state
@@ -190,18 +190,18 @@ stat:
         - '/etc/motd':
             tag: 'CIS-8.1'
             mode: 644
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
         - '/etc/issue':
             tag: 'CIS-8.1'
             mode: 644
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
         - '/etc/issue.net':
             tag: 'CIS-8.1'
             mode: 644
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: 'Files containing the warning banners must be owned by root and must have permissions 644'
     alert: email
     trigger: state
@@ -241,8 +241,8 @@ stat:
       '*':
         - '/etc/shadow':
             tag: 'CIS-9.1.7'
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/shadow must be owned by root'
     alert: email
     trigger: state
@@ -262,8 +262,8 @@ stat:
       '*':
         - '/etc/gshadow':
             tag: 'CIS-9.1.8'
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/gshadow must be owned by root'
     alert: email
     trigger: state
@@ -283,8 +283,8 @@ stat:
       '*':
         - '/etc/group':
             tag: 'CIS-9.1.9'
-            user: 0
-            group: 0
+            user: 'root'
+            group: 'root'
     description: '/etc/group must be owned by root'
     alert: email
     trigger: state
