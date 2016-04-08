@@ -32,7 +32,49 @@ def audit(tags, verbose=False):
     '''
     Run the grep audits contained in the YAML files processed by __virtual__
     '''
-    pass
+    ret - {'Success': [], 'Failure': []}
+
+    for tag in __tags__:
+        if fnmatch.fnmatch(tag, tags):
+            for tag_data in __tags__[tag]:
+                name = tag_data['name']
+                expected = {}
+                for e in ['mode', 'user', 'group']:
+                if e in tag_data:
+                    expected[e] = tag_data[e]
+
+                #getting the stats using salt
+                salt_ret = __salt__['file.stats'](name)
+
+                passed = True
+                for e in expected:
+                    r = salt_ret[e][1:] if e == 'mode' else salt_ret[e]
+                    if expected[e] != r:
+                        passed = False
+
+                if passed:
+                    ret['Success'].append(tag_data)
+                else:
+                    ret['Failure'].append(tag_data)
+
+    if not verbose:
+        failure = set()
+        success = set()
+
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            failure.add(tag)
+
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            if tag not in failure:
+                success.add(tag)
+
+        ret['Success'] = list(success)
+        ret['Failure'] = list(failure)
+
+    return ret
+
 
 
 def _merge_yaml(ret, data):
