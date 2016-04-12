@@ -32,7 +32,7 @@ def audit(tags, verbose=False):
     '''
     Run the grep audits contained in the YAML files processed by __virtual__
     '''
-    ret - {'Success': [], 'Failure': []}
+    ret = {'Success': [], 'Failure': []}
 
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
@@ -40,15 +40,23 @@ def audit(tags, verbose=False):
                 name = tag_data['name']
                 expected = {}
                 for e in ['mode', 'user', 'group']:
-                if e in tag_data:
-                    expected[e] = tag_data[e]
+                    if e in tag_data:
+                        expected[e] = str(tag_data[e])
 
                 #getting the stats using salt
                 salt_ret = __salt__['file.stats'](name)
+                if not salt_ret:
+                    if 'cannot stat' in expected.values():
+                        ret['Success'].append(tag_data)
+                    else:
+                        ret['Failure'].append(tag_data)
+                    continue
 
                 passed = True
-                for e in expected:
-                    r = salt_ret[e][1:] if e == 'mode' else salt_ret[e]
+                for e in expected.keys():
+                    r = salt_ret[e]
+                    if e == 'mode' and r != '0':
+                        r = r[1:]
                     if expected[e] != r:
                         passed = False
 
