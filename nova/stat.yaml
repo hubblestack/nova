@@ -1,9 +1,0 @@
-stat:
-  grub_conf:
-    name:
-      CentOS Linux-6: /etc/grub.conf
-      CentOS Linux-7: /boot/grub2/grub.cfg
-    pattern: '600 0 0'
-    tags:
-      CentOS Linux-6: ['CIS-1.5.1', '1.5.2']
-      CentOS Linux-7: ['CIS-1.5.1', '1.5.2']

@@ -1,24 +1,23 @@
 # -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for auditing packages.
+Hubble Nova plugin for auditing services
 
-Supports both blacklisting and "whitelisting" pacakges. Blacklisted packages
-must not be installed. Whitelisted packages must be installed, with options for
-requiring a specific version or a minimum or maximum version.
+Supports both blacklisting and "whitelisting" services. Blacklisted services
+must not be running. Whitelisted services must be running.
 
 :maintainer: HubbleStack
-:maturity: 20160325
+:maturity: 20160404
 :platform: All
 :requires: SaltStack
 
 This audit module requires yaml data to execute. It will search the local
-directory for any .yaml files, and if it finds a top-level 'pkg' key, it will
+directory for any .yaml files, and if it finds a top-level 'service' key, it will
 use that data.
 
 Sample YAML data, with inline comments:
 
 
-pkg:
+service:
   # Must not be installed
   blacklist:
     # Unique ID for this set of audits
@@ -26,11 +25,11 @@ pkg:
       data:
         # 'osfinger' grain, for multiplatform support
         CentOS Linux-6:
-          # pkg name : tag
+          # service name : tag
           - 'telnet': 'CIS-2.1.1'
         # Catch-all, if no osfinger match was found
         '*':
-          # pkg name : tag
+          # service name : tag
           - 'telnet': 'telnet-bad'
       # description/alert/trigger are currently ignored, but may be used in the future
       description: 'Telnet is evil'
@@ -40,17 +39,6 @@ pkg:
   whitelist:
     rsh:
       data:
-        CentOS Linux-6:
-          # Use dict format to define specific version
-          - 'rsh':
-              tag: 'CIS-2.1.3'
-              version: '4.3.2'
-          # Dict format can also define ranges (only >= and <= supported)
-          - 'rsh-client':
-              tag: 'CIS-2.1.3'
-              version: '>=4.3.2'
-          # String format says "package must be installed, at any version"
-          - 'rsh-server': 'CIS-2.1.4'
         CentOS Linux-7:
           - 'rsh': 'CIS-2.1.3'
           - 'rsh-server': 'CIS-2.1.4'
@@ -94,7 +82,7 @@ def __virtual__():
 
 def audit(tags, verbose=False):
     '''
-    Run the pkg audits contained in the YAML files processed by __virtual__
+    Run the service audits contained in the YAML files processed by __virtual__
     '''
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
@@ -105,54 +93,17 @@ def audit(tags, verbose=False):
 
                 # Blacklisted packages (must not be installed)
                 if audittype == 'blacklist':
-                    if __salt__['pkg.version'](name):
+                    if __salt__['service.status'](name):
                         ret['Failure'].append(tag_data)
                     else:
                         ret['Success'].append(tag_data)
 
                 # Whitelisted packages (must be installed)
                 elif audittype == 'whitelist':
-                    if 'version' in tag_data:
-                        mod, _, version = tag_data['version'].partition('=')
-                        if not version:
-                            version = mod
-                            mod = ''
-
-                        if mod == '<':
-                            if (LooseVersion(__salt__['pkg.version'](name)) <=
-                                    LooseVersion(version)):
-                                ret['Success'].append(tag_data)
-                            else:
-                                ret['Failure'].append(tag_data)
-
-                        elif mod == '>':
-                            if (LooseVersion(__salt__['pkg.version'](name)) >=
-                                    LooseVersion(version)):
-                                ret['Success'].append(tag_data)
-                            else:
-                                ret['Failure'].append(tag_data)
-
-                        elif not mod:
-                            # Just peg to the version, no > or <
-                            if __salt__['pkg.version'](name) == version:
-                                ret['Success'].append(tag_data)
-                            else:
-                                ret['Failure'].append(tag_data)
-
-                        else:
-                            # Invalid modifier
-                            log.error('Invalid modifier in version {0} for pkg {1} audit {2}'
-                                      .format(tag_data['version'], name, tag))
-                            tag_data = copy.deepcopy(tag_data)
-                            # Include an error in the failure
-                            tag_data['error'] = 'Invalid modifier {0}'.format(mod)
-                            ret['Failure'].append(tag_data)
-
-                    else:  # No version checking
-                        if __salt__['pkg.version'](name):
-                            ret['Success'].append(tag_data)
-                        else:
-                            ret['Failure'].append(tag_data)
+                    if __salt__['service.status'](name):
+                        ret['Success'].append(tag_data)
+                    else:
+                        ret['Failure'].append(tag_data)
 
     if not verbose:
         failure = set()
@@ -192,15 +143,15 @@ def _get_yaml(dirname):
 
 def _merge_yaml(ret, data):
     '''
-    Merge two yaml dicts together at the pkg:blacklist and pkg:whitelist level
+    Merge two yaml dicts together at the service:blacklist and service:whitelist level
     '''
-    if 'pkg' not in ret:
-        ret['pkg'] = {}
+    if 'service' not in ret:
+        ret['service'] = {}
     for topkey in ('blacklist', 'whitelist'):
-        if topkey in data.get('pkg', {}):
-            if topkey not in ret['pkg']:
-                ret['pkg'][topkey] = {}
-            ret['pkg'][topkey].update(data['pkg'][topkey])
+        if topkey in data.get('service', {}):
+            if topkey not in ret['service']:
+                ret['service'][topkey] = {}
+            ret['service'][topkey].update(data['service'][topkey])
     return ret
 
 
@@ -210,28 +161,22 @@ def _get_tags(data):
     '''
     ret = {}
     distro = __grains__.get('osfinger')
-    for toplist, toplevel in data.get('pkg', {}).iteritems():
-        # pkg:blacklist
+    for toplist, toplevel in data.get('service', {}).iteritems():
+        # service:blacklist
         for audit_id, audit_data in toplevel.iteritems():
-            # pkg:blacklist:telnet
+            # service:blacklist:telnet
             tags_dict = audit_data.get('data', {})
-            # pkg:blacklist:telnet:data
+            # service:blacklist:telnet:data
             tags = tags_dict.get(distro, tags_dict.get('*', []))
-            # pkg:blacklist:telnet:data:Debian-8
+            # service:blacklist:telnet:data:Debian-8
             for item in tags:
                 for name, tag in item.iteritems():
-                    tag_data = {}
-                    # Whitelist could have a dictionary, not a string
-                    if isinstance(tag, dict):
-                        tag_data = copy.deepcopy(tag)
-                        tag = tag_data.pop('tag')
                     if tag not in ret:
                         ret[tag] = []
                     formatted_data = {'name': name,
                                       'tag': tag,
-                                      'module': 'pkg',
+                                      'module': 'service',
                                       'type': toplist}
-                    formatted_data.update(tag_data)
                     formatted_data.update(audit_data)
                     formatted_data.pop('data')
                     ret[tag].append(formatted_data)
