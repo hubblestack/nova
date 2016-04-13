@@ -30,7 +30,7 @@ def __virtual__():
 
 def audit(tags, verbose=False):
     '''
-    Run the grep audits contained in the YAML files processed by __virtual__
+    Run the stat audits contained in the YAML files processed by __virtual__
     '''
     ret = {'Success': [], 'Failure': []}
 
@@ -39,14 +39,14 @@ def audit(tags, verbose=False):
             for tag_data in __tags__[tag]:
                 name = tag_data['name']
                 expected = {}
-                for e in ['mode', 'user', 'group']:
+                for e in ['mode', 'user', 'uid', 'group', 'gid']:
                     if e in tag_data:
-                        expected[e] = str(tag_data[e])
+                        expected[e] = tag_data[e]
 
                 #getting the stats using salt
                 salt_ret = __salt__['file.stats'](name)
                 if not salt_ret:
-                    if 'cannot stat' in expected.values():
+                    if None in expected.values():
                         ret['Success'].append(tag_data)
                     else:
                         ret['Failure'].append(tag_data)
@@ -57,7 +57,7 @@ def audit(tags, verbose=False):
                     r = salt_ret[e]
                     if e == 'mode' and r != '0':
                         r = r[1:]
-                    if expected[e] != r:
+                    if str(expected[e]) != str(r):
                         passed = False
 
                 if passed:
@@ -106,7 +106,7 @@ def _get_yaml(dirname):
     ret = {}
     try:
         for yamlpath in os.listdir(dirname):
-            if yamlpath.endswith('.yaml'):
+            if yamlpath.endswith('.yaml') or yamlpath.endswith('.yml'):
                 with open(os.path.join(dirname, yamlpath)) as fh_:
                     data = yaml.safe_load(fh_)
                 _merge_yaml(ret, data)
