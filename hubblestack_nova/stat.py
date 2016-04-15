@@ -76,7 +76,7 @@ def audit(tags, verbose=False):
             description = tag_data.get('description')
             if (tag, description) not in tags_descriptions:
                 failure.append({tag: description})
-                tags.descriptions.add((tag, description))
+                tags_descriptions.add((tag, description))
 
         tags_descriptions = set()
 
@@ -85,7 +85,7 @@ def audit(tags, verbose=False):
             description = tag_data.get('description')
             if (tag, description) not in tags_descriptions:
                 success.append({tag: description})
-                tags.descriptions.add((tag, description))
+                tags_descriptions.add((tag, description))
 
         ret['Success'] = success
         ret['Failure'] = failure
