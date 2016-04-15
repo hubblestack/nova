@@ -102,15 +102,23 @@ def audit(tags, verbose=False):
         failure = []
         success = []
 
+        tags_descriptions = set()
+
         for tag_data in ret['Failure']:
             tag = tag_data['tag']
             description = tag_data.get('description')
-            failure.append({tag: description})
+            if (tag, description) not in tags_descriptions:
+                failure.append({tag: description})
+                tags.descriptions.add((tag, description))
+
+        tags_descriptions = set()
 
         for tag_data in ret['Success']:
             tag = tag_data['tag']
             description = tag_data.get('description')
-            success.append({tag: description})
+            if (tag, description) not in tags_descriptions:
+                success.append({tag: description})
+                tags.descriptions.add((tag, description))
 
         ret['Success'] = success
         ret['Failure'] = failure
