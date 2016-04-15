@@ -38,7 +38,7 @@ def audit(modules='',
           tag='*',
           verbose=False,
           show_success=True,
-          report_compliance=True):
+          show_compliance=True):
     '''
     Primary entry point for audit calls.
 
@@ -65,7 +65,7 @@ def audit(modules='',
         Whether to show successful audits in addition to failed audits.
         Defaults to True.
 
-    report_compliance
+    show_compliance
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True.
     '''
