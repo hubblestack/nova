@@ -99,20 +99,21 @@ def audit(tags, verbose=False):
                         ret['Failure'].append(tag_data)
 
     if not verbose:
-        failure = set()
-        success = set()
+        failure = []
+        success = []
 
         for tag_data in ret['Failure']:
             tag = tag_data['tag']
-            failure.add(tag)
+            description = tag_data.get('description')
+            failure.append({tag: description})
 
         for tag_data in ret['Success']:
             tag = tag_data['tag']
-            if tag not in failure:
-                success.add(tag)
+            description = tag_data.get('description')
+            success.append({tag: description})
 
-        ret['Success'] = list(success)
-        ret['Failure'] = list(failure)
+        ret['Success'] = success
+        ret['Failure'] = failure
 
     return ret
 
