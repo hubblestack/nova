@@ -89,6 +89,7 @@ def audit(tags, verbose=False):
                 if audittype == 'blacklist':
                     grep_ret = __salt__['file.grep'](name, tag_data['pattern']).get('stdout')
 
+                    found = False
                     if grep_ret:
                         found = True
                     if 'match_output' in tag_data and tag_data['match_output'] not in grep_ret:
@@ -103,6 +104,7 @@ def audit(tags, verbose=False):
                 elif audittype == 'whitelist':
                     grep_ret = __salt__['file.grep'](name, tag_data['pattern']).get('stdout')
 
+                    found = False
                     if grep_ret:
                         found = True
                     if 'match_output' in tag_data and tag_data['match_output'] not in grep_ret:
