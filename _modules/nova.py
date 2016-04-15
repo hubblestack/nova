@@ -34,7 +34,11 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(modules='', tag='*', verbose=False, show_success=True):
+def audit(modules='',
+          tag='*',
+          verbose=False,
+          show_success=True,
+          report_compliance=True):
     '''
     Primary entry point for audit calls.
 
@@ -60,6 +64,10 @@ def audit(modules='', tag='*', verbose=False, show_success=True):
     show_success
         Whether to show successful audits in addition to failed audits.
         Defaults to True.
+
+    report_compliance
+        Whether to show compliance as a percentage (successful checks divided
+        by total checks). Defaults to True.
     '''
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
@@ -90,6 +98,12 @@ def audit(modules='', tag='*', verbose=False, show_success=True):
                 # Compile the results
                 results['Success'].extend(ret.get('Success', []))
                 results['Failure'].extend(ret.get('Failure', []))
+
+    if show_compliance:
+        compliance = float(len(results['Success']))/(len(results['Success']) +
+                                                     len(results['Failure']))
+        compliance = int(compliance * 100)
+        results['Compliance'] = '{0}%'.format(compliance)
 
     if not show_success:
         results.pop('Success')
