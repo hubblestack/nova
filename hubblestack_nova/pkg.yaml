@@ -67,7 +67,7 @@ pkg:
     rsyslog:
       data:
         '*':
-          'rsyslog': 'CIS-5.1.1'
+          - 'rsyslog': 'CIS-5.1.1'
       description: 'Install rsyslog'
       alert: email
       trigger: state
@@ -75,7 +75,7 @@ pkg:
     anacron:
       data:
         '*':
-          'cronie-anacron': 'CIS-6.1.1'
+          - 'cronie-anacron': 'CIS-6.1.1'
       description: 'Enable anacron Daemon'
       alert: email
       trigger: state
