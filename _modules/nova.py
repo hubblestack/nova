@@ -99,9 +99,9 @@ def audit(modules='',
                 results['Success'].extend(ret.get('Success', []))
                 results['Failure'].extend(ret.get('Failure', []))
 
-    if show_compliance:
-        compliance = float(len(results['Success']))/(len(results['Success']) +
-                                                     len(results['Failure']))
+    total_audits = len(results['Success']) + len(results['Failure'])
+    if show_compliance and total_audits:
+        compliance = float(len(results['Success']))/total_audits
         compliance = int(compliance * 100)
         results['Compliance'] = '{0}%'.format(compliance)
 
