@@ -26,6 +26,7 @@ grep:
           - '/etc/fstab':  # filename
               tag: 'CIS-1.1.1'  # audit tag
               pattern: '/tmp'  # grep pattern
+              match_output: 'nodev'  # string to check for in output of grep command (optional)
         '*':  # wildcard, will be run if no direct osfinger match
           - '/etc/fstab':
               tag: 'CIS-1.1.1'
@@ -86,14 +87,28 @@ def audit(tags, verbose=False):
 
                 # Blacklisted packages (must not be installed)
                 if audittype == 'blacklist':
-                    if __salt__['file.grep'](name, tag_data['pattern']).get('stdout'):
+                    grep_ret = __salt__['file.grep'](name, tag_data['pattern']).get('stdout')
+
+                    if grep_ret:
+                        found = True
+                    if 'match_output' in tag_data and tag_data['match_output'] not in grep_ret:
+                        found = False
+
+                    if found:
                         ret['Failure'].append(tag_data)
                     else:
                         ret['Success'].append(tag_data)
 
                 # Whitelisted packages (must be installed)
                 elif audittype == 'whitelist':
-                    if __salt__['file.grep'](name, tag_data['pattern']).get('stdout'):
+                    grep_ret = __salt__['file.grep'](name, tag_data['pattern']).get('stdout')
+
+                    if grep_ret:
+                        found = True
+                    if 'match_output' in tag_data and tag_data['match_output'] not in grep_ret:
+                        found = False
+
+                    if found:
                         ret['Success'].append(tag_data)
                     else:
                         ret['Failure'].append(tag_data)
