@@ -34,7 +34,11 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(modules='', tag='*', verbose=False, show_success=True):
+def audit(modules='',
+          tag='*',
+          verbose=None,
+          show_success=None,
+          show_compliance=None):
     '''
     Primary entry point for audit calls.
 
@@ -55,16 +59,30 @@ def audit(modules='', tag='*', verbose=False, show_success=True):
     verbose
         Whether to show additional information about audits, including
         description, remediation instructions, etc. The data returned depends
-        on the audit module. Defaults to False.
+        on the audit module. Defaults to False. Configurable via
+        `hubblestack.nova.verbose` in minion config/pillar.
 
     show_success
         Whether to show successful audits in addition to failed audits.
-        Defaults to True.
+        Defaults to True. Configurable via `hubblestack.nova.show_success` in
+        minion config/pillar.
+
+    show_compliance
+        Whether to show compliance as a percentage (successful checks divided
+        by total checks). Defaults to True. Configurable via
+        `hubblestack.nova.show_compliance` in minion config/pillar.
     '''
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
     if not __nova__:
         return False, 'No nova modules have been loaded.'
+
+    if verbose is None:
+        verbose = __salt__['config.get']('hubblestack.nova.verbose', False)
+    if show_success is None:
+        show_success = __salt__['config.get']('hubblestack.nova.show_success', True)
+    if show_compliance is None:
+        show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
 
     if not isinstance(modules, list):
         # Convert string
@@ -90,6 +108,12 @@ def audit(modules='', tag='*', verbose=False, show_success=True):
                 # Compile the results
                 results['Success'].extend(ret.get('Success', []))
                 results['Failure'].extend(ret.get('Failure', []))
+
+    total_audits = len(results['Success']) + len(results['Failure'])
+    if show_compliance and total_audits:
+        compliance = float(len(results['Success']))/total_audits
+        compliance = int(compliance * 100)
+        results['Compliance'] = '{0}%'.format(compliance)
 
     if not show_success:
         results.pop('Success')

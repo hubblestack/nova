@@ -66,20 +66,29 @@ def audit(tags, verbose=False):
                     ret['Failure'].append(tag_data)
 
     if not verbose:
-        failure = set()
-        success = set()
+        failure = []
+        success = []
+
+        tags_descriptions = set()
 
         for tag_data in ret['Failure']:
             tag = tag_data['tag']
-            failure.add(tag)
+            description = tag_data.get('description')
+            if (tag, description) not in tags_descriptions:
+                failure.append({tag: description})
+                tags_descriptions.add((tag, description))
+
+        tags_descriptions = set()
 
         for tag_data in ret['Success']:
             tag = tag_data['tag']
-            if tag not in failure:
-                success.add(tag)
+            description = tag_data.get('description')
+            if (tag, description) not in tags_descriptions:
+                success.append({tag: description})
+                tags_descriptions.add((tag, description))
 
-        ret['Success'] = list(success)
-        ret['Failure'] = list(failure)
+        ret['Success'] = success
+        ret['Failure'] = failure
 
     return ret
 
@@ -124,6 +133,12 @@ def _get_tags(data):
     for audit_id, audit_data in data.get('stat', {}).iteritems():
         tags_dict = audit_data.get('data', {})
         tags = tags_dict.get(distro, tags_dict.get('*', []))
+        if isinstance(tags, dict):
+            # malformed yaml, convert to list of dicts
+            tmp = []
+            for name, tag in tags.iteritems():
+                tmp.append({name: tag})
+            tags = tmp
         for item in tags:
             for name, tag in item.iteritems():
                 if isinstance(tag, dict):
