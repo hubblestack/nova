@@ -1,6 +1,6 @@
 sysctl:
   whitelist: # or blacklist
-    fstab_tmp_partition:  # unique ID
+    net.ipv4.ip_forward:  # unique ID
       data:
         CentOS Linux-6:  # osfinger grain
           - 'net.ipv4.ip_forward':  # sysctl query
