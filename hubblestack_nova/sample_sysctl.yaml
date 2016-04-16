@@ -6,6 +6,9 @@ sysctl:
           - 'net.ipv4.ip_forward':  # sysctl query
               tag: 'CIS-1.1.1'  # audit tag
               match_output: '0'  # string to check for in output of sysctl query
+          - 'net.ipv4.ip_forward2':
+              tag: 'CIS-1.1.1'  # duplicate tags are OK.
+              match_output: '0'
         '*':  # wildcard, will be run if no direct osfinger match
           - 'net.ipv4.ip_forward':
               tag: 'CIS-1.1.23423'
