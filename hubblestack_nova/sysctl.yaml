@@ -1,0 +1,12 @@
+sysctl:
+  'CIS-4.2.4':
+    data:
+      CentOS Linux-7:
+        - 'net.ipv4.conf.all.log_martians':
+            match_output: '1'
+            pattern: 'bla'
+        - 'net.ipv4.conf.default.log_martians':
+            match_output: '1'
+    description: 'Log suspicious packets (Scored)'
+    alert: email
+    trigger: state
