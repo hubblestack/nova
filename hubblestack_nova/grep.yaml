@@ -1,11 +1,8 @@
 grep:
   whitelist:
+
     fstab_tmp_partition:
       data:
-        CentOS Linux-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.1'
-              pattern: '/tmp'
         '*':
           - '/etc/fstab':
               tag: 'CIS-1.1.1'
@@ -15,3 +12,4 @@ grep:
         of resource exhaustion if it is not bound to a separate partition.
       alert: email
       trigger: state
+
