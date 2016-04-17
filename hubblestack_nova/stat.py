@@ -1,3 +1,42 @@
+# -*- encoding: utf-8 -*-
+'''
+Hubble Nova plugin for using stat to verify settings over files
+
+:maintainer: HubbleStack
+:maturity: 20160417
+:platform: CentOS-6 and CentOS-7
+:requires: SaltStack
+
+This audit module requires yaml data to execute. It will search the local
+directory for any .yaml files, and if it finds a top-level 'stat' key, it will
+use that data.
+
+Sample YAML data, with inline comments:
+
+
+stat:
+  grub_conf_own:  # unique ID
+    data:
+      'CentOS-6':  # osfinger grain
+        - '/etc/grub.conf':  # filename
+            tag: 'CIS-1.5.1'  #audit tag
+            user: 'root'  #expected owner
+            uid: 0        #expected uid owner
+            group: 'root'  #expected group owner
+            gid: 0          #expected gid owner
+      'CentOS Linux-7':
+        - '/etc/grub2/grub.cfg':
+            tag: 'CIS-1.5.1'
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
+    # The rest of these attributes are optional, and currently not used
+    description: 'Grub must be owned by root'
+    alert: email
+    trigger: state
+'''
+
 from __future__ import absolute_import
 import logging
 
