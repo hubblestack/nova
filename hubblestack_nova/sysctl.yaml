@@ -15,7 +15,7 @@ sysctl:
         - 'kernel.randomize_va_space':
             tag: 'CIS-1.6.3'
             match_output: '2'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'kernel.randomize_va_space':
             tag: 'CIS-1.6.2'
             match_output: '2'
@@ -29,7 +29,7 @@ sysctl:
         - 'net.ipv4.ip_forward':
             tag: 'CIS-4.1.1'
             match_output: '0'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.ip_forward':
             tag: 'CIS-4.1.1'
             match_output: '0'
@@ -46,7 +46,7 @@ sysctl:
         - 'net.ipv4.conf.default.send_redirects':
             tag: 'CIS-4.1.2'
             match_output: '0'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.conf.all.send_redirects':
             tag: 'CIS-4.1.2'
             match_output: '0'
@@ -66,7 +66,7 @@ sysctl:
         - 'net.ipv4.conf.default.accept_source_route':
             tag: 'CIS-4.2.1'
             match_output: '0'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.conf.all.accept_source_route':
             tag: 'CIS-4.2.1'
             match_output: '0'
@@ -86,7 +86,7 @@ sysctl:
         - 'net.ipv4.conf.default.accept_redirects':
             tag: 'CIS-4.2.2'
             match_output: '0'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.conf.all.accept_redirects':
             tag: 'CIS-4.2.2'
             match_output: '0'
@@ -106,7 +106,7 @@ sysctl:
         - 'net.ipv4.conf.default.log_martians':
             tag: 'CIS-4.2.4'
             match_output: '1'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.conf.all.log_martian':
             tag: 'CIS-4.2.4'
             match_output: '1'
@@ -123,7 +123,7 @@ sysctl:
         - 'net.ipv4.icmp_echo_ignore_broadcasts':
             tag: 'CIS-4.2.5'
             match_output: '1'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.icmp_echo_ignore_broadcasts':
             tag: 'CIS-4.2.5'
             match_output: '1'
@@ -137,7 +137,7 @@ sysctl:
         - 'net.ipv4.icmp_ignore_bogus_error_responses':
             tag: 'CIS-4.2.6'
             match_output: '1'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.icmp_ignore_bogus_error_responses':
             tag: 'CIS-4.2.6'
             match_output: '1'
@@ -151,7 +151,7 @@ sysctl:
         - 'net.ipv4.tcp_syncookies':
             tag: 'CIS-4.2.8'
             match_output: '1'
-      'CentOS-7':
+      'CentOS Linux-7':
         - 'net.ipv4.tcp_syncookies':
             tag: 'CIS-4.2.8'
             match_output: '1'
