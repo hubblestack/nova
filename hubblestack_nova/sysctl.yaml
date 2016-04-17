@@ -93,7 +93,7 @@ sysctl:
         - 'net.ipv4.conf.default.accept_redirects':
             tag: 'CIS-4.2.2'
             match_output: '0'
-    description: 'Disable ICMP Redirect Acceptance'
+    description: 'Disable ICMP Redirect Acceptance (Scored)'
     alert: email
     trigger: state
 
@@ -155,3 +155,4 @@ sysctl:
         - 'net.ipv4.tcp_syncookies':
             tag: 'CIS-4.2.8'
             match_output: '1'
+    description: 'Enable TCP SYN Cookies (Scored)'
