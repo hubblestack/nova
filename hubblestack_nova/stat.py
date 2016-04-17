@@ -132,7 +132,7 @@ def _get_tags(data):
     distro = __grains__.get('osfinger')
     for audit_id, audit_data in data.get('stat', {}).iteritems():
         tags_dict = audit_data.get('data', {})
-        tags = tags_dict.get(distro, tags_dict.get('*', []))
+        tags = tags_dict.get(distro, [])
         if isinstance(tags, dict):
             # malformed yaml, convert to list of dicts
             tmp = []
