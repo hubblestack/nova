@@ -35,6 +35,10 @@ stat:
 
   hosts_allow:
     data:
+      'CentOS-6':
+        - '/etc/hosts.allow':
+            tag: 'CIS-4.5.3'
+            mode: 644
       'CentOS Linux-7':
         - '/etc/hosts.allow':
             tag: 'CIS-4.5.3'
@@ -45,6 +49,10 @@ stat:
 
   hosts_deny:
     data:
+      'CentOS-6':
+        - '/etc/hosts.deny':
+            tag: 'CIS-4.5.5'
+            mode: 644
       'CentOS Linux-7':
         - '/etc/hosts.deny':
             tag: 'CIS-4.5.5'
@@ -55,6 +63,14 @@ stat:
 
   anacrontab:
     data:
+      'CentOS-6':
+        - '/etc/anacrontab':
+            tag: 'CIS-6.1.3'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/anacrontab':
             tag: 'CIS-6.1.3'
@@ -69,6 +85,14 @@ stat:
 
   crontab:
     data:
+      'CentOS-6':
+        - '/etc/crontab':
+            tag: 'CIS-6.1.4'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/crontab':
             tag: 'CIS-6.1.4'
@@ -83,6 +107,14 @@ stat:
 
   cron_hourly:
     data:
+      'CentOS-6':
+        - 'etc/cron.hourly':
+            tag: 'CIS-6.1.5'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - 'etc/cron.hourly':
             tag: 'CIS-6.1.5'
@@ -97,6 +129,14 @@ stat:
 
   cron_daily:
     data:
+      'CentOS-6':
+        - '/etc/cron.daily':
+            tag: 'CIS-6.1.6'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/cron.daily':
             tag: 'CIS-6.1.6'
@@ -111,6 +151,14 @@ stat:
 
   cron_weekly:
     data:
+      'CentOS-6':
+        - '/etc/cron.weekly':
+            tag: 'CIS-6.1.7'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/cron.weekly':
             tag: 'CIS-6.1.7'
@@ -125,6 +173,14 @@ stat:
 
   cron_monthly:
     data:
+      'CentOS-6':
+        - '/etc/cron.monthly':
+            tag: 'CIS-6.1.8'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/cron.monthly':
             tag: 'CIS-6.1.8'
@@ -139,6 +195,14 @@ stat:
 
   cron_d:
     data:
+      'CentOS-6':
+        - '/etc/cron.d':
+            tag: 'CIS-6.1.9'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/cron.d':
             tag: 'CIS-6.1.9'
@@ -153,6 +217,14 @@ stat:
 
   at_allow:
     data:
+      'CentOS-6':
+        - '/etc/at.allow':
+            tag: 'CIS-6.1.10'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/at.allow':
             tag: 'CIS-6.1.10'
@@ -167,6 +239,35 @@ stat:
 
   at_cron_allow:
     data:
+      'CentOS-6':
+        - '/etc/cron.deny':
+            tag: 'CIS-6.1.11'
+            mode: null
+            user: null
+            uid: null
+            group: null
+            gid: null
+        - '/etc/at.deny':
+            tag: 'CIS-6.1.11'
+            mode: null
+            user: null
+            uid: null
+            group: null
+            gid: null
+        - '/etc/cron.allow':
+            tag: 'CIS-6.1.11'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
+        - '/etc/at/allow':
+            tag: 'CIS-6.1.11'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/cron.deny':
             tag: 'CIS-6.1.11'
@@ -202,6 +303,14 @@ stat:
 
   sshd_config:
     data:
+      'CentOS-6':
+        - '/etc/ssh/sshd_config':
+            tag: 'CIS-6.2.3'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/ssh/sshd_config':
             tag: 'CIS-6.2.3'
@@ -216,6 +325,28 @@ stat:
 
   warning_banner:
     data:
+      'CentOS-6':
+        - '/etc/motd':
+            tag: 'CIS-8.1'
+            mode: 644
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
+        - '/etc/issue':
+            tag: 'CIS-8.1'
+            mode: 644
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
+        - '/etc/issue.net':
+            tag: 'CIS-8.1'
+            mode: 644
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/motd':
             tag: 'CIS-8.1'
@@ -244,6 +375,10 @@ stat:
 
   passwd_perm:
     data:
+      'CentOS-6':
+        - '/etc/passwd':
+            tag: 'CIS-9.1.2'
+            mode: 644
       'CentOS Linux-7':
         - '/etc/passwd':
             tag: 'CIS-9.1.2'
@@ -254,6 +389,13 @@ stat:
 
   passwd_own:
     data:
+      'CentOS-6':
+        - '/etc/passwd':
+            tag: 'CIS-9.1.6'
+            user: 'root'
+            uid: 0
+            group: 'root'
+            uid: 0
       'CentOS Linux-7':
         - '/etc/passwd':
             tag: 'CIS-9.1.6'
@@ -267,6 +409,10 @@ stat:
 
   shadow_perm:
     data:
+      'CentOS-6':
+        - '/etc/shadow':
+            tag: 'CIS-9.1.3'
+            mode: 0
       'CentOS Linux-7':
         - '/etc/shadow':
             tag: 'CIS-9.1.3'
@@ -277,6 +423,13 @@ stat:
 
   shadow_own:
     data:
+      'CentOS-6':
+        - '/etc/shadow':
+            tag: 'CIS-9.1.7'
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/shadow':
             tag: 'CIS-9.1.7'
@@ -290,6 +443,10 @@ stat:
 
   gshadow_perm:
     data:
+      'CentOS-6':
+        - '/etc/gshadow':
+            tag: 'CIS-9.1.4'
+            mode: 0
       'CentOS Linux-7':
         - '/etc/gshadow':
             tag: 'CIS-9.1.4'
@@ -300,6 +457,13 @@ stat:
 
   gshadow_own:
     data:
+      'CentOS-6':
+        - '/etc/gshadow':
+            tag: 'CIS-9.1.8'
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/gshadow':
             tag: 'CIS-9.1.8'
@@ -313,6 +477,10 @@ stat:
 
   group_perm:
     data:
+      'CentOS-6':
+        - '/etc/group':
+            tag: 'CIS-9.1.5'
+            mode: 644
       'CentOS Linux-7':
         - '/etc/group':
             tag: 'CIS-9.1.5'
@@ -323,6 +491,13 @@ stat:
 
   group_own:
     data:
+      'CentOS-6':
+        - '/etc/group':
+            tag: 'CIS-9.1.9'
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
       'CentOS Linux-7':
         - '/etc/group':
             tag: 'CIS-9.1.9'
