@@ -1,4 +1,4 @@
-ssysctl:
+sysctl:
   whitelist: # or blacklist
     net.ipv4.ip_forward:  # unique ID
       data:
