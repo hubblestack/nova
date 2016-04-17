@@ -1,0 +1,157 @@
+sysctl:
+  exec_shield:
+    data:
+      'CentOS-6':
+        - 'kernel.exec-shield':
+            tag: 'CIS-1.6.2'
+            match_output: '1'
+    description: 'Configure ExecShield (Scored)'
+    alert: email
+    trigger: state
+
+  randomize_va_space:
+    data:
+      'CentOS-6':
+        - 'kernel.randomize_va_space':
+            tag: 'CIS-1.6.3'
+            match_output: '2'
+      'CentOS-7':
+        - 'kernel.randomize_va_space':
+            tag: 'CIS-1.6.2'
+            match_output: '2'
+    description: 'Enable Randomized Virtual Memory Region Placement (Scored)'
+    alert: email
+    trigger: state
+
+  ip_forwarding:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.ip_forward':
+            tag: 'CIS-4.1.1'
+            match_output: '0'
+      'CentOS-7':
+        - 'net.ipv4.ip_forward':
+            tag: 'CIS-4.1.1'
+            match_output: '0'
+    description: 'Disable IP Forwarding (Scored)'
+    alert: email
+    trigger: state
+
+  send_packet_redirect:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.conf.all.send_redirects':
+            tag: 'CIS-4.1.2'
+            match_output: '0'
+        - 'net.ipv4.conf.default.send_redirects':
+            tag: 'CIS-4.1.2'
+            match_output: '0'
+      'CentOS-7':
+        - 'net.ipv4.conf.all.send_redirects':
+            tag: 'CIS-4.1.2'
+            match_output: '0'
+        - 'net.ipv4.conf.default.send_redirects':
+            tag: 'CIS-4.1.2'
+            match_output: '0'
+    description: 'Disable Send Packet Redirect (Scored)'
+    alert: email
+    trigger: state
+
+  source_routed_packet_acceptance:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.conf.all.accept_source_route':
+            tag: 'CIS-4.2.1'
+            match_output: '0'
+        - 'net.ipv4.conf.default.accept_source_route':
+            tag: 'CIS-4.2.1'
+            match_output: '0'
+      'CentOS-7':
+        - 'net.ipv4.conf.all.accept_source_route':
+            tag: 'CIS-4.2.1'
+            match_output: '0'
+        - 'net.ipv4.conf.default.accept_source_route':
+            tag: 'CIS-4.2.1'
+            match_output: '0'
+    description: 'Disable Source Routed Packet Acceptance (Scored)'
+    alert: email
+    trigger: state
+
+  icmp_redirect_acceptance:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.conf.all.accept_redirects':
+            tag: 'CIS-4.2.2'
+            match_output: '0'
+        - 'net.ipv4.conf.default.accept_redirects':
+            tag: 'CIS-4.2.2'
+            match_output: '0'
+      'CentOS-7':
+        - 'net.ipv4.conf.all.accept_redirects':
+            tag: 'CIS-4.2.2'
+            match_output: '0'
+        - 'net.ipv4.conf.default.accept_redirects':
+            tag: 'CIS-4.2.2'
+            match_output: '0'
+    description: 'Disable ICMP Redirect Acceptance'
+    alert: email
+    trigger: state
+
+  log_suspicious_packets:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.conf.all.log_martian':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+        - 'net.ipv4.conf.default.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+      'CentOS-7':
+        - 'net.ipv4.conf.all.log_martian':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+        - 'net.ipv4.conf.default.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+    description: 'Log Suspicious Activity (Scored)'
+    alert: email
+    trigger: state
+
+  ignore_broadcast_requests:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.icmp_echo_ignore_broadcasts':
+            tag: 'CIS-4.2.5'
+            match_output: '1'
+      'CentOS-7':
+        - 'net.ipv4.icmp_echo_ignore_broadcasts':
+            tag: 'CIS-4.2.5'
+            match_output: '1'
+    description: 'Enable Ignore Broadcast Requests (Scored)'
+    alert: email
+    trigger: state
+
+  bad_error_message_protection:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.icmp_ignore_bogus_error_responses':
+            tag: 'CIS-4.2.6'
+            match_output: '1'
+      'CentOS-7':
+        - 'net.ipv4.icmp_ignore_bogus_error_responses':
+            tag: 'CIS-4.2.6'
+            match_output: '1'
+    description: 'Enable Bad Error Message Protection (Scored)'
+    alert: email
+    trigger: state
+
+  tcp_syn_cookies:
+    data:
+      'CentOS-6':
+        - 'net.ipv4.tcp_syncookies':
+            tag: 'CIS-4.2.8'
+            match_output: '1'
+      'CentOS-7':
+        - 'net.ipv4.tcp_syncookies':
+            tag: 'CIS-4.2.8'
+            match_output: '1'
