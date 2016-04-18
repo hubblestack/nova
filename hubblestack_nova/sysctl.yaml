@@ -156,3 +156,5 @@ sysctl:
             tag: 'CIS-4.2.8'
             match_output: '1'
     description: 'Enable TCP SYN cookies (Scored)'
+    alert: email
+    trigger: state
