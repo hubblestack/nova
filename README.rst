@@ -30,12 +30,12 @@ configurable via pillar. The defaults are shown below:
 Usage
 =====
 
-There are three functions in the hubble.py module. ``nova.sync`` will sync the
-configured ``hubblestack_nova/`` directory to the minion. ``nova.load`` will
-load the synced audit modules.  Finally, ``nova.audit`` will run the audits.
+There are three functions in the hubble.py module. ``hubble.sync`` will sync the
+configured ``hubblestack_nova/`` directory to the minion. ``hubble.load`` will
+load the synced audit modules.  Finally, ``hubble.audit`` will run the audits.
 
-By default, ``nova.audit`` will call ``nova.load`` (which in turn calls
-``nova.sync``) (in order to ensure that it is auditing with the most up-to-date
+By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
+``hubble.sync``) (in order to ensure that it is auditing with the most up-to-date
 information. These operations are fairly fast, but if you want to avoid the
 additional overhead, you can disable these behaviors via pillar (defaults are
 shown, change to False to disable behaviors):
@@ -45,7 +45,7 @@ shown, change to False to disable behaviors):
     hubblestack.nova.autosync: True
     hubblestack.nova.autoload: True
 
-``nova.audit`` takes two optional arguments. The first is a comma-separated
+``hubble.audit`` takes two optional arguments. The first is a comma-separated
 list of paths.  These paths can be files or directories. If a path is a
 directory, all modules below that directory will be run. If it is a file, that
 file will be run.
@@ -55,7 +55,7 @@ matched. All audits have an accompanying tag. Nova modules are designed to take
 this argument, compare it to each tag that module handles, and only run those
 which match the argument (using ``fnmatch``).
 
-``nova.audit`` will return a list of audits which were successful, and a list
+``hubble.audit`` will return a list of audits which were successful, and a list
 of audits which failed.
 
 Here are some example calls:
@@ -63,16 +63,16 @@ Here are some example calls:
 .. code-block:: bash
 
     # Run all modules and tags under salt://hubblestack_nova/
-    salt '*' nova.audit
+    salt '*' hubble.audit
 
     # Run all modules and tags under salt://hubblestack_nova/foo/
     # Will also run salt://hubblestack_nova/foo.py if it exists
-    salt '*' nova.audit modules=foo
+    salt '*' hubble.audit modules=foo
 
     # Run all modules and tags under salt://hubblestack_nova/foo/ and
     # salt://hubblestack_nova/bar, but only run audits with tags starting
     # with "CIS"
-    salt '*' nova.audit modules=foo,bar tags='CIS*'
+    salt '*' hubble.audit modules=foo,bar tags='CIS*'
 
 Development
 ===========
