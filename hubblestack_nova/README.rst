@@ -38,8 +38,8 @@ for additional distributions.
 The end-goal of this design is that even non-programmers can write and
 contribute to audit "profiles", lowering the bar for contribution.
 
-The pkg module
---------------
+The pkg module example
+----------------------
 
 The `pkg` module audits based on a whitelist or blacklist of installed
 packages. The general YAML syntax looks as follows:
@@ -78,3 +78,11 @@ you're auditing against. Examples might be: `CIS-2.1.1`, `STIG-X.Y` or even
 If you are contributing checks to this project, it is important to accurately
 tie the `osfinger`, `pkg_name` and `TAG` to the upstream benchmark that you're
 contributing a profile for.
+
+Global Compatibility
+--------------------
+
+For those situations where a check may be globally compatible, the `osfinger`
+value can be replaced with a `*` glob. The `*` glob defines global
+compatibility, and will be run on all platforms (assuming the underlying
+`__virtual__()` successfully applies).
