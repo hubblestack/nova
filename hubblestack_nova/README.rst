@@ -62,7 +62,7 @@ Given the above example, supporting a distribution or platform within a
 #. The package name and corresponding unique TAG for that platform.
 
 If you are unsure the `osfinger` grain for your platform, use the following
-cammand:
+command:
 
 .. code-block:: shell
 
