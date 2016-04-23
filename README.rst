@@ -10,7 +10,7 @@ running systems.
 Installation
 ============
 
-Place `nova.py <_modules/nova.py>`_ in your ``_modules/`` directory in your Salt
+Place `hubble.py <_modules/hubble.py>`_ in your ``_modules/`` directory in your Salt
 fileserver (whether roots or gitfs) and sync it to the minion.
 
 Create a ``hubblestack_nova`` directory in the root of your Salt fileserver's
@@ -30,7 +30,7 @@ configurable via pillar. The defaults are shown below:
 Usage
 =====
 
-There are three functions in the nova.py module. ``nova.sync`` will sync the
+There are three functions in the hubble.py module. ``nova.sync`` will sync the
 configured ``hubblestack_nova/`` directory to the minion. ``nova.load`` will
 load the synced audit modules.  Finally, ``nova.audit`` will run the audits.
 
