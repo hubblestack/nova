@@ -834,6 +834,57 @@ grep:
               pattern: "^umask 077"
       description: 'Set Default umask for Users (Scored)'
 
+    passwd_hashing_algorithm:
+      data:
+        CentOS Linux-7:
+          - '/etc/login.defs':
+              tag: 'CIS-6.3.1'
+              pattern: "^ENCRYPT_METHOD"
+              match_output: "SHA512"
+      description: 'Upgrade password hashing algorithm to SHA-512 (Scored)'
+
+    passwd_pam_cracklib:
+      data:
+        CentOS Linux-7:
+          - '/etc/pam.d/system-auth':
+              tag: 'CIS-6.3.2'
+              pattern: "pam_cracklib.so"
+      description: 'Set password creation requirement parameters using pam_cracklib (Scored)'
+
+    passwd_pam_cracklib:
+      data:
+        CentOS Linux-7:
+          - '/etc/pam.d/system-auth':
+              tag: 'CIS-6.3.2'
+              pattern: "pam_cracklib.so"
+      description: 'Set password creation requirement parameters using pam_cracklib (Scored)'
+
+    passwd_limit_reuse:
+      data:
+        CentOS Linux-7:
+          - '/etc/pam.d/system-auth':
+              tag: 'CIS-6.3.4'
+              pattern: "remember"
+              match_output: "5"
+      description: 'Limit password reuise (Scored)'
+
+    restrict_access_su:
+      data:
+        CentOS Linux-7:
+          - '/etc/pam.d/su':
+              tag: 'CIS-6.5'
+              pattern: "pam_wheel.so"
+      description: 'Restrict access to the su command (Scored)'
+
+    lock_inactive_accounts:
+      data:
+        CentOS Linux-7:
+          - '/etc/default/useradd':
+              tag: 'CIS-7.5'
+              pattern: "^INACTIVE"
+              match_output: "-1"
+      description: 'Lock inactive user accounts (Scored)'
+
   blacklist:
     legacy_passwd_entries:
       data:
