@@ -19,6 +19,7 @@ def __virtual__():
     if 'FreeBSD' not in __grains__['os']:
         return False, 'This audit module only runs on FreeBSD'
     global __tags__
+    __tags__ = ['freebsd-pkg-audit']
     return True
 
 
