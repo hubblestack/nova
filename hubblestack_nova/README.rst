@@ -10,7 +10,7 @@ targeted by module name or "tag".
 Profile Compatibility
 ---------------------
 
-Early on in this project it became obvious that we would need to suppot
+Early on in this project it became obvious that we would need to support
 multiple distributions and platforms. Everything from CentOS to Debian, and BSD
 to Windows. This section describes how that compatibility is defined and
 determined.
@@ -71,7 +71,7 @@ command:
 Generally speaking, the `osfinger`, `pkg_name` and `TAG` will be unique per
 platform. Because packages don't always share the same naming scheme between
 distributions, this will need to be determined on a per-package basis. Also,
-the TAG value generally follows a naming patterm based on the standard that
+the TAG value generally follows a naming pattern based on the standard that
 you're auditing against. Examples might be: `CIS-2.1.1`, `STIG-X.Y` or even
 `CUSTOM-N.M`.
 
