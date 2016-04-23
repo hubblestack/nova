@@ -87,7 +87,7 @@ Anatomy of a Nova audit module
 
     # -*- encoding: utf-8 -*-
     '''
-    A simple Nova plugin
+    Loader and primary interface for nova modules
 
     :maintainer: HubbleStack
     :maturity: 20160214
@@ -117,7 +117,7 @@ include full documentation
         return True
 
 
-    def audit(tags, verbose=False):
+    def audit(tag, verbose=False):
         ret = {'Success': [], 'Failure': []}
         for tag in __tags__:
             if fnmatch.fnmatch(tag, tags):
@@ -131,10 +131,10 @@ All Nova plugins require a ``__virtual__()`` function to determine module
 compatibility, and an ``audit()`` function to perform the actual audit
 functionality
 
-The ``audit()`` function must take two arguments, ``tags`` and
-``verbose``. The ``tags`` argument is a glob expression for which tags
+The ``audit()`` function must take two arguments, ``tag`` and
+``verbose``. The ``tag`` argument is a glob expression for which tags
 the audit function should run. It is the job of the audit module to compare the
-``tags`` glob with all tags supported by this module and only run the audits
+``tag`` glob with all tags supported by this module and only run the audits
 which match. The ``verbose`` argument defines whether additional
 information should be returned for audits, such as description and
 remediation instructions.
