@@ -97,7 +97,26 @@ pkg:
           - 'avahi-daemon': 'CIS-6.2'
       description: 'Disable Avahi Server (Scored)'
 
+    prelink:
+      data:
+        Ubuntu-14.04:
+          - 'prelink': 'CIS-4.4'
+      description: 'Disable Prelink (Scored)'
+
+    biosdevname:
+      data:
+        Ubuntu-14.04:
+          - 'biosdevname': 'CIS-6.17'
+      description: 'Ensure biosdevname is not enabled (Scored)'
+
   whitelist:
+
+    apparmor:
+      data:
+        Ubuntu-14.04:
+          - 'apparmor': 'CIS-4.5'
+          - 'apparmor-utils': 'CIS-4.5'
+      description: 'Activate AppArmor (Scored)'
 
     aide:
       data:
@@ -164,11 +183,9 @@ stat:
             gid: 0
       'Ubuntu-14.04':
         - '/boot/grub/grub.cfg':
-            tag: 'CIS-3.2'
+            tag: 'CIS-3.1'
             user: 'root'
-            uid: 0
             group: 'root'
-            gid: 0
     description: 'Grub must be owned by root (Scored)'
     alert: email
     trigger: state
@@ -183,7 +200,11 @@ stat:
         - '/etc/grub2/grub.cfg':
             tag: 'CIS-1.5.2'
             mode: 600
-    description: 'Grub must have permissions 600 (Scored)'
+      Ubuntu-14.04:
+        - '/boot/grub/grub.cfg':
+            tag: 'CIS-3.2'
+            mode: 600
+    description: 'Set permissions on bootloader config (Scored)'
     alert: email
     trigger: state
 
@@ -466,6 +487,10 @@ stat:
         - '/etc/passwd':
             tag: 'CIS-9.1.2'
             mode: 644
+      Ubuntu-14.04:
+        - '/etc/passwd':
+            tag: 'CIS-12.1'
+            mode: 644
     description: '/etc/passwd must have permissions 644 (Scored)'
     alert: email
     trigger: state
@@ -479,7 +504,12 @@ stat:
             uid: 0
             group: 'root'
             uid: 0
-    description: '/etc/passwd must be owned by root (Scored)'
+      Ubuntu-14.04:
+        - '/etc/passwd':
+            tag: 'CIS-12.4'
+            user: 'root'
+            group: 'root'
+    description: 'Verify user/group ownership on /etc/passwd (Scored)'
     alert: email
     trigger: state
 
@@ -493,7 +523,7 @@ stat:
         - '/etc/shadow':
             tag: 'CIS-12.3'
             mode: '640'
-    description: '/etc/shadow must have permissions 000 (Scored)'
+    description: 'Verify user/group ownership on /etc/shadow (Scored)'
     alert: email
     trigger: state
 
@@ -506,6 +536,11 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
+      Ubuntu-14.04:
+        - '/etc/shadow':
+            tag: 'CIS-12.5'
+            user: 'root'
+            group: 'root'
     description: '/etc/shadow must be owned by root (Scored)'
     alert: email
     trigger: state
@@ -552,6 +587,11 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
+      Ubuntu-14.04:
+        - '/etc/group':
+            tag: 'CIS-12.6'
+            user: 'root'
+            group: 'root'
     description: '/etc/group must be owned by root (Scored)'
     alert: email
     trigger: state
@@ -1121,11 +1161,47 @@ grep:
               match_output: "-1"
       description: 'Lock inactive user accounts (Scored)'
 
+    local_only_mta:
+      data:
+        Ubuntu-14.04:
+          - '/etc/postfix/main.cf':
+              tag: 'CIS-6.15'
+              pattern: "^inet_interfaces = localhost"
+      description: 'Configure Mail Transfer Agent for local-only mode (Scored)'
+
   blacklist:
     legacy_passwd_entries:
       data:
         CentOS Linux-7:
-          - '/etc/login.defs':
+          - '/etc/passwd':
               tag: 'CIS-9.2.2'
               pattern: "^+:"
-      description: 'Set Password Expiring Warning Days (Scored)'
+        Ubuntu-14.04:
+          - '/etc/passwd':
+              tag: 'CIS-13.2'
+              pattern: "^+:"
+      description: 'Verify No Legacy "+" Entries Exist in /etc/passwd File (Scored)'
+
+    legacy_shadow_entries:
+      data:
+        Ubuntu-14.04:
+          - '/etc/shadow':
+              tag: 'CIS-13.3'
+              pattern: "^+:"
+      description: 'Verify No Legacy "+" Entries Exist in /etc/shadow File (Scored)'
+
+    legacy_group_entries:
+      data:
+        Ubuntu-14.04:
+          - '/etc/group':
+              tag: 'CIS-13.4'
+              pattern: "^+:"
+      description: 'Verify No Legacy "+" Entries Exist in /etc/shadow File (Scored)'
+
+    single_user_auth:
+      data:
+        Ubuntu-14.04:
+          - '/etc/shadow':
+              tag: 'CIS-3.4'
+              pattern: "^root:[*\!]:"
+      description: 'Require Authentication for Single-User Mode (Scored)'
