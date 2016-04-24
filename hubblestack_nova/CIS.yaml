@@ -6,6 +6,9 @@ pkg:
         'CentOS Linux-7':
           - 'telnet-server': 'CIS-2.1.1'
           - 'telnet': 'CIS-2.1.2'
+        'Ubuntu-14.04':
+          - 'telnet-server': 'CIS-5.1.6'
+          - 'telnet': 'CIS-5.1.6'
       description: 'Remove telnet and telnet-server (Scored)'
       alert: email
       trigger: state
@@ -15,6 +18,10 @@ pkg:
         'CentOS Linux-7':
           - 'rsh-server': 'CIS-2.1.3'
           - 'rsh': 'CIS-2.1.4'
+        'Ubuntu-14.04':
+          - 'rsh-server': 'CIS-5.1.2'
+          - 'rsh-client': 'CIS-5.1.3'
+          - 'rsh-redone-client': 'CIS-5.1.3'
       description: 'Remove rsh and rsh-server (Scored)'
       alert: email
       trigger: state
@@ -24,6 +31,8 @@ pkg:
         'CentOS Linux-7':
           - 'ypbind': 'CIS-2.1.5'
           - 'ypserv': 'CIS-2.1.6'
+        'Ubuntu-14.04':
+          - 'nis': 'CIS-5.1.1'
       description: 'Remove nis client and nis server (Scored)'
       alert: email
       trigger: state
@@ -33,6 +42,9 @@ pkg:
         'CentOS Linux-7':
           - 'tftp': 'CIS-2.1.7'
           - 'tftp-server': 'CIS-2.1.8'
+        'Ubuntu-14.04':
+          - 'tftp': 'CIS-5.1.7'
+          - 'atftp': 'CIS-5.1.7'
       description: 'Remove tftp and tftp-server (Scored)'
       alert: email
       trigger: state
@@ -42,6 +54,8 @@ pkg:
         'CentOS Linux-7':
           - 'talk': 'CIS-2.1.9'
           - 'talk-server': 'CIS-2.1.10'
+        'Ubuntu-14.04':
+          - 'talk': 'CIS-5.1.5'
       description: 'Remove talk and talk-server (Scored)'
       alert: email
       trigger: state
@@ -50,6 +64,8 @@ pkg:
       data:
         'CentOS Linux-7':
           - 'xinetd': 'CIS-2.1.11'
+        'Ubuntu-14.04':
+          - 'xinetd': 'CIS-5.1.8'
       description: 'Remove xinetd (Scored)'
       alert: email
       trigger: state
@@ -58,20 +74,27 @@ pkg:
       data:
         'CentOS Linux-7':
           - 'dhcp': 'CIS-3.5'
+        'Ubuntu-14.04':
+          - 'isc-dhcp-server': 'CIS-6.4'
+          - 'isc-dhcp-server6': 'CIS-6.4'
       description: 'Remove DHCP server (Scored)'
       alert: email
       trigger: state
 
-    xorg-x11-server-common:
+    xorg-server:
       data:
         'CentOS Linux-7':
           - 'xorg-x11-server-common': 'CIS-3.2'
+        'Ubuntu-14.04':
+          - 'xserver-xorg-core': 'CIS-6.1'
       description: 'Remove the X Window System (Scored)'
 
     avahi-daemon:
       data:
         'CentOS Linux-7':
-         - 'avahi-daemon' : 'CIS-3.3'
+          - 'avahi-daemon': 'CIS-3.3'
+        'Ubuntu-14.04':
+          - 'avahi-daemon': 'CIS-6.2'
       description: 'Disable Avahi Server (Scored)'
 
   whitelist:
@@ -80,6 +103,8 @@ pkg:
       data:
         'CentOS Linux-7':
           - 'aide': 'CIS-1.3.1'
+        'Ubuntu-14.04':
+          - 'aide': 'CIS-8.3.1'
       description: 'Install AIDE (Scored)'
 
     firewalld:
@@ -88,11 +113,27 @@ pkg:
           - 'firewalld': 'CIS-4.7'
       description: 'Enable firewalld (Scored)'
 
+    tcp_wrappers:
+      data:
+        'Ubuntu-14.04':
+          - 'tcpd': 'CIS-7.4.1'
+      description: 'Install TCP Wrappers (Scored)'
+
     rsyslog:
       data:
         'CentOS Linux-7':
           - 'rsyslog': 'CIS-5.1.1'
+        'Ubuntu-14.04':
+          - 'rsyslog': 'CIS-8.2.1'
       description: 'Install rsyslog (Scored)'
+      alert: email
+      trigger: state
+
+    auditd:
+      data:
+        'Ubuntu-14.04':
+          - 'auditd': 'CIS-8.1.2'
+      description: 'Install and Enable auditd Service (Scored)'
       alert: email
       trigger: state
 
@@ -121,6 +162,13 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
+      'Ubuntu-14.04':
+        - '/boot/grub/grub.cfg':
+            tag: 'CIS-3.2'
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
     description: 'Grub must be owned by root (Scored)'
     alert: email
     trigger: state
@@ -145,7 +193,11 @@ stat:
         - '/etc/hosts.allow':
             tag: 'CIS-4.5.3'
             mode: 644
-    description: '/etc/hosts.allow must have permissions 644 (Scored)'
+      'Ubuntu-14.04':
+        - '/etc/hosts.allow':
+            tag: 'CIS-7.4.3'
+            mode: 644
+    description: 'Verify Permissions on /etc/hosts.allow (Scored)'
     alert: email
     trigger: state
 
@@ -155,7 +207,11 @@ stat:
         - '/etc/hosts.deny':
             tag: 'CIS-4.5.5'
             mode: 644
-    description: '/etc/hosts.deny must have persmissions 644 (Scored)'
+      'Ubuntu-14.04':
+        - '/etc/hosts.deny':
+            tag: 'CIS-7.4.5'
+            mode: 644
+    description: 'Verify Permissions on /etc/hosts.deny (Scored)'
     alert: email
     trigger: state
 
@@ -183,6 +239,14 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
+      'Ubuntu-14.04':
+        - '/etc/crontab':
+            tag: 'CIS-9.1.2'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
     description: '/etc/crontab must be owned by root and have persmissions 600 (Scored)'
     alert: email
     trigger: state
@@ -192,6 +256,14 @@ stat:
       'CentOS Linux-7':
         - 'etc/cron.hourly':
             tag: 'CIS-6.1.5'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
+      'Ubuntu-14.04':
+        - 'etc/cron.hourly':
+            tag: 'CIS-9.1.3'
             mode: 700
             user: 'root'
             uid: 0
@@ -211,6 +283,14 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
+      'Ubuntu-14.04':
+        - '/etc/cron.daily':
+            tag: 'CIS-9.1.4'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
     description: '/etc/cron.daily must be owned by root and must have permissions 700 (Scored)'
     alert: email
     trigger: state
@@ -220,6 +300,14 @@ stat:
       'CentOS Linux-7':
         - '/etc/cron.weekly':
             tag: 'CIS-6.1.7'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
+      'Ubuntu-14.04':
+        - '/etc/cron.weekly':
+            tag: 'CIS-9.1.5'
             mode: 700
             user: 'root'
             uid: 0
@@ -239,6 +327,14 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
+      'Ubuntu-14.04':
+        - '/etc/cron.monthly':
+            tag: 'CIS-9.1.6'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
     description: '/etc/cron.monthly must be owned by root and must have permissions 700 (Scored)'
     alert: email
     trigger: state
@@ -248,6 +344,14 @@ stat:
       'CentOS Linux-7':
         - '/etc/cron.d':
             tag: 'CIS-6.1.9'
+            mode: 700
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
+      'Ubuntu-14.04':
+        - '/etc/cron.d':
+            tag: 'CIS-9.1.7'
             mode: 700
             user: 'root'
             uid: 0
@@ -316,6 +420,14 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
+      'Ubuntu-14.04':
+        - '/etc/ssh/sshd_config':
+            tag: 'CIS-9.3.3'
+            mode: 600
+            user: 'root'
+            uid: 0
+            group: 'root'
+            gid: 0
     description: '/etc/ssh/sshd_config must be owned by root and must have permissions 600 (Scored)'
     alert: email
     trigger: state
@@ -376,7 +488,11 @@ stat:
       'CentOS Linux-7':
         - '/etc/shadow':
             tag: 'CIS-9.1.3'
-            mode: 0
+            mode: '000'
+      'Ubuntu-14.04':
+        - '/etc/shadow':
+            tag: 'CIS-12.3'
+            mode: '640'
     description: '/etc/shadow must have permissions 000 (Scored)'
     alert: email
     trigger: state
@@ -630,6 +746,10 @@ grep:
           - '/boot/grub2/grub.cfg':
               tag: 'CIS-1.5.3'
               pattern: '^password'
+        Ubuntu-14.04:
+          - '/boot/grub/grub.cfg':
+              tag: 'CIS-3.3'
+              pattern: "^password"
       description: 'Set Boot Loader Password (Scored)'
 
     restrict_core_dumps:
@@ -637,6 +757,10 @@ grep:
         CentOS Linux-7:
           - '/etc/security/limits.conf':
               tag: 'CIS-1.6.1'
+              pattern: 'hard core'
+        Ubuntu-14.04:
+          - '/etc/security/limits.conf':
+              tag: 'CIS-4.1'
               pattern: 'hard core'
       description: 'Restrict Core Dumps (Scored)'
 
@@ -658,6 +782,10 @@ grep:
           - '/etc/ntp.conf':
               tag: 'CIS-3.6'
               pattern: 'restrict -6 default'
+        Ubuntu-14.04:
+          - '/etc/ntp.conf':
+              tag: 'CIS-6.5'
+              pattern: 'restrict default'
       description: 'Configure Network Time Protocol (NTP) (Scored)'
 
     rsyslog_remote_logging:
@@ -666,6 +794,10 @@ grep:
           - '/etc/rsyslog.conf':
               tag: 'CIS-5.1.5'
               pattern: "^*.*[^I][^I]*@"
+        Ubuntu-14.04:
+          - '/etc/rsyslog.conf':
+              tag: 'CIS-8.2.5'
+              pattern: "^*.*[^I][^I]*@"
       description: 'Configure rsyslog to Send Logs to a Remote Log Host (Scored)'
 
     sshd_protocol_2:
@@ -673,6 +805,11 @@ grep:
         CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.1'
+              pattern: "^Protocol"
+              match_output: 'Protocol 2'
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.1'
               pattern: "^Protocol"
               match_output: 'Protocol 2'
       description: 'Set SSH Protocol to 2 (Scored)'
@@ -684,6 +821,11 @@ grep:
               tag: 'CIS-6.2.2'
               pattern: "^LogLevel"
               match_output: 'LogLevel INFO'
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.2'
+              pattern: "^LogLevel"
+              match_output: 'LogLevel INFO'
       description: 'Set LogLevel to INFO (Scored)'
 
     sshd_x11_forwarding:
@@ -691,6 +833,11 @@ grep:
         CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.4'
+              pattern: "^X11Forwarding"
+              match_output: 'X11Forwarding no'
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.4'
               pattern: "^X11Forwarding"
               match_output: 'X11Forwarding no'
       description: 'Disable SSH X11 Forwarding (Scored)'
@@ -702,6 +849,11 @@ grep:
               tag: 'CIS-6.2.5'
               pattern: "^MaxAuthTries"
               match_output: "MaxAuthTries 4"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.5'
+              pattern: "^MaxAuthTries"
+              match_output: "MaxAuthTries 4"
       description: 'Set SSH MaxAuthTries to 4 or Less (Scored)'
 
     sshd_ignore_rhosts:
@@ -709,6 +861,11 @@ grep:
         CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.6'
+              pattern: "^IgnoreRhosts"
+              match_output: "IgnoreRhosts yes"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.6'
               pattern: "^IgnoreRhosts"
               match_output: "IgnoreRhosts yes"
       description: 'Set SSH IgnoreRhosts to Yes (Scored)'
@@ -720,6 +877,11 @@ grep:
               tag: 'CIS-6.2.7'
               pattern: "^HostbasedAuthentication"
               match_output: "HostbasedAuthentication no"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.7'
+              pattern: "^HostbasedAuthentication"
+              match_output: "HostbasedAuthentication no"
       description: 'Set SSH HostbasedAuthentication to No (Scored)'
 
     sshd_disable_root_login:
@@ -727,6 +889,11 @@ grep:
         CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.8'
+              pattern: "^PermitRootLogin"
+              match_output: "PermitRootLogin no"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.8'
               pattern: "^PermitRootLogin"
               match_output: "PermitRootLogin no"
       description: 'Set SSH HostbasedAuthentication to No (Scored)'
@@ -738,6 +905,11 @@ grep:
               tag: 'CIS-6.2.9'
               pattern: "^PermitEmptyPasswords"
               match_output: "PermitEmptyPasswords no"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.9'
+              pattern: "^PermitEmptyPasswords"
+              match_output: "PermitEmptyPasswords no"
       description: 'Set SSH PermitEmptyPasswords to No (Scored)'
 
     sshd_permit_user_environment:
@@ -747,6 +919,11 @@ grep:
               tag: 'CIS-6.2.10'
               pattern: "^PermitUserEnvironment"
               match_output: "PermitUserEnvironment no"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.10'
+              pattern: "^PermitUserEnvironment"
+              match_output: "PermitUserEnvironment no"
       description: 'Do Not Allow Users to Set Environment Options (Scored)'
 
     sshd_approved_cipher:
@@ -754,6 +931,11 @@ grep:
         CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.11'
+              pattern: "Ciphers"
+              match_output: "Ciphers aes128-ctr,aes192-ctr,aes256-ctr "
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.11'
               pattern: "Ciphers"
               match_output: "Ciphers aes128-ctr,aes192-ctr,aes256-ctr "
       description: 'Use Only Approved Cipher in Counter Mode (Scored)'
@@ -767,6 +949,15 @@ grep:
               match_output: "ClientAliveInterval 300"
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.12'
+              pattern: "^ClientAliveCountMatch"
+              match_output: "ClientAliveCountMatch 0"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.12'
+              pattern: "^ClientAliveInterval"
+              match_output: "ClientAliveInterval 300"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.12'
               pattern: "^ClientAliveCountMatch"
               match_output: "ClientAliveCountMatch 0"
       description: 'Set Idle Timeout Interval for User Login (Scored)'
@@ -786,6 +977,19 @@ grep:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.13'
               pattern: "^DenyGroups"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^AllowUsers"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^AllowGroups"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^DenyUsers"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^DenyGroups"
       description: 'Limit Access via SSH (Scored)'
 
     sshd_banner:
@@ -794,6 +998,10 @@ grep:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.14'
               pattern: "^Banner"
+        Ubuntu-14.04:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.14'
+              pattern: "^Banner"
       description: 'Set SSH Banner (Scored)'
 
     passwd_expiration_days:
@@ -801,6 +1009,11 @@ grep:
         CentOS Linux-7:
           - '/etc/login.defs':
               tag: 'CIS-7.1.1'
+              pattern: "PASS_MAX_DAYS"
+              match_output: "90"
+        Ubuntu-14.04:
+          - '/etc/login.defs':
+              tag: 'CIS-10.1.1'
               pattern: "PASS_MAX_DAYS"
               match_output: "90"
       description: 'Set Password Expiration Days (Scored)'
@@ -812,6 +1025,11 @@ grep:
               tag: 'CIS-7.1.2'
               pattern: "PASS_MIN_DAYS"
               match_output: "7"
+        Ubuntu-14.04:
+          - '/etc/login.defs':
+              tag: 'CIS-10.1.2'
+              pattern: "PASS_MIN_DAYS"
+              match_output: "7"
       description: 'Set Password Change Minimum Number of Days (Scored)'
 
     passwd_expiry_warning:
@@ -819,6 +1037,11 @@ grep:
         CentOS Linux-7:
           - '/etc/login.defs':
               tag: 'CIS-7.1.3'
+              pattern: "PASS_WARN_DAYS"
+              match_output: "7"
+        Ubuntu-14.04:
+          - '/etc/login.defs':
+              tag: 'CIS-10.1.3'
               pattern: "PASS_WARN_DAYS"
               match_output: "7"
       description: 'Set Password Expiring Warning Days (Scored)'
@@ -831,6 +1054,10 @@ grep:
               pattern: "^umask 077"
           - '/etc/profile.d/*':
               tag: 'CIS-7.4'
+              pattern: "^umask 077"
+        Ubuntu-14.04:
+          - '/etc/login.defs':
+              tag: 'CIS-10.4'
               pattern: "^umask 077"
       description: 'Set Default umask for Users (Scored)'
 
@@ -866,13 +1093,22 @@ grep:
               tag: 'CIS-6.3.4'
               pattern: "remember"
               match_output: "5"
-      description: 'Limit password reuise (Scored)'
+        Ubuntu-14.04:
+          - '/etc/pam.d/common-password':
+              tag: 'CIS-9.2.3'
+              pattern: "remember"
+              match_output: "5"
+      description: 'Limit password reuse (Scored)'
 
     restrict_access_su:
       data:
         CentOS Linux-7:
           - '/etc/pam.d/su':
               tag: 'CIS-6.5'
+              pattern: "pam_wheel.so"
+        Ubuntu-14.04:
+          - '/etc/pam.d/su':
+              tag: 'CIS-9.5'
               pattern: "pam_wheel.so"
       description: 'Restrict access to the su command (Scored)'
 
