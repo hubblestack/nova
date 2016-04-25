@@ -1517,32 +1517,32 @@ sysctl:
     alert: email
     trigger: state
 
-log_suspicious_packets:
-  data:
-    'Red Hat Enterprise Linux Server-6':
-      - 'net.ipv4.conf.all.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-      - 'net.ipv4.conf.default.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-    'CentOS-6':
-      - 'net.ipv4.conf.all.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-      - 'net.ipv4.conf.default.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-    'CentOS Linux-7':
-      - 'net.ipv4.conf.all.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-      - 'net.ipv4.conf.default.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-  description: 'Log Suspicious Activity (Scored)'
-  alert: email
-  trigger: state
+  log_suspicious_packets:
+    data:
+      'Red Hat Enterprise Linux Server-6':
+        - 'net.ipv4.conf.all.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+        - 'net.ipv4.conf.default.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+      'CentOS-6':
+        - 'net.ipv4.conf.all.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+        - 'net.ipv4.conf.default.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+      'CentOS Linux-7':
+        - 'net.ipv4.conf.all.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+        - 'net.ipv4.conf.default.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+    description: 'Log Suspicious Activity (Scored)'
+    alert: email
+    trigger: state
 
   ignore_broadcast_requests:
     data:
