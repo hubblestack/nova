@@ -61,7 +61,7 @@ sysctl:
         - 'net.ipv4.conf.default.send_redirects':
             tag: 'CIS-7.1.2'
             match_output: '0'
-        - 'net.ipv4.conf.all.send_redirects'
+        - 'net.ipv4.conf.all.send_redirects':
             tag: 'CIS-7.1.2'
             match_output: '0'
     description: 'Disable Send Packet Redirect (Scored)'
