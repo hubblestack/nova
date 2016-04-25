@@ -67,19 +67,22 @@ def audit(tags, verbose=False):
 
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
+            passed = True
             for tag_data in __tags__[tag]:
                 name = tag_data['name']
                 match_output = tag_data['match_output']
 
                 salt_ret = __salt__['sysctl.get'](name)
                 if not salt_ret:
-                    ret['Failure'].append(tag_data)
+                    passed = False
                 if str(salt_ret).startswith('error'):
-                    ret['Failure'].append(tag_data)
-                if str(salt_ret) == str(match_output):
-                    ret['Success'].append(tag_data)
-                else:
-                    ret['Failure'].append(tag_data)
+                    passed = False
+                if str(salt_ret) != str(match_output):
+                    passed = False
+            if passed:
+                ret['Success'].append(tag_data)
+            else:
+                ret['Failure'].append(tag_data)
 
     if not verbose:
         failure = []
