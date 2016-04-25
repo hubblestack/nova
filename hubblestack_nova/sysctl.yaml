@@ -122,21 +122,21 @@ sysctl:
   log_suspicious_packets:
     data:
       'CentOS-6':
-        - 'net.ipv4.conf.all.log_martian':
+        - 'net.ipv4.conf.all.log_martians':
             tag: 'CIS-4.2.4'
             match_output: '1'
         - 'net.ipv4.conf.default.log_martians':
             tag: 'CIS-4.2.4'
             match_output: '1'
       'CentOS Linux-7':
-        - 'net.ipv4.conf.all.log_martian':
+        - 'net.ipv4.conf.all.log_martians':
             tag: 'CIS-4.2.4'
             match_output: '1'
         - 'net.ipv4.conf.default.log_martians':
             tag: 'CIS-4.2.4'
             match_output: '1'
       'Ubuntu-14.04':
-        - 'net.ipv4.conf.all.log_martian':
+        - 'net.ipv4.conf.all.log_martians':
             tag: 'CIS-7.2.4'
             match_output: '1'
         - 'net.ipv4.conf.default.log_martians':
