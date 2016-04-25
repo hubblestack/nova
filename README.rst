@@ -72,7 +72,7 @@ Here are some example calls:
     # Run all modules and tags under salt://hubblestack_nova/foo/ and
     # salt://hubblestack_nova/bar, but only run audits with tags starting
     # with "CIS"
-    salt '*' hubble.audit modules=foo,bar tag='CIS*'
+    salt '*' hubble.audit modules=foo,bar tags='CIS*'
 
 Development
 ===========
