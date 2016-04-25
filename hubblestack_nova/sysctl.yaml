@@ -115,7 +115,6 @@ sysctl:
         - 'net.ipv4.conf.all.accept_redirects':
             tag: 'CIS-7.2.2'
             match_output: '0'
-
     description: 'Disable ICMP Redirect Acceptance'
     alert: email
     trigger: state
@@ -161,7 +160,6 @@ sysctl:
         - 'net.ipv4.icmp_echo_ignore_broadcasts':
             tag: 'CIS-7.2.5'
             match_output: '1'
-
     description: 'Enable Ignore Broadcast Requests (Scored)'
     alert: email
     trigger: state

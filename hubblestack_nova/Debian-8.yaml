@@ -129,6 +129,206 @@ grep:
               pattern: 'restrict default'
       description: 'Configure Network Time Protocol (NTP) (Scored)'
 
+    keep_all_auditing_information:
+      data:
+        Debian-8:
+          - '/etc/audit/auditd.conf'
+              tag: 'CIS-8.1.1.3'
+              pattern: 'max_log_file_action'
+              match_output: 'keep_logs'
+      description: 'Keep All Auditing Information (Scored)'
+
+    rsyslog_remote_logging:
+      data:
+        Debian-8:
+          - '/etc/rsyslog.conf':
+              tag: 'CIS-8.2.5'
+              pattern: "^*.*[^I][^I]*@"
+      description: 'Configure rsyslog to Send Logs to a Remote Log Host (Scored)'
+
+    passwd_limit_reuse:
+      data:
+        Debian-8:
+          - '/etc/pam.d/common-password':
+              tag: 'CIS-9.2.3'
+              pattern: "remember"
+              match_output: "5"
+      description: 'Limit password reuse (Scored)'
+
+    sshd_protocol_2:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.1'
+              pattern: "^Protocol"
+              match_output: 'Protocol 2'
+      description: 'Set SSH Protocol to 2 (Scored)'
+
+    sshd_loglevel_info:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.2'
+              pattern: "^LogLevel"
+              match_output: 'LogLevel INFO'
+      description: 'Set LogLevel to INFO (Scored)'
+
+    sshd_x11_forwarding:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.4'
+              pattern: "^X11Forwarding"
+              match_output: 'X11Forwarding no'
+      description: 'Disable SSH X11 Forwarding (Scored)'
+
+    sshd_max_auth_retries:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.5'
+              pattern: "^MaxAuthTries"
+              match_output: "MaxAuthTries 4"
+      description: 'Set SSH MaxAuthTries to 4 or Less (Scored)'
+
+    sshd_ignore_rhosts:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.6'
+              pattern: "^IgnoreRhosts"
+              match_output: "IgnoreRhosts yes"
+      description: 'Set SSH IgnoreRhosts to Yes (Scored)'
+
+    sshd_hostbased_auth:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.7'
+              pattern: "^HostbasedAuthentication"
+              match_output: "HostbasedAuthentication no"
+      description: 'Set SSH HostbasedAuthentication to No (Scored)'
+
+    sshd_disable_root_login:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.8'
+              pattern: "^PermitRootLogin"
+              match_output: "PermitRootLogin no"
+      description: 'Set SSH HostbasedAuthentication to No (Scored)'
+
+    sshd_permit_empty_passwords:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.9'
+              pattern: "^PermitEmptyPasswords"
+              match_output: "PermitEmptyPasswords no"
+      description: 'Set SSH PermitEmptyPasswords to No (Scored)'
+
+    sshd_permit_user_environment:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.10'
+              pattern: "^PermitUserEnvironment"
+              match_output: "PermitUserEnvironment no"
+      description: 'Do Not Allow Users to Set Environment Options (Scored)'
+
+    sshd_approved_cipher:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.11'
+              pattern: "Ciphers"
+              match_output: "Ciphers aes128-ctr,aes192-ctr,aes256-ctr "
+      description: 'Use Only Approved Cipher in Counter Mode (Scored)'
+
+    sshd_idle_timeout:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.12'
+              pattern: "^ClientAliveInterval"
+              match_output: "ClientAliveInterval 300"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.12'
+              pattern: "^ClientAliveCountMatch"
+              match_output: "ClientAliveCountMatch 0"
+      description: 'Set Idle Timeout Interval for User Login (Scored)'
+
+    sshd_limit_access:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^AllowUsers"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^AllowGroups"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^DenyUsers"
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.13'
+              pattern: "^DenyGroups"
+      description: 'Limit Access via SSH (Scored)'
+
+    sshd_banner:
+      data:
+        Debian-8:
+          - '/etc/ssh/sshd_config':
+              tag: 'CIS-9.3.14'
+              pattern: "^Banner"
+      description: 'Set SSH Banner (Scored)'
+
+    restrict_access_su:
+      data:
+        Debian-8:
+          - '/etc/pam.d/su':
+              tag: 'CIS-9.5'
+              pattern: "pam_wheel.so"
+      description: 'Restrict access to the su command (Scored)'
+
+    passwd_expiration_days:
+      data:
+        Debian-8:
+          - '/etc/login.defs':
+              tag: 'CIS-10.1.1'
+              pattern: "PASS_MAX_DAYS"
+              match_output: "90"
+      description: 'Set Password Expiration Days (Scored)'
+
+    passwd_change_min_days:
+      data:
+        Debian-8:
+          - '/etc/login.defs':
+              tag: 'CIS-10.1.2'
+              pattern: "PASS_MIN_DAYS"
+              match_output: "7"
+      description: 'Set Password Change Minimum Number of Days (Scored)'
+
+    passwd_expiry_warning:
+      data:
+        Debian-8:
+          - '/etc/login.defs':
+              tag: 'CIS-10.1.3'
+              pattern: "PASS_WARN_DAYS"
+              match_output: "7"
+      description: 'Set Password Expiring Warning Days (Scored)'
+
+    default_umask:
+      data:
+        Debian-8:
+          - '/etc/bash.bashrc':
+              tag: 'CIS-10.4'
+              pattern: "^umask 077"
+          - '/etc/profile.d/*':
+              tag: 'CIS-10.4'
+              pattern: "^umask 077"
+      description: 'Set Default umask for Users (Scored)'
+
 stat:
   grub_conf_own:
     data:
@@ -163,6 +363,102 @@ stat:
               pattern: 'hard core'
       description: 'Restrict Core Dumps (Scored)'
 
+  cron_hourly:
+    data:
+      Debian-8:
+        - 'etc/cron.hourly':
+            tag: 'CIS-9.1.3'
+            mode: 700
+            user: 'root'
+            group: 'root'
+    description: 'Set user/group owner and permissions on /etc/cron.hourly (Scored)'
+
+  cron_daily:
+    data:
+      Debian-8:
+        - '/etc/cron.daily':
+            tag: 'CIS-9.1.4'
+            mode: 700
+            user: 'root'
+            group: 'root'
+    description: 'Set user/group owner and permissions on /etc/cron.daily (Scored)'
+
+  cron_weekly:
+    data:
+      Debian-8:
+        - '/etc/cron.weekly':
+            tag: 'CIS-9.1.5'
+            mode: 700
+            user: 'root'
+            group: 'root'
+    description: 'Set user/group owner and permission on /etc/cron.weekly (Scored)'
+
+  cron_monthly:
+    data:
+      Debian-8:
+        - '/etc/cron.monthly':
+            tag: 'CIS-9.1.6'
+            mode: 700
+            user: 'root'
+            group: 'root'
+    description: 'Set user/group owner and permission on /etc/cron.monthly (Scored)'
+
+  cron_d:
+    data:
+      Debian-8:
+        - '/etc/cron.d':
+            tag: 'CIS-9.1.7'
+            mode: 700
+            user: 'root'
+            group: 'root'
+    description: 'Set user/group owner and permission on /etc/cron.d (Scored)'
+
+  sshd_config:
+    data:
+      Debian-8:
+        - '/etc/ssh/sshd_config':
+            tag: 'CIS-9.3.3'
+            mode: 600
+            user: 'root'
+            group: 'root'
+    description: 'Set Permissions on /etc/ssh/sshd_config (Scored)'
+
+  passwd_perm:
+    data:
+      Debian-8:
+        - '/etc/passwd':
+            tag: 'CIS-12.1'
+            mode: 644
+        - '/etc/passwd':
+            tag: 'CIS-12.4'
+            user: 'root'
+            group: 'root'
+    description: 'Verify permissions on /etc/passwd (Scored)'
+
+  shadow_perm:
+    data:
+      Debian-8:
+        - '/etc/shadow':
+            tag: 'CIS-12.2'
+            mode: 640
+        - '/etc/shadow':
+            tag: 'CIS-12.5'
+            user: 'root'
+            group: 'root'
+    description: 'Verify user/group ownership on /etc/shadow (Scored)'
+
+  group_perm:
+    data:
+      Debian-8:
+        - '/etc/group':
+            tag: 'CIS-12.3'
+            mode: 644
+        - '/etc/group':
+            tag: 'CIS-12.3'
+            user: 'root'
+            group: 'root'
+    description: '/etc/group must have permissions 000 (Scored)'
+
   blacklist:
     single_user_auth:
       data:
@@ -171,6 +467,46 @@ stat:
               tag: 'CIS-3.4'
               pattern: "^root:[*\!]:"
       description: 'Require Authentication for Single-User Mode (Scored)'
+
+  hosts_allow:
+    data:
+      Debian-8:
+        - '/etc/hosts.allow':
+            tag: 'CIS-7.4.3'
+            mode: 644
+    description: 'Verify Permissions on /etc/hosts.allow (Scored)'
+
+  hosts_deny:
+    data:
+      Debian-8:
+        - '/etc/hosts.deny':
+            tag: 'CIS-7.4.5'
+            mode: 644
+    description: 'Verify Permissions on /etc/hosts.deny (Scored)'
+
+    legacy_passwd_entries:
+      data:
+        Debian-8:
+          - '/etc/passwd':
+              tag: 'CIS-13.2'
+              pattern: "^+:"
+      description: 'Verify No Legacy "+" Entries Exist in /etc/passwd File (Scored)'
+
+    legacy_shadow_entries:
+      data:
+        Debian-8:
+          - '/etc/shadow':
+              tag: 'CIS-13.3'
+              pattern: "^+:"
+      description: 'Verify No Legacy "+" Entries Exist in /etc/shadow File (Scored)'
+
+    legacy_group_entries:
+      data:
+        Debian-8:
+          - '/etc/group':
+              tag: 'CIS-13.4'
+              pattern: "^+:"
+      description: 'Verify No Legacy "+" Entries Exist in /etc/shadow File (Scored)'
 
 sysctl:
   randomize_va_space:
@@ -366,3 +702,40 @@ pkg:
         Debian-8:
           - 'tcpd': 'CIS-7.4.1'
       description: 'Install TCP Wrappers (Scored)'
+
+    iptables:
+      data:
+        Debian-8:
+          - 'iptables': 'CIS-7.7'
+          - 'iptables-persistent': 'CIS-7.7'
+      description: 'Ensure firewall is active (Scored)'
+
+    auditd:
+      data:
+        Debian-8:
+          - 'auditd': 'CIS-8.1.2'
+      description: 'Install and Enable auditd Service (Scored)'
+
+    rsyslog:
+      data:
+        Debian-8:
+          - 'rsyslog': 'CIS-8.2.1'
+      description: 'Install rsyslog package (Scored)'
+
+    aide:
+      data:
+        Debian-8:
+          - 'aide': 'CIS-8.3.1'
+      description: 'Install AIDE (Scored)'
+
+    cracklib:
+      data:
+        Debian-8:
+          - 'libpam-cracklib': 'CIS-9.2.1'
+      description: 'Set password creation requirement parameters using pam_cracklib (Scored)'
+
+    openssh_server:
+      data:
+        Debian-8:
+          - 'openssh-server': 'CIS-9.3'
+      description: 'Configure SSH'
