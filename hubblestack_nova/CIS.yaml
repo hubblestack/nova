@@ -1203,5 +1203,5 @@ grep:
         Ubuntu-14.04:
           - '/etc/shadow':
               tag: 'CIS-3.4'
-              pattern: "^root:[*\!]:"
+              pattern: "^root:[*\\!]:"
       description: 'Require Authentication for Single-User Mode (Scored)'
