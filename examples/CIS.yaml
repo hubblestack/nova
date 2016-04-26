@@ -977,23 +977,23 @@ sysctl:
             match_output: '0'
     description: 'Disable Secure ICMP Redirect Acceptance (Scored)'
 
-log_suspicious_packets:
-  data:
-    'Red Hat Enterprise Linux Server-6':
-      - 'net.ipv4.conf.all.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-      - 'net.ipv4.conf.default.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-    'CentOS-6':
-      - 'net.ipv4.conf.all.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-      - 'net.ipv4.conf.default.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-  description: 'Log Suspicious Activity (Scored)'
+  log_suspicious_packets:
+    data:
+      'Red Hat Enterprise Linux Server-6':
+        - 'net.ipv4.conf.all.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+        - 'net.ipv4.conf.default.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+      'CentOS-6':
+        - 'net.ipv4.conf.all.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+        - 'net.ipv4.conf.default.log_martians':
+            tag: 'CIS-4.2.4'
+            match_output: '1'
+    description: 'Log Suspicious Activity (Scored)'
 
   ignore_broadcast_requests:
     data:
