@@ -1,0 +1,7 @@
+nova:
+  '*':
+    - CIS-RHEL7-L1-scored
+  'web*':
+    - CIS-RHEL7-L2-scored
+  'db*':
+    - STIG-RHEL7-conf-high
