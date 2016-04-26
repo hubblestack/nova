@@ -1,7 +1,3 @@
-# NOTE: This CIS Profile only includes Level 1 Scored Items.
-# NOTE: Within this file, there are a few sections that should be tailored to your
-#       organization's specific policy.  Search for '# NOTE: ' comments through the file.
-
 pkg:
   blacklist:
 
@@ -10,76 +6,45 @@ pkg:
         'Red Hat Enterprise Linux Server-6':
           - 'telnet-server': 'CIS-2.1.1'
           - 'telnet': 'CIS-2.1.2'
-        'CentOS Linux-7':
-          - 'telnet-server': 'CIS-2.1.1'
-          - 'telnet': 'CIS-2.1.2'
       description: 'Remove telnet and telnet-server (Scored)'
-      alert: email
-      trigger: state
 
     rsh:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - 'rsh-server': 'CIS-2.1.3'
           - 'rsh': 'CIS-2.1.4'
-        'CentOS Linux-7':
           - 'rsh-server': 'CIS-2.1.3'
-          - 'rsh': 'CIS-2.1.4'
       description: 'Remove rsh and rsh-server (Scored)'
-      alert: email
-      trigger: state
 
     nis:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'ypbind': 'CIS-2.1.5'
           - 'ypserv': 'CIS-2.1.6'
-        'CentOS Linux-7':
-          - 'ypbind': 'CIS-2.1.5'
-          - 'ypserv': 'CIS-2.1.6'
       description: 'Remove nis client and nis server (Scored)'
-      alert: email
-      trigger: state
 
     tftp:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'tftp': 'CIS-2.1.7'
           - 'tftp-server': 'CIS-2.1.8'
-        'CentOS Linux-7':
-          - 'tftp': 'CIS-2.1.7'
-          - 'tftp-server': 'CIS-2.1.8'
       description: 'Remove tftp and tftp-server (Scored)'
-      alert: email
-      trigger: state
 
     talk:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'talk': 'CIS-2.1.9'
           - 'talk-server': 'CIS-2.1.10'
-        'CentOS Linux-7':
-          - 'talk': 'CIS-2.1.9'
-          - 'talk-server': 'CIS-2.1.10'
       description: 'Remove talk and talk-server (Scored)'
-      alert: email
-      trigger: state
 
     xinetd:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'xinetd': 'CIS-2.1.11'
-        'CentOS Linux-7':
-          - 'xinetd': 'CIS-2.1.11'
       description: 'Remove xinetd (Scored)'
-      alert: email
-      trigger: state
 
     xorg-x11-server-common:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - 'xorg-x11-server-common': 'CIS-3.2'
-        'CentOS Linux-7':
           - 'xorg-x11-server-common': 'CIS-3.2'
       description: 'Remove the X Window System (Scored)'
 
@@ -87,19 +52,13 @@ pkg:
       data:
         'Red Hat Enterprise Linux Server-6':
          - 'avahi-daemon' : 'CIS-3.3'
-        'CentOS Linux-7':
-         - 'avahi-daemon' : 'CIS-3.3'
       description: 'Disable Avahi Server (Scored)'
 
     dhcp:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'dhcp': 'CIS-3.5'
-        'CentOS Linux-7':
-          - 'dhcp': 'CIS-3.5'
       description: 'Remove DHCP server (Scored)'
-      alert: email
-      trigger: state
 
   whitelist:
 
@@ -108,8 +67,6 @@ pkg:
         'Red Hat Enterprise Linux Server-6':
           - 'aide': 'CIS-1.3.1'
         'CentOS-6':
-          - 'aide': 'CIS-1.3.1'
-        'CentOS Linux-7':
           - 'aide': 'CIS-1.3.1'
       description: 'Install AIDE (Scored)'
 
@@ -121,23 +78,13 @@ pkg:
           - 'iptables': 'CIS-4.7_installed'
       description: 'Install IPtables (Scored)'
 
-    firewalld:
-      data:
-        'CentOS Linux-7':
-          - 'firewalld': 'CIS-4.7_installed'
-      description: 'Enable firewalld (Scored)'
-
     rsyslog:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'rsyslog': 'CIS-5.1.1'
         'CentOS-6':
           - 'rsyslog': 'CIS-5.1.1'
-        'CentOS Linux-7':
-          - 'rsyslog': 'CIS-5.1.1'
       description: 'Install rsyslog (Scored)'
-      alert: email
-      trigger: state
 
     anacron:
       data:
@@ -145,11 +92,7 @@ pkg:
           - 'cronie-anacron': 'CIS-6.1.1'
         'CentOS-6':
           - 'cronie-anacron': 'CIS-6.1.1'
-        'CentOS Linux-7':
-          - 'cronie-anacron': 'CIS-6.1.1'
       description: 'Enable anacron Daemon (Scored)'
-      alert: email
-      trigger: state
 
 stat:
   grub_conf_own:
@@ -168,16 +111,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/grub2/grub.cfg':
-            tag: 'CIS-1.5.1'
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: 'Grub must be owned by root (Scored)'
-    alert: email
-    trigger: state
 
   grub_conf_perm:
     data:
@@ -189,13 +123,7 @@ stat:
         - '/etc/grub.conf':
             tag: 'CIS-1.5.2'
             mode: 600
-      'CentOS Linux-7':
-        - '/etc/grub2/grub.cfg':
-            tag: 'CIS-1.5.2'
-            mode: 600
     description: 'Grub must have permissions 600 (Scored)'
-    alert: email
-    trigger: state
 
   hosts_allow:
     data:
@@ -203,13 +131,7 @@ stat:
         - '/etc/hosts.allow':
             tag: 'CIS-4.5.3'
             mode: 644
-      'CentOS Linux-7':
-        - '/etc/hosts.allow':
-            tag: 'CIS-4.5.3'
-            mode: 644
     description: '/etc/hosts.allow must have permissions 644 (Scored)'
-    alert: email
-    trigger: state
 
   hosts_deny:
     data:
@@ -217,13 +139,7 @@ stat:
         - '/etc/hosts.deny':
             tag: 'CIS-4.5.5'
             mode: 644
-      'CentOS Linux-7':
-        - '/etc/hosts.deny':
-            tag: 'CIS-4.5.5'
-            mode: 644
     description: '/etc/hosts.deny must have persmissions 644 (Scored)'
-    alert: email
-    trigger: state
 
   anacrontab:
     data:
@@ -235,17 +151,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/anacrontab':
-            tag: 'CIS-6.1.3'
-            mode: 600
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/anacrontab file be owned by root and must have permissions 600 (Scored)'
-    alert: email
-    trigger: state
 
   crontab:
     data:
@@ -257,17 +163,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/crontab':
-            tag: 'CIS-6.1.4'
-            mode: 600
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/crontab must be owned by root and have persmissions 600 (Scored)'
-    alert: email
-    trigger: state
 
   cron_hourly:
     data:
@@ -279,17 +175,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - 'etc/cron.hourly':
-            tag: 'CIS-6.1.5'
-            mode: 700
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/cron.hourly must be owned by root and must have permissions 700 (Scored)'
-    alert: email
-    trigger: state
 
   cron_daily:
     data:
@@ -301,17 +187,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/cron.daily':
-            tag: 'CIS-6.1.6'
-            mode: 700
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/cron.daily must be owned by root and must have permissions 700 (Scored)'
-    alert: email
-    trigger: state
 
   cron_weekly:
     data:
@@ -323,17 +199,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/cron.weekly':
-            tag: 'CIS-6.1.7'
-            mode: 700
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/cron.weekly must be owned by root and must have permissions 700 (Scored)'
-    alert: email
-    trigger: state
 
   cron_monthly:
     data:
@@ -345,17 +211,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/cron.monthly':
-            tag: 'CIS-6.1.8'
-            mode: 700
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/cron.monthly must be owned by root and must have permissions 700 (Scored)'
-    alert: email
-    trigger: state
 
   cron_d:
     data:
@@ -367,17 +223,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/cron.d':
-            tag: 'CIS-6.1.9'
-            mode: 700
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/cron.d must be owned by root and must have permissions 700 (Scored)'
-    alert: email
-    trigger: state
 
   at_allow:
     data:
@@ -389,17 +235,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/at.allow':
-            tag: 'CIS-6.1.10'
-            mode: 600
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/at.allow must be owned by root and have persmissions 600 (Scored)'
-    alert: email
-    trigger: state
 
   at_cron_allow:
     data:
@@ -432,38 +268,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/cron.deny':
-            tag: 'CIS-6.1.11'
-            mode: null
-            user: null
-            uid: null
-            group: null
-            gid: null
-        - '/etc/at.deny':
-            tag: 'CIS-6.1.11'
-            mode: null
-            user: null
-            uid: null
-            group: null
-            gid: null
-        - '/etc/cron.allow':
-            tag: 'CIS-6.1.11'
-            mode: 600
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
-        - '/etc/at/allow':
-            tag: 'CIS-6.1.11'
-            mode: 600
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: 'Restrict at/cron to authorized users (Scored)'
-    alert: email
-    trigger: state
 
   sshd_config:
     data:
@@ -475,17 +280,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/ssh/sshd_config':
-            tag: 'CIS-6.2.3'
-            mode: 600
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/ssh/sshd_config must be owned by root and must have permissions 600 (Scored)'
-    alert: email
-    trigger: state
 
   warning_banner:
     data:
@@ -511,31 +306,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/motd':
-            tag: 'CIS-8.1'
-            mode: 644
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
-        - '/etc/issue':
-            tag: 'CIS-8.1'
-            mode: 644
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
-        - '/etc/issue.net':
-            tag: 'CIS-8.1'
-            mode: 644
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: 'Files containing the warning banners must be owned by root and must have permissions 644 (Scored)'
-    alert: email
-    trigger: state
 
   passwd_perm:
     data:
@@ -543,13 +314,7 @@ stat:
         - '/etc/passwd':
             tag: 'CIS-9.1.2'
             mode: 644
-      'CentOS Linux-7':
-        - '/etc/passwd':
-            tag: 'CIS-9.1.2'
-            mode: 644
     description: '/etc/passwd must have permissions 644 (Scored)'
-    alert: email
-    trigger: state
 
   passwd_own:
     data:
@@ -560,16 +325,7 @@ stat:
             uid: 0
             group: 'root'
             uid: 0
-      'CentOS Linux-7':
-        - '/etc/passwd':
-            tag: 'CIS-9.1.6'
-            user: 'root'
-            uid: 0
-            group: 'root'
-            uid: 0
     description: '/etc/passwd must be owned by root (Scored)'
-    alert: email
-    trigger: state
 
   shadow_perm:
     data:
@@ -577,13 +333,7 @@ stat:
         - '/etc/shadow':
             tag: 'CIS-9.1.3'
             mode: 0
-      'CentOS Linux-7':
-        - '/etc/shadow':
-            tag: 'CIS-9.1.3'
-            mode: 0
     description: '/etc/shadow must have permissions 000 (Scored)'
-    alert: email
-    trigger: state
 
   shadow_own:
     data:
@@ -594,16 +344,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/shadow':
-            tag: 'CIS-9.1.7'
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/shadow must be owned by root (Scored)'
-    alert: email
-    trigger: state
 
   gshadow_perm:
     data:
@@ -611,13 +352,7 @@ stat:
         - '/etc/gshadow':
             tag: 'CIS-9.1.4'
             mode: 0
-      'CentOS Linux-7':
-        - '/etc/gshadow':
-            tag: 'CIS-9.1.4'
-            mode: 0
     description: '/etc/gshadow must have permissions 000 (Scored)'
-    alert: email
-    trigger: state
 
   gshadow_own:
     data:
@@ -628,16 +363,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/gshadow':
-            tag: 'CIS-9.1.8'
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/gshadow must be owned by root (Scored)'
-    alert: email
-    trigger: state
 
   group_perm:
     data:
@@ -645,13 +371,7 @@ stat:
         - '/etc/group':
             tag: 'CIS-9.1.5'
             mode: 644
-      'CentOS Linux-7':
-        - '/etc/group':
-            tag: 'CIS-9.1.5'
-            mode: 644
     description: '/etc/group must have permissions 000 (Scored)'
-    alert: email
-    trigger: state
 
   group_own:
     data:
@@ -662,16 +382,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-      'CentOS Linux-7':
-        - '/etc/group':
-            tag: 'CIS-9.1.9'
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
     description: '/etc/group must be owned by root (Scored)'
-    alert: email
-    trigger: state
 
 grep:
   whitelist:
@@ -679,10 +390,6 @@ grep:
     fstab_tmp_partition:
       data:
         Red Hat Enterprise Linux Server-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.1'
-              pattern: '/tmp'
-        CentOS Linux-7:
           - '/etc/fstab':
               tag: 'CIS-1.1.1'
               pattern: '/tmp'
@@ -695,11 +402,6 @@ grep:
     fstab_tmp_partition_nodev:
       data:
         Red Hat Enterprise Linux Server-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.2'
-              pattern: '/tmp'
-              match_output: 'nodev'
-        CentOS Linux-7:
           - '/etc/fstab':
               tag: 'CIS-1.1.2'
               pattern: '/tmp'
@@ -718,11 +420,6 @@ grep:
               tag: 'CIS-1.1.3'
               pattern: '/tmp'
               match_output: 'nosuid'
-        CentOS Linux-7:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.3'
-              pattern: '/tmp'
-              match_output: 'nosuid'
         Ubuntu-14.04:
           - '/etc/fstab':
               tag: 'CIS-2.3'
@@ -733,11 +430,6 @@ grep:
     fstab_tmp_partition_noexec:
       data:
         Red Hat Enterprise Linux Server-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.4'
-              pattern: '/tmp'
-              match_output: 'noexec'
-        CentOS Linux-7:
           - '/etc/fstab':
               tag: 'CIS-1.1.4'
               pattern: '/tmp'
@@ -755,10 +447,6 @@ grep:
           - '/etc/fstab':
               tag: 'CIS-1.1.5'
               pattern: '/var'
-        CentOS Linux-7:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.5'
-              pattern: '/var'
         Ubuntu-14.04:
           - '/etc/fstab':
               tag: 'CIS-2.5'
@@ -768,11 +456,6 @@ grep:
     fstab_var_tmp_bind_mount:
       data:
         Red Hat Enterprise Linux Server-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.6'
-              pattern: '/tmp'
-              match_output: '/var/tmp'
-        CentOS Linux-7:
           - '/etc/fstab':
               tag: 'CIS-1.1.6'
               pattern: '/tmp'
@@ -790,10 +473,6 @@ grep:
           - '/etc/fstab':
               tag: 'CIS-1.1.7'
               pattern: '/var/log'
-        CentOS Linux-7:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.7'
-              pattern: '/var/log'
         Ubuntu-14.04:
           - '/etc/fstab':
               tag: 'CIS-2.7'
@@ -803,10 +482,6 @@ grep:
     fstab_var_log_audit_partition:
       data:
         Red Hat Enterprise Linux Server-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.8'
-              pattern: '/var/log/audit'
-        CentOS Linux-7:
           - '/etc/fstab':
               tag: 'CIS-1.1.8'
               pattern: '/var/log/audit'
@@ -822,10 +497,6 @@ grep:
           - '/etc/fstab':
               tag: 'CIS-1.1.9'
               pattern: '/home'
-        CentOS Linux-7:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.9'
-              pattern: '/home'
         Ubuntu-14.04:
           - '/etc/fstab':
               tag: 'CIS-2.9'
@@ -835,11 +506,6 @@ grep:
     fstab_home_partition_nodev:
       data:
         Red Hat Enterprise Linux Server-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.10'
-              pattern: '/home'
-              match_output: 'nodev'
-        CentOS Linux-7:
           - '/etc/fstab':
               tag: 'CIS-1.1.10'
               pattern: '/home'
@@ -858,11 +524,6 @@ grep:
               tag: 'CIS-1.1.14'
               pattern: '/dev/shm'
               match_output: 'nodev'
-        CentOS Linux-7:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.14'
-              pattern: '/dev/shm'
-              match_output: 'nodev'
         Ubuntu-14.04:
           - '/etc/fstab':
               tag: 'CIS-2.14'
@@ -873,11 +534,6 @@ grep:
     fstab_dev_shm_partition_nosuid:
       data:
         Red Hat Enterprise Linux Server-6:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.15'
-              pattern: '/dev/shm'
-              match_output: 'nosuid'
-        CentOS Linux-7:
           - '/etc/fstab':
               tag: 'CIS-1.1.15'
               pattern: '/dev/shm'
@@ -896,11 +552,6 @@ grep:
               tag: 'CIS-1.1.16'
               pattern: '/dev/shm'
               match_output: 'noexec'
-        CentOS Linux-7:
-          - '/etc/fstab':
-              tag: 'CIS-1.1.16'
-              pattern: '/dev/shm'
-              match_output: 'noexec'
         Ubuntu-14.04:
           - '/etc/fstab':
               tag: 'CIS-2.16'
@@ -915,20 +566,11 @@ grep:
               tag: 'CIS-1.2.3'
               pattern: 'gpgcheck'
               match_output: 'gpgcheck=1'
-        CentOS Linux-7:
-          - '/etc/yum.conf':
-              tag: 'CIS-1.1.16'
-              pattern: 'gpgcheck'
-              match_output: 'gpgcheck=1'
       description: 'Verify that gpgcheck is Globally Activated (Scored)'
 
     boot_loader_passwd:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/boot/grub2/grub.cfg':
-              tag: 'CIS-1.5.3'
-              pattern: '^password'
-        CentOS Linux-7:
           - '/boot/grub2/grub.cfg':
               tag: 'CIS-1.5.3'
               pattern: '^password'
@@ -940,20 +582,11 @@ grep:
           - '/etc/security/limits.conf':
               tag: 'CIS-1.6.1'
               pattern: 'hard core'
-        CentOS Linux-7:
-          - '/etc/security/limits.conf':
-              tag: 'CIS-1.6.1'
-              pattern: 'hard core'
       description: 'Restrict Core Dumps (Scored)'
 
     set_daemon_umask:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/sysconfig/init':
-              tag: 'CIS-3.1'
-              pattern: 'umask'
-              match_output: 'umask 027'
-        CentOS Linux-7:
           - '/etc/sysconfig/init':
               tag: 'CIS-3.1'
               pattern: 'umask'
@@ -969,13 +602,6 @@ grep:
           - '/etc/ntp.conf':
               tag: 'CIS-3.6'
               pattern: 'restrict -6 default'
-        CentOS Linux-7:
-          - '/etc/ntp.conf':
-              tag: 'CIS-3.6'
-              pattern: 'restrict default'
-          - '/etc/ntp.conf':
-              tag: 'CIS-3.6'
-              pattern: 'restrict -6 default'
       description: 'Configure Network Time Protocol (NTP) (Scored)'
 
     rsyslog_remote_logging:
@@ -984,20 +610,11 @@ grep:
           - '/etc/rsyslog.conf':
               tag: 'CIS-5.1.5'
               pattern: "^*.*[^I][^I]*@"
-        CentOS Linux-7:
-          - '/etc/rsyslog.conf':
-              tag: 'CIS-5.1.5'
-              pattern: "^*.*[^I][^I]*@"
       description: 'Configure rsyslog to Send Logs to a Remote Log Host (Scored)'
 
     sshd_protocol_2:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.1'
-              pattern: "^Protocol"
-              match_output: 'Protocol 2'
-        CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.1'
               pattern: "^Protocol"
@@ -1011,21 +628,11 @@ grep:
               tag: 'CIS-6.2.2'
               pattern: "^LogLevel"
               match_output: 'LogLevel INFO'
-        CentOS Linux-7:
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.2'
-              pattern: "^LogLevel"
-              match_output: 'LogLevel INFO'
       description: 'Set LogLevel to INFO (Scored)'
 
     sshd_x11_forwarding:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.4'
-              pattern: "^X11Forwarding"
-              match_output: 'X11Forwarding no'
-        CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.4'
               pattern: "^X11Forwarding"
@@ -1039,21 +646,11 @@ grep:
               tag: 'CIS-6.2.5'
               pattern: "^MaxAuthTries"
               match_output: "MaxAuthTries 4"
-        CentOS Linux-7:
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.5'
-              pattern: "^MaxAuthTries"
-              match_output: "MaxAuthTries 4"
       description: 'Set SSH MaxAuthTries to 4 or Less (Scored)'
 
     sshd_ignore_rhosts:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.6'
-              pattern: "^IgnoreRhosts"
-              match_output: "IgnoreRhosts yes"
-        CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.6'
               pattern: "^IgnoreRhosts"
@@ -1067,21 +664,11 @@ grep:
               tag: 'CIS-6.2.7'
               pattern: "^HostbasedAuthentication"
               match_output: "HostbasedAuthentication no"
-        CentOS Linux-7:
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.7'
-              pattern: "^HostbasedAuthentication"
-              match_output: "HostbasedAuthentication no"
       description: 'Set SSH HostbasedAuthentication to No (Scored)'
 
     sshd_disable_root_login:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.8'
-              pattern: "^PermitRootLogin"
-              match_output: "PermitRootLogin no"
-        CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.8'
               pattern: "^PermitRootLogin"
@@ -1095,21 +682,11 @@ grep:
               tag: 'CIS-6.2.9'
               pattern: "^PermitEmptyPasswords"
               match_output: "PermitEmptyPasswords no"
-        CentOS Linux-7:
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.9'
-              pattern: "^PermitEmptyPasswords"
-              match_output: "PermitEmptyPasswords no"
       description: 'Set SSH PermitEmptyPasswords to No (Scored)'
 
     sshd_permit_user_environment:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.10'
-              pattern: "^PermitUserEnvironment"
-              match_output: "PermitUserEnvironment no"
-        CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.10'
               pattern: "^PermitUserEnvironment"
@@ -1123,25 +700,11 @@ grep:
               tag: 'CIS-6.2.11'
               pattern: "Ciphers"
               match_output: "Ciphers aes128-ctr,aes192-ctr,aes256-ctr "
-        CentOS Linux-7:
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.11'
-              pattern: "Ciphers"
-              match_output: "Ciphers aes128-ctr,aes192-ctr,aes256-ctr "
       description: 'Use Only Approved Cipher in Counter Mode (Scored)'
 
     sshd_idle_timeout:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.12'
-              pattern: "^ClientAliveInterval"
-              match_output: "ClientAliveInterval 300"
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.12'
-              pattern: "^ClientAliveCountMatch"
-              match_output: "ClientAliveCountMatch 0"
-        CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.12'
               pattern: "^ClientAliveInterval"
@@ -1167,28 +730,11 @@ grep:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.13'
               pattern: "^DenyGroups"
-        CentOS Linux-7:
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.13'
-              pattern: "^AllowUsers"
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.13'
-              pattern: "^AllowGroups"
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.13'
-              pattern: "^DenyUsers"
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.13'
-              pattern: "^DenyGroups"
       description: 'Limit Access via SSH (Scored)'
 
     sshd_banner:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.14'
-              pattern: "^Banner"
-        CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.14'
               pattern: "^Banner"
@@ -1254,11 +800,6 @@ grep:
               tag: 'CIS-7.1.1'
               pattern: "PASS_MAX_DAYS"
               match_output: "90"
-        CentOS Linux-7:
-          - '/etc/login.defs':
-              tag: 'CIS-7.1.1'
-              pattern: "PASS_MAX_DAYS"
-              match_output: "90"
       description: 'Set Password Expiration Days (Scored)'
 
     passwd_change_min_days:
@@ -1268,21 +809,11 @@ grep:
               tag: 'CIS-7.1.2'
               pattern: "PASS_MIN_DAYS"
               match_output: "7"
-        CentOS Linux-7:
-          - '/etc/login.defs':
-              tag: 'CIS-7.1.2'
-              pattern: "PASS_MIN_DAYS"
-              match_output: "7"
       description: 'Set Password Change Minimum Number of Days (Scored)'
 
     passwd_expiry_warning:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/login.defs':
-              tag: 'CIS-7.1.3'
-              pattern: "PASS_WARN_DAYS"
-              match_output: "7"
-        CentOS Linux-7:
           - '/etc/login.defs':
               tag: 'CIS-7.1.3'
               pattern: "PASS_WARN_DAYS"
@@ -1298,23 +829,12 @@ grep:
           - '/etc/profile.d/*':
               tag: 'CIS-7.4'
               pattern: "^umask 077"
-        CentOS Linux-7:
-          - '/etc/bashrc':
-              tag: 'CIS-7.4'
-              pattern: "^umask 077"
-          - '/etc/profile.d/*':
-              tag: 'CIS-7.4'
-              pattern: "^umask 077"
       description: 'Set Default umask for Users (Scored)'
 
   blacklist:
     legacy_passwd_entries_passwd:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/passwd':
-              tag: 'CIS-9.2.2'
-              pattern: "^+:"
-        CentOS Linux-7:
           - '/etc/passwd':
               tag: 'CIS-9.2.2'
               pattern: "^+:"
@@ -1326,19 +846,11 @@ grep:
           - '/etc/shadow':
               tag: 'CIS-9.2.3'
               pattern: "^+:"
-        CentOS Linux-7:
-          - '/etc/shadow':
-              tag: 'CIS-9.2.3'
-              pattern: "^+:"
       description: 'Verify No Legacy "+" Entries Exist in /etc/shadow (Scored)'
 
     legacy_passwd_entries_group:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/etc/group':
-              tag: 'CIS-9.2.4'
-              pattern: "^+:"
-        CentOS Linux-7:
           - '/etc/group':
               tag: 'CIS-9.2.4'
               pattern: "^+:"
@@ -1356,8 +868,6 @@ sysctl:
             tag: 'CIS-1.6.1'
             match_output: '0'
     description: 'Restrict SUID Core Dumps (Scored)'
-    alert: email
-    trigger: state
 
   exec_shield:
     data:
@@ -1370,8 +880,6 @@ sysctl:
             tag: 'CIS-1.6.2'
             match_output: '1'
     description: 'Configure ExecShield (Scored)'
-    alert: email
-    trigger: state
 
   randomize_va_space:
     data:
@@ -1383,13 +891,7 @@ sysctl:
         - 'kernel.randomize_va_space':
             tag: 'CIS-1.6.3'
             match_output: '2'
-      'CentOS Linux-7':
-        - 'kernel.randomize_va_space':
-            tag: 'CIS-1.6.2'
-            match_output: '2'
     description: 'Enable Randomized Virtual Memory Region Placement (Scored)'
-    alert: email
-    trigger: state
 
   ip_forwarding:
     data:
@@ -1401,13 +903,7 @@ sysctl:
         - 'net.ipv4.ip_forward':
             tag: 'CIS-4.1.1'
             match_output: '0'
-      'CentOS Linux-7':
-        - 'net.ipv4.ip_forward':
-            tag: 'CIS-4.1.1'
-            match_output: '0'
     description: 'Disable IP Forwarding (Scored)'
-    alert: email
-    trigger: state
 
   send_packet_redirect:
     data:
@@ -1425,16 +921,7 @@ sysctl:
         - 'net.ipv4.conf.default.send_redirects':
             tag: 'CIS-4.1.2'
             match_output: '0'
-      'CentOS Linux-7':
-        - 'net.ipv4.conf.all.send_redirects':
-            tag: 'CIS-4.1.2'
-            match_output: '0'
-        - 'net.ipv4.conf.default.send_redirects':
-            tag: 'CIS-4.1.2'
-            match_output: '0'
     description: 'Disable Send Packet Redirect (Scored)'
-    alert: email
-    trigger: state
 
   source_routed_packet_acceptance:
     data:
@@ -1452,16 +939,7 @@ sysctl:
         - 'net.ipv4.conf.default.accept_source_route':
             tag: 'CIS-4.2.1'
             match_output: '0'
-      'CentOS Linux-7':
-        - 'net.ipv4.conf.all.accept_source_route':
-            tag: 'CIS-4.2.1'
-            match_output: '0'
-        - 'net.ipv4.conf.default.accept_source_route':
-            tag: 'CIS-4.2.1'
-            match_output: '0'
     description: 'Disable Source Routed Packet Acceptance (Scored)'
-    alert: email
-    trigger: state
 
   icmp_redirect_acceptance:
     data:
@@ -1479,16 +957,7 @@ sysctl:
         - 'net.ipv4.conf.default.accept_redirects':
             tag: 'CIS-4.2.2'
             match_output: '0'
-      'CentOS Linux-7':
-        - 'net.ipv4.conf.all.accept_redirects':
-            tag: 'CIS-4.2.2'
-            match_output: '0'
-        - 'net.ipv4.conf.default.accept_redirects':
-            tag: 'CIS-4.2.2'
-            match_output: '0'
     description: 'Disable ICMP Redirect Acceptance (Scored)'
-    alert: email
-    trigger: state
 
   secure_icmp_redirect_acceptance:
     data:
@@ -1506,16 +975,7 @@ sysctl:
         - 'net.ipv4.conf.default.secure_redirects':
             tag: 'CIS-4.2.3'
             match_output: '0'
-      'CentOS Linux-7':
-        - 'net.ipv4.conf.all.secure_redirects':
-            tag: 'CIS-4.2.3'
-            match_output: '0'
-        - 'net.ipv4.conf.default.secure_redirects':
-            tag: 'CIS-4.2.3'
-            match_output: '0'
     description: 'Disable Secure ICMP Redirect Acceptance (Scored)'
-    alert: email
-    trigger: state
 
 log_suspicious_packets:
   data:
@@ -1533,16 +993,7 @@ log_suspicious_packets:
       - 'net.ipv4.conf.default.log_martians':
           tag: 'CIS-4.2.4'
           match_output: '1'
-    'CentOS Linux-7':
-      - 'net.ipv4.conf.all.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
-      - 'net.ipv4.conf.default.log_martians':
-          tag: 'CIS-4.2.4'
-          match_output: '1'
   description: 'Log Suspicious Activity (Scored)'
-  alert: email
-  trigger: state
 
   ignore_broadcast_requests:
     data:
@@ -1554,13 +1005,7 @@ log_suspicious_packets:
         - 'net.ipv4.icmp_echo_ignore_broadcasts':
             tag: 'CIS-4.2.5'
             match_output: '1'
-      'CentOS Linux-7':
-        - 'net.ipv4.icmp_echo_ignore_broadcasts':
-            tag: 'CIS-4.2.5'
-            match_output: '1'
     description: 'Enable Ignore Broadcast Requests (Scored)'
-    alert: email
-    trigger: state
 
   bad_error_message_protection:
     data:
@@ -1572,13 +1017,7 @@ log_suspicious_packets:
         - 'net.ipv4.icmp_ignore_bogus_error_responses':
             tag: 'CIS-4.2.6'
             match_output: '1'
-      'CentOS Linux-7':
-        - 'net.ipv4.icmp_ignore_bogus_error_responses':
-            tag: 'CIS-4.2.6'
-            match_output: '1'
     description: 'Enable Bad Error Message Protection (Scored)'
-    alert: email
-    trigger: state
 
   tcp_syn_cookies:
     data:
@@ -1590,13 +1029,7 @@ log_suspicious_packets:
         - 'net.ipv4.tcp_syncookies':
             tag: 'CIS-4.2.8'
             match_output: '1'
-      'CentOS Linux-7':
-        - 'net.ipv4.tcp_syncookies':
-            tag: 'CIS-4.2.8'
-            match_output: '1'
     description: 'Enable TCP SYN cookies (Scored)'
-    alert: email
-    trigger: state
 
 service:
   # # Must not be installed
@@ -1624,37 +1057,27 @@ service:
         'Red Hat Enterprise Linux Server-6':
           - 'iptables': 'CIS-4.7_running'
       description: 'rsyslogd should be running'
-      alert: email
-      trigger: state
 
     rsyslogd_running:             # best practice to verify the process is running
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'rsyslogd': 'CIS-5.1.2_running'
       description: 'rsyslogd should be running'
-      alert: email
-      trigger: state
 
     auditd_running:             # best practice to verify the process is running
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'auditd': 'CIS-5.2_running'
       description: 'auditd should be running'
-      alert: email
-      trigger: state
 
     anacron_running:             # best practice to verify the process is running
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'cronie-anacron': 'CIS-6.1.1_running'
       description: 'anacron should be running'
-      alert: email
-      trigger: state
 
     crond_running:             # best practice to verify the process is running
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'crond': 'CIS-6.1.2_running'
       description: 'crond should be running'
-      alert: email
-      trigger: state
