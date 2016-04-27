@@ -906,7 +906,7 @@ grep:
     boot_loader_passwd:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/boot/grub2/grub.cfg':
+          - '/etc/grub.conf':
               tag: 'CIS-1.5.3'
               pattern: '^password'
         CentOS Linux-7:
