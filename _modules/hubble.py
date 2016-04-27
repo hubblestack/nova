@@ -200,6 +200,9 @@ def _hubble_dir():
     Generate the local minion directory to which nova modules are synced
     '''
     nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack_nova')
+    # Support optional salt:// in config
+    if 'salt://' in nova_dir:
+        _, _, nova_dir = nova_dir.partition('salt://')
     saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
     cachedir = os.path.join(__opts__.get('cachedir'),
                             'files',
