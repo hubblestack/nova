@@ -678,6 +678,12 @@ grep:
           - '/etc/ntp.conf':
               tag: 'CIS-3.6'
               pattern: 'restrict -6 default'
+          - '/etc/ntp.conf':
+              tag: 'CIS-3.6'
+              pattern: '^server'
+          - '/etc/sysconfig/ntpd':
+              tag: 'CIS-3.6'
+              pattern: 'ntp:ntp'
       description: 'Configure Network Time Protocol (NTP) (Scored)'
 
     rsyslog_remote_logging:

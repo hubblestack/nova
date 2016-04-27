@@ -46,6 +46,12 @@ grep:
         - /etc/ntp.conf:
             pattern: restrict -6 default
             tag: CIS-3.6
+        - '/etc/ntp.conf':
+            tag: 'CIS-3.6'
+            pattern: '^server'
+        - '/etc/sysconfig/ntpd':
+            tag: 'CIS-3.6'
+            pattern: 'ntp:ntp'
       description: Configure Network Time Protocol (NTP) (Scored)
     default_umask:
       data:
