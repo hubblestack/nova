@@ -814,7 +814,7 @@ grep:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.14'
               pattern: "^Banner"
-      description: 'Set SSH Banner (Scored)
+      description: 'Set SSH Banner (Scored)'
 
     # NOTE: Need to update this entry to reflect your organization's password policy
     limit_password_reuse:
