@@ -898,7 +898,7 @@ grep:
               match_output: 'gpgcheck=1'
         CentOS Linux-7:
           - '/etc/yum.conf':
-              tag: 'CIS-1.1.16'
+              tag: 'CIS-1.2.2'
               pattern: 'gpgcheck'
               match_output: 'gpgcheck=1'
       description: 'Verify that gpgcheck is Globally Activated (Scored)'
