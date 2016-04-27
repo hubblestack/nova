@@ -906,7 +906,7 @@ grep:
     boot_loader_passwd:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/boot/grub2/grub.cfg':
+          - '/etc/grub.conf':
               tag: 'CIS-1.5.3'
               pattern: '^password'
         CentOS Linux-7:
@@ -1217,6 +1217,11 @@ grep:
               tag: 'CIS-6.3.4'
               pattern: "pam_unix.so"
               match_output: "remember=5"  # number of passwords to remember
+        'CentOS Linux-7':
+          - '/etc/pam.d/system-auth':
+              tag: 'CIS-6.3.4'
+              pattern: "pam_unix.so"
+              match_output: "remember=5"  # number of passwords to remember
       description: 'PAM Password Reuse (Scored)'
 
     limit_su_command_access:
@@ -1226,6 +1231,17 @@ grep:
               tag: 'CIS-6.5'
               pattern: "pam_wheel.so"
               match_output: "use_uid"  # number of passwords to remember
+          - '/etc/group':
+              tag: 'CIS-6.5'
+              pattern: "wheel"
+        'CentOS Linux-7':
+          - '/etc/pam.d/su':
+              tag: 'CIS-6.5'
+              pattern: "pam_wheel.so"
+              match_output: "use_uid"  # number of passwords to remember
+          - '/etc/group':
+              tag: 'CIS-6.5'
+              pattern: "wheel"
       description: 'Limit su command access (Scored)'
 
     passwd_expiration_days:
