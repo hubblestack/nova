@@ -32,7 +32,8 @@ Usage
 
 There are three functions in the hubble.py module. ``hubble.sync`` will sync the
 configured ``hubblestack_nova/`` directory to the minion. ``hubble.load`` will
-load the synced audit modules.  Finally, ``hubble.audit`` will run the audits.
+load the synced audit modules and their yaml configuration files.  Finally,
+``hubble.audit`` will run the audits.
 
 By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
 ``hubble.sync``) (in order to ensure that it is auditing with the most up-to-date
@@ -62,14 +63,14 @@ Here are some example calls:
 
 .. code-block:: bash
 
-    # Run all modules and tags under salt://hubblestack_nova/
+    # Run all yaml configs and tags under salt://hubblestack_nova/
     salt '*' hubble.audit
 
-    # Run all modules and tags under salt://hubblestack_nova/foo/
-    # Will also run salt://hubblestack_nova/foo.py if it exists
+    # Run all yaml configs and tags under salt://hubblestack_nova/foo/
+    # Will also run salt://hubblestack_nova/foo.yaml if it exists
     salt '*' hubble.audit modules=foo
 
-    # Run all modules and tags under salt://hubblestack_nova/foo/ and
+    # Run all yaml configs and tags under salt://hubblestack_nova/foo/ and
     # salt://hubblestack_nova/bar, but only run audits with tags starting
     # with "CIS"
     salt '*' hubble.audit modules=foo,bar tags='CIS*'
@@ -107,17 +108,22 @@ include full documentation
     import fnmatch
     import salt.utils
 
-    __tags__ = []
-
     def __virtual__():
         if salt.utils.is_windows():
             return False, 'This audit module only runs on linux'
-        global __tags__
-        __tags__ = ['cis-foo', 'cis-bar', 'cis-baz']
         return True
 
 
-    def audit(tag, verbose=False):
+    def audit(data_list, tag, verbose=False):
+        __tags__ = []
+        for data in data_list:
+            # This is where you process the dictionaries passed in by hubble.py,
+            # searching for data pertaining to this audit module. Modules which
+            # require no data should use yaml which is empty except for a
+            # top-level key, and should only do work if the top-level key is
+            # found in the data
+            pass
+
         ret = {'Success': [], 'Failure': []}
         for tag in __tags__:
             if fnmatch.fnmatch(tag, tags):
@@ -131,13 +137,15 @@ All Nova plugins require a ``__virtual__()`` function to determine module
 compatibility, and an ``audit()`` function to perform the actual audit
 functionality
 
-The ``audit()`` function must take two arguments, ``tag`` and
-``verbose``. The ``tag`` argument is a glob expression for which tags
-the audit function should run. It is the job of the audit module to compare the
-``tag`` glob with all tags supported by this module and only run the audits
-which match. The ``verbose`` argument defines whether additional
-information should be returned for audits, such as description and
-remediation instructions.
+The ``audit()`` function must take three arguments, ``data_list``, ``tag`` and
+``verbose``. The ``data_list`` argument is a list of dictionaries passed in by
+``hubble.py``. ``hubble.py`` gets this data from loading the specified yaml for
+the audit run. Your audit module should only run if it finds its own data in
+this list. The ``tag`` argument is a glob expression for which tags the audit
+function should run. It is the job of the audit module to compare the ``tag``
+glob with all tags supported by this module and only run the audits which
+match. The ``verbose`` argument defines whether additional information should
+be returned for audits, such as description and remediation instructions.
 
 The return value should be a dictionary, with two keys, "Success" and
 "Failure".  The values for these keys should be a list of tags as strings, or a

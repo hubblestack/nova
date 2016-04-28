@@ -77,25 +77,22 @@ from distutils.version import LooseVersion
 
 log = logging.getLogger(__name__)
 
-__tags__ = None
-__data__ = None
-
 
 def __virtual__():
     if salt.utils.is_windows():
         return False, 'This audit module only runs on linux'
-    global __tags__
-    global __data__
-    yamldir = os.path.dirname(__file__)
-    __data__ = _get_yaml(yamldir)
-    __tags__ = _get_tags(__data__)
     return True
 
 
-def audit(tags, verbose=False):
+def audit(data_list, tags, verbose=False):
     '''
     Run the pkg audits contained in the YAML files processed by __virtual__
     '''
+    __data__ = {}
+    for data in data_list:
+        _merge_yaml(__data__, data)
+    __tags__ = _get_tags(__data__)
+
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
@@ -179,23 +176,6 @@ def audit(tags, verbose=False):
         ret['Success'] = success
         ret['Failure'] = failure
 
-    return ret
-
-
-def _get_yaml(dirname):
-    '''
-    Iterate over the current directory for all yaml files, read them in,
-    merge them, and return the __data__
-    '''
-    ret = {}
-    try:
-        for yamlpath in os.listdir(dirname):
-            if yamlpath.endswith('.yaml'):
-                with open(os.path.join(dirname, yamlpath)) as fh_:
-                    data = yaml.safe_load(fh_)
-                _merge_yaml(ret, data)
-    except:
-        return {}
     return ret
 
 
