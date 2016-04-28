@@ -27,8 +27,8 @@ def audit(data_list, tags, verbose=False):
 
     __tags__ = []
     for data in data_list:
-        if 'freebsd-pkg' in data:
-            __tags__ = ['freebsd-pkg-audit']
+        if 'pkgng_audit' in data:
+            __tags__ = ['pkgng_audit']
             break
 
     if not __tags__:
