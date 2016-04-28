@@ -90,7 +90,7 @@ def audit(configs='',
         configs = configs.split(',')
 
     # Convert config list to paths, with leading slashes
-    configs = [os.path.join('/', os.path.join(*(con.partition('.yaml')[-1]).split('.')))
+    configs = [os.path.join('/', os.path.join(*(con.split('.yaml')[0]).split('.')))
                for con in configs]
 
     results = {'Success': [], 'Failure': []}
