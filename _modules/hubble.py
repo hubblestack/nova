@@ -25,6 +25,7 @@ import os
 import sys
 import six
 import inspect
+import yaml
 
 import salt
 import salt.utils
@@ -34,7 +35,7 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(modules='',
+def audit(configs='',
           tag='*',
           verbose=None,
           show_success=None,
@@ -42,19 +43,19 @@ def audit(modules='',
     '''
     Primary entry point for audit calls.
 
-    modules
-        List (comma-separated or python list) of modules/directories to search
-        for audit modules. Directories are dot-separated, much in the same way
-        as Salt states. For individual module names, leave the .py extension
-        off.  If a given path resolves to a python file, it will be treated as
-        a single module. Otherwise it will be treated as a directory. All
-        modules found in a recursive search of the specified directories will
-        be included in the audit.
+    configs
+        List (comma-separated or python list) of yaml configs/directories to
+        search for audit data. Directories are dot-separated, much in the same
+        way as Salt states. For individual config names, leave the .yaml
+        extension off.  If a given path resolves to a python file, it will be
+        treated as a single config. Otherwise it will be treated as a
+        directory. All configs found in a recursive search of the specified
+        directories will be included in the audit.
 
     tags
         Glob pattern string for tags to include in the audit. This way you can
         give a directory, and tell the system to only run the `CIS*`-tagged
-        audit modules, for example.
+        audits, for example.
 
     verbose
         Whether to show additional information about audits, including
@@ -75,7 +76,7 @@ def audit(modules='',
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
     if not __nova__:
-        return False, 'No nova modules have been loaded.'
+        return False, 'No nova modules/data have been loaded.'
 
     if verbose is None:
         verbose = __salt__['config.get']('hubblestack.nova.verbose', False)
@@ -84,30 +85,35 @@ def audit(modules='',
     if show_compliance is None:
         show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
 
-    if not isinstance(modules, list):
+    if not isinstance(configs, list):
         # Convert string
-        modules = modules.split(',')
+        configs = configs.split(',')
 
-    # Convert module list to paths, with leading slashes
-    modules = [os.path.join('/', os.path.join(*mod.split('.'))) for mod in modules]
+    # Convert config list to paths, with leading slashes
+    configs = [os.path.join('/', os.path.join(*(con.partition('.yaml')[-1]).split('.')))
+               for con in configs]
 
     results = {'Success': [], 'Failure': []}
-    already_run = set()
-    # This is a pretty terrible way to iterate, performance-wise
-    # However, the data sets should be relatively small, so I don't anticipate
-    # issues.
-    for module in modules:
-        for key, func in __nova__._dict.iteritems():
-            if key not in already_run and key.startswith(module):
-                # Found a match, run the audit
-                ret = func(tag, verbose=verbose)
 
-                # Make sure we don't run the same audit twice
-                already_run.add(key)
+    # Compile a list of audit data sets which we need to run
+    to_run = set()
+    for config in configs:
+        for key in __nova__.__data__:
+            if key.startswith(config):
+                # Found a match, add the audit data to the set
+                to_run.add(key)
+    data_list = [__nova__.__data__[key] for key in to_run]
+    # Run the audits
+    # This is currently pretty brute-force -- we just run all the modules we
+    # have available with the data list, so data will be processed multiple
+    # times. However, for the scale we're working at this should be fine.
+    # We can revisit if this ever becomes a big bottleneck
+    for key, func in __nova__._dict.iteritems():
+        ret = func(data_list, tag, verbose=verbose)
 
-                # Compile the results
-                results['Success'].extend(ret.get('Success', []))
-                results['Failure'].extend(ret.get('Failure', []))
+        # Compile the results
+        results['Success'].extend(ret.get('Success', []))
+        results['Failure'].extend(ret.get('Failure', []))
 
     total_audits = len(results['Success']) + len(results['Failure'])
     if show_compliance and total_audits:
@@ -191,7 +197,9 @@ def load():
     __nova__ = NovaLazyLoader()
 
     ret = {'loaded': __nova__._dict.keys(),
-           'missing': __nova__.missing_modules}
+           'missing': __nova__.missing_modules,
+           'data': __nova__.__data__.keys(),
+           'missing_data': __nova__.__missing_data__}
     return ret
 
 
@@ -220,6 +228,8 @@ class NovaLazyLoader(LazyLoader):
         super(NovaLazyLoader, self).__init__([_hubble_dir()],
                                              opts=__opts__,
                                              tag='nova')
+        self.__data__ = {}
+        self.__missing_data__ = {}
         self._load_all()
 
     def refresh_file_mapping(self):
@@ -230,6 +240,7 @@ class NovaLazyLoader(LazyLoader):
         # map of suffix to description for imp
         self.suffix_map = {}
         suffix_order = []  # local list to determine precedence of extensions
+        suffix_order.append('.yaml')
         for (suffix, mode, kind) in imp.get_suffixes():
             self.suffix_map[suffix] = (suffix, mode, kind)
             suffix_order.append(suffix)
@@ -249,11 +260,11 @@ class NovaLazyLoader(LazyLoader):
                             continue
                         _, ext = os.path.splitext(filename)
                         fpath = os.path.join(dirname, filename)
-                        f_noext, _ = os.path.splitext(fpath.partition(mod_dir)[-1])
-                        # Nova only supports .py
-                        if ext not in ['.py']:
+                        f_withext = fpath.partition(mod_dir)[-1]
+                        # Nova only supports .py and .yaml
+                        if ext not in ['.py', '.yaml']:
                             continue
-                        if f_noext in self.disabled:
+                        if f_withext in self.disabled:
                             log.trace(
                                 'Skipping {0}, it is disabled by configuration'.format(
                                 filename
@@ -262,14 +273,14 @@ class NovaLazyLoader(LazyLoader):
                             continue
 
                         # if we don't have it, we want it
-                        elif f_noext not in self.file_mapping:
-                            self.file_mapping[f_noext] = (fpath, ext)
+                        elif f_withext not in self.file_mapping:
+                            self.file_mapping[f_withext] = (fpath, ext)
                         # if we do, we want it if we have a higher precidence ext
                         else:
-                            curr_ext = self.file_mapping[f_noext][1]
+                            curr_ext = self.file_mapping[f_withext][1]
                             #log.debug("****** curr_ext={0} ext={1} suffix_order={2}".format(curr_ext, ext, suffix_order))
                             if curr_ext and suffix_order.index(ext) < suffix_order.index(curr_ext):
-                                self.file_mapping[f_noext] = (fpath, ext)
+                                self.file_mapping[f_withext] = (fpath, ext)
                     except OSError:
                         continue
 
@@ -280,6 +291,16 @@ class NovaLazyLoader(LazyLoader):
         mod = None
         fpath, suffix = self.file_mapping[name]
         self.loaded_files.add(name)
+        if suffix == '.yaml':
+            try:
+                with open(fpath) as fh_:
+                    data = yaml.safe_load(fh_)
+            except Exception as exc:
+                self.__missing_data__[name] = str(exc)
+                return False
+
+            self.__data__[name] = data
+            return True
         try:
             sys.path.append(os.path.dirname(fpath))
             desc = self.suffix_map[suffix]
