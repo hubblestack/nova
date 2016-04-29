@@ -124,13 +124,14 @@ def audit(configs='',
                 results['Errors'] = {}
             results['Errors'][key] = {'error': 'exception occurred',
                                       'data': str(exc)}
-
-        if not isinstance(ret, dict):
-            if 'Errors' not in results:
-                results['Errors'] = {}
-            results['Errors'][key] = {'error': 'bad return type',
-                                      'data': ret}
             continue
+        else:
+            if not isinstance(ret, dict):
+                if 'Errors' not in results:
+                    results['Errors'] = {}
+                results['Errors'][key] = {'error': 'bad return type',
+                                          'data': ret}
+                continue
 
         # Compile the results
         results['Success'].extend(ret.get('Success', []))
