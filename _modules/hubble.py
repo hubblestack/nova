@@ -36,7 +36,7 @@ __nova__ = {}
 
 
 def audit(configs='',
-          tag='*',
+          tags='*',
           verbose=None,
           show_success=None,
           show_compliance=None):
@@ -72,6 +72,14 @@ def audit(configs='',
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
         `hubblestack.nova.show_compliance` in minion config/pillar.
+
+    CLI Examples:
+
+    .. code-block:: bash
+
+        salt '*' hubble.audit foo
+        salt '*' hubble.audit foo,bar tags='CIS*'
+        salt '*' hubble.audit foo,bar.baz verbose=True
     '''
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
@@ -99,17 +107,38 @@ def audit(configs='',
     to_run = set()
     for config in configs:
         for key in __nova__.__data__:
-            if key.startswith(config):
+            key_path_split = key.split('.yaml')[0].split(os.path.sep)
+            matches = True
+            for i, path in enumerate(config.split(os.path.sep)):
+                if i >= len(key_path_split) or path != key_path_split[i]:
+                    matches = False
+            if matches:
                 # Found a match, add the audit data to the set
                 to_run.add(key)
     data_list = [__nova__.__data__[key] for key in to_run]
+    log.trace('hubble.py data_list:')
+    log.trace(data_list)
     # Run the audits
     # This is currently pretty brute-force -- we just run all the modules we
     # have available with the data list, so data will be processed multiple
     # times. However, for the scale we're working at this should be fine.
     # We can revisit if this ever becomes a big bottleneck
     for key, func in __nova__._dict.iteritems():
-        ret = func(data_list, tag, verbose=verbose)
+        try:
+            ret = func(data_list, tags, verbose=verbose)
+        except Exception as exc:
+            if 'Errors' not in results:
+                results['Errors'] = {}
+            results['Errors'][key] = {'error': 'exception occurred',
+                                      'data': str(exc)}
+            continue
+        else:
+            if not isinstance(ret, dict):
+                if 'Errors' not in results:
+                    results['Errors'] = {}
+                results['Errors'][key] = {'error': 'bad return type',
+                                          'data': ret}
+                continue
 
         # Compile the results
         results['Success'].extend(ret.get('Success', []))
