@@ -107,7 +107,12 @@ def audit(configs='',
     to_run = set()
     for config in configs:
         for key in __nova__.__data__:
-            if key.startswith(config):
+            key_path_split = key.split('.yaml')[0].split(os.path.sep)
+            matches = True
+            for i, path in enumerate(config.split(os.path.sep)):
+                if i >= len(key_path_split) or path != key_path_split[i]:
+                    matches = False
+            if matches:
                 # Found a match, add the audit data to the set
                 to_run.add(key)
     data_list = [__nova__.__data__[key] for key in to_run]
