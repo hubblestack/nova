@@ -36,7 +36,7 @@ __nova__ = {}
 
 
 def audit(configs='',
-          tag='*',
+          tags='*',
           verbose=None,
           show_success=None,
           show_compliance=None):
@@ -72,6 +72,14 @@ def audit(configs='',
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
         `hubblestack.nova.show_compliance` in minion config/pillar.
+
+    CLI Examples:
+
+    .. code-block:: bash
+
+        salt '*' hubble.audit foo
+        salt '*' hubble.audit foo,bar tag='CIS*'
+        salt '*' hubble.audit foo,bar.baz verbose=True
     '''
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
