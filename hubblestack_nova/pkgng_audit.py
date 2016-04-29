@@ -31,6 +31,9 @@ def audit(data_list, tags, verbose=False):
             __tags__ = ['pkgng_audit']
             break
 
+    log.trace('pkgng audit __tags__:')
+    log.trace(__tags__)
+
     if not __tags__:
         # No yaml data found, don't do any work
         return ret
