@@ -90,8 +90,12 @@ def audit(configs='',
         configs = configs.split(',')
 
     # Convert config list to paths, with leading slashes
-    configs = [os.path.join('/', os.path.join(*(con.split('.yaml')[0]).split('.')))
-               for con in configs]
+    if salt.utils.is_windows():
+        configs = [os.path.join('\\', os.path.join(*(con.split('.yaml')[0]).split('.')))
+                   for con in configs]
+    else:
+        configs = [os.path.join('/', os.path.join(*(con.split('.yaml')[0]).split('.')))
+                   for con in configs]
 
     results = {'Success': [], 'Failure': []}
 
