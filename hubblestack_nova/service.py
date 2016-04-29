@@ -81,6 +81,11 @@ def audit(data_list, tags, verbose=False):
         _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
+    log.trace('service audit __data__:')
+    log.trace(__data__)
+    log.trace('service audit __tags__:')
+    log.trace(__tags__)
+
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
@@ -139,8 +144,9 @@ def _merge_yaml(ret, data):
     for topkey in ('blacklist', 'whitelist'):
         if topkey in data.get('service', {}):
             if topkey not in ret['service']:
-                ret['service'][topkey] = {}
-            ret['service'][topkey].update(data['service'][topkey])
+                ret['service'][topkey] = []
+            for key, val in data['service'][topkey].iteritems():
+                ret['service'][topkey].append({key: val})
     return ret
 
 
@@ -152,27 +158,29 @@ def _get_tags(data):
     distro = __grains__.get('osfinger')
     for toplist, toplevel in data.get('service', {}).iteritems():
         # service:blacklist
-        for audit_id, audit_data in toplevel.iteritems():
-            # service:blacklist:telnet
-            tags_dict = audit_data.get('data', {})
-            # service:blacklist:telnet:data
-            tags = tags_dict.get(distro, tags_dict.get('*', []))
-            # service:blacklist:telnet:data:Debian-8
-            if isinstance(tags, dict):
-                # malformed yaml, convert to list of dicts
-                tmp = []
-                for name, tag in tags.iteritems():
-                    tmp.append({name: tag})
-                tags = tmp
-            for item in tags:
-                for name, tag in item.iteritems():
-                    if tag not in ret:
-                        ret[tag] = []
-                    formatted_data = {'name': name,
-                                      'tag': tag,
-                                      'module': 'service',
-                                      'type': toplist}
-                    formatted_data.update(audit_data)
-                    formatted_data.pop('data')
-                    ret[tag].append(formatted_data)
+        for audit_dict in toplevel:
+            # service:blacklist:0
+            for audit_id, audit_data in audit_dict.iteritems():
+                # service:blacklist:0:telnet
+                tags_dict = audit_data.get('data', {})
+                # service:blacklist:0:telnet:data
+                tags = tags_dict.get(distro, tags_dict.get('*', []))
+                # service:blacklist:0:telnet:data:Debian-8
+                if isinstance(tags, dict):
+                    # malformed yaml, convert to list of dicts
+                    tmp = []
+                    for name, tag in tags.iteritems():
+                        tmp.append({name: tag})
+                    tags = tmp
+                for item in tags:
+                    for name, tag in item.iteritems():
+                        if tag not in ret:
+                            ret[tag] = []
+                        formatted_data = {'name': name,
+                                          'tag': tag,
+                                          'module': 'service',
+                                          'type': toplist}
+                        formatted_data.update(audit_data)
+                        formatted_data.pop('data')
+                        ret[tag].append(formatted_data)
     return ret
