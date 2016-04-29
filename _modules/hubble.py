@@ -111,6 +111,8 @@ def audit(configs='',
                 # Found a match, add the audit data to the set
                 to_run.add(key)
     data_list = [__nova__.__data__[key] for key in to_run]
+    log.trace('hubble.py data_list:')
+    log.trace(data_list)
     # Run the audits
     # This is currently pretty brute-force -- we just run all the modules we
     # have available with the data list, so data will be processed multiple
