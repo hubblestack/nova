@@ -109,7 +109,20 @@ def audit(configs='',
     # times. However, for the scale we're working at this should be fine.
     # We can revisit if this ever becomes a big bottleneck
     for key, func in __nova__._dict.iteritems():
-        ret = func(data_list, tag, verbose=verbose)
+        try:
+            ret = func(data_list, tag, verbose=verbose)
+        except Exception as exc:
+            if 'Errors' not in results:
+                results['Errors'] = {}
+            results['Errors'][key] = {'error': 'exception occurred',
+                                      'data': str(exc)}
+
+        if not isinstance(ret, dict):
+            if 'Errors' not in results:
+                results['Errors'] = {}
+            results['Errors'][key] = {'error': 'bad return type',
+                                      'data': ret}
+            continue
 
         # Compile the results
         results['Success'].extend(ret.get('Success', []))
