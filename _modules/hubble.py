@@ -78,7 +78,7 @@ def audit(configs='',
     .. code-block:: bash
 
         salt '*' hubble.audit foo
-        salt '*' hubble.audit foo,bar tag='CIS*'
+        salt '*' hubble.audit foo,bar tags='CIS*'
         salt '*' hubble.audit foo,bar.baz verbose=True
     '''
     if __salt__['config.get']('hubblestack.nova.autoload', True):
@@ -118,7 +118,7 @@ def audit(configs='',
     # We can revisit if this ever becomes a big bottleneck
     for key, func in __nova__._dict.iteritems():
         try:
-            ret = func(data_list, tag, verbose=verbose)
+            ret = func(data_list, tags, verbose=verbose)
         except Exception as exc:
             if 'Errors' not in results:
                 results['Errors'] = {}
