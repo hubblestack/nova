@@ -58,6 +58,11 @@ def audit(data_list, tags, verbose=False):
         _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
+    log.trace('service audit __data__:')
+    log.trace(__data__)
+    log.trace('service audit __tags__:')
+    log.trace(__tags__)
+
     ret = {'Success': [], 'Failure': []}
 
     for tag in __tags__:
@@ -112,11 +117,9 @@ def _merge_yaml(ret, data):
     Merge two yaml dicts together
     '''
     if 'sysctl' not in ret:
-        ret['sysctl'] = {}
-    for topkey in data.get('sysctl', {}):
-        if topkey not in ret['sysctl']:
-            ret['sysctl'][topkey] = {}
-        ret['sysctl'][topkey].update(data['sysctl'][topkey])
+        ret['sysctl'] = []
+    for key, val in data.get('sysctl', {}).iteritems():
+        ret['sysctl'].append({key: val})
     return ret
 
 
@@ -126,27 +129,28 @@ def _get_tags(data):
     '''
     ret = {}
     distro = __grains__.get('osfinger')
-    for audit_id, audit_data in data.get('sysctl', {}).iteritems():
-        tags_dict = audit_data.get('data', {})
-        tags = tags_dict.get(distro, [])
-        if isinstance(tags, dict):
-            # malformed yaml, convert to list of dicts
-            tmp = []
-            for name, tag in tags.iteritems():
-                tmp.append({name: tag})
-            tags = tmp
-        for item in tags:
-            for name, tag in item.iteritems():
-                if isinstance(tag, dict):
-                    tag_data = copy.deepcopy(tag)
-                    tag = tag_data.pop('tag')
-                if tag not in ret:
-                    ret[tag] = []
-                formatted_data = {'name': name,
-                                  'tag': tag,
-                                  'module': 'sysctl'}
-                formatted_data.update(tag_data)
-                formatted_data.update(audit_data)
-                formatted_data.pop('data')
-                ret[tag].append(formatted_data)
+    for audit_dict in data.get('sysctl', []):
+        for audit_id, audit_data in audit_dict.iteritems():
+            tags_dict = audit_data.get('data', {})
+            tags = tags_dict.get(distro, [])
+            if isinstance(tags, dict):
+                # malformed yaml, convert to list of dicts
+                tmp = []
+                for name, tag in tags.iteritems():
+                    tmp.append({name: tag})
+                tags = tmp
+            for item in tags:
+                for name, tag in item.iteritems():
+                    if isinstance(tag, dict):
+                        tag_data = copy.deepcopy(tag)
+                        tag = tag_data.pop('tag')
+                    if tag not in ret:
+                        ret[tag] = []
+                    formatted_data = {'name': name,
+                                      'tag': tag,
+                                      'module': 'sysctl'}
+                    formatted_data.update(tag_data)
+                    formatted_data.update(audit_data)
+                    formatted_data.pop('data')
+                    ret[tag].append(formatted_data)
     return ret
