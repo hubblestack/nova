@@ -93,6 +93,11 @@ def audit(data_list, tags, verbose=False):
         _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
+    log.trace('pkg audit __data__:')
+    log.trace(__data__)
+    log.trace('pkg audit __tags__:')
+    log.trace(__tags__)
+
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
@@ -188,8 +193,9 @@ def _merge_yaml(ret, data):
     for topkey in ('blacklist', 'whitelist'):
         if topkey in data.get('pkg', {}):
             if topkey not in ret['pkg']:
-                ret['pkg'][topkey] = {}
-            ret['pkg'][topkey].update(data['pkg'][topkey])
+                ret['pkg'][topkey] = []
+            for key, val in data['pkg'][topkey].iteritems():
+                ret['pkg'][topkey].append({key: val})
     return ret
 
 
@@ -201,33 +207,35 @@ def _get_tags(data):
     distro = __grains__.get('osfinger')
     for toplist, toplevel in data.get('pkg', {}).iteritems():
         # pkg:blacklist
-        for audit_id, audit_data in toplevel.iteritems():
-            # pkg:blacklist:telnet
-            tags_dict = audit_data.get('data', {})
-            # pkg:blacklist:telnet:data
-            tags = tags_dict.get(distro, tags_dict.get('*', []))
-            # pkg:blacklist:telnet:data:Debian-8
-            if isinstance(tags, dict):
-                # malformed yaml, convert to list of dicts
-                tmp = []
-                for name, tag in tags.iteritems():
-                    tmp.append({name: tag})
-                tags = tmp
-            for item in tags:
-                for name, tag in item.iteritems():
-                    tag_data = {}
-                    # Whitelist could have a dictionary, not a string
-                    if isinstance(tag, dict):
-                        tag_data = copy.deepcopy(tag)
-                        tag = tag_data.pop('tag')
-                    if tag not in ret:
-                        ret[tag] = []
-                    formatted_data = {'name': name,
-                                      'tag': tag,
-                                      'module': 'pkg',
-                                      'type': toplist}
-                    formatted_data.update(tag_data)
-                    formatted_data.update(audit_data)
-                    formatted_data.pop('data')
-                    ret[tag].append(formatted_data)
+        for audit_dict in toplevel:
+            # pkg:blacklist:0
+            for audit_id, audit_data in audit_dict.iteritems():
+                # pkg:blacklist:0:telnet
+                tags_dict = audit_data.get('data', {})
+                # pkg:blacklist:0:telnet:data
+                tags = tags_dict.get(distro, tags_dict.get('*', []))
+                # pkg:blacklist:0:telnet:data:Debian-8
+                if isinstance(tags, dict):
+                    # malformed yaml, convert to list of dicts
+                    tmp = []
+                    for name, tag in tags.iteritems():
+                        tmp.append({name: tag})
+                    tags = tmp
+                for item in tags:
+                    for name, tag in item.iteritems():
+                        tag_data = {}
+                        # Whitelist could have a dictionary, not a string
+                        if isinstance(tag, dict):
+                            tag_data = copy.deepcopy(tag)
+                            tag = tag_data.pop('tag')
+                        if tag not in ret:
+                            ret[tag] = []
+                        formatted_data = {'name': name,
+                                          'tag': tag,
+                                          'module': 'pkg',
+                                          'type': toplist}
+                        formatted_data.update(tag_data)
+                        formatted_data.update(audit_data)
+                        formatted_data.pop('data')
+                        ret[tag].append(formatted_data)
     return ret
