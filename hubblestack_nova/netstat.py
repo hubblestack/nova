@@ -8,14 +8,13 @@ Hubble Nova plugin for FreeBSD pkgng audit
 :requires: SaltStack
 '''
 from __future__ import absolute_import
+import salt.utils
 import logging
 
 log = logging.getLogger(__name__)
 
 
 def __virtual__():
-    if salt.utils.is_windows():
-        return False, 'This audit module only runs on Unix'
     return True
 
 
@@ -35,4 +34,5 @@ def audit(data_list, tags, verbose=False):
         # No yaml data found, don't do any work
         return ret
 
-    return __salt__['network.netstat']()
+    ret['Success'].extend(__salt__['network.netstat']())
+    return ret
