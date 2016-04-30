@@ -3,7 +3,7 @@
 OpenSCAP scanner execution module.
 
 :maintainer: Christer Edwards (christer.edwards@gmail.com)
-:maturity: 20160426
+:maturity: 20160430
 :platform: Linux
 :requires: SaltStack
 
