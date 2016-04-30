@@ -107,8 +107,6 @@ pkg:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'aide': 'CIS-1.3.1'
-        'CentOS-6':
-          - 'aide': 'CIS-1.3.1'
         'CentOS Linux-7':
           - 'aide': 'CIS-1.3.1'
       description: 'Install AIDE (Scored)'
@@ -116,8 +114,6 @@ pkg:
     iptables:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - 'iptables': 'CIS-4.7_installed'
-        'CentOS-6':
           - 'iptables': 'CIS-4.7_installed'
       description: 'Install IPtables (Scored)'
 
@@ -131,8 +127,6 @@ pkg:
       data:
         'Red Hat Enterprise Linux Server-6':
           - 'rsyslog': 'CIS-5.1.1'
-        'CentOS-6':
-          - 'rsyslog': 'CIS-5.1.1'
         'CentOS Linux-7':
           - 'rsyslog': 'CIS-5.1.1'
       description: 'Install rsyslog (Scored)'
@@ -142,8 +136,6 @@ pkg:
     anacron:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - 'cronie-anacron': 'CIS-6.1.1'
-        'CentOS-6':
           - 'cronie-anacron': 'CIS-6.1.1'
         'CentOS Linux-7':
           - 'cronie-anacron': 'CIS-6.1.1'
@@ -155,13 +147,6 @@ stat:
   grub_conf_own:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - '/etc/grub.conf':
-            tag: 'CIS-1.5.1'
-            user: 'root'
-            uid: 0
-            group: 'root'
-            gid: 0
-      'CentOS-6':
         - '/etc/grub.conf':
             tag: 'CIS-1.5.1'
             user: 'root'
@@ -182,10 +167,6 @@ stat:
   grub_conf_perm:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - '/etc/grub.conf':
-            tag: 'CIS-1.5.2'
-            mode: 600
-      'CentOS-6':
         - '/etc/grub.conf':
             tag: 'CIS-1.5.2'
             mode: 600
@@ -917,7 +898,7 @@ grep:
               match_output: 'gpgcheck=1'
         CentOS Linux-7:
           - '/etc/yum.conf':
-              tag: 'CIS-1.1.16'
+              tag: 'CIS-1.2.2'
               pattern: 'gpgcheck'
               match_output: 'gpgcheck=1'
       description: 'Verify that gpgcheck is Globally Activated (Scored)'
@@ -925,7 +906,7 @@ grep:
     boot_loader_passwd:
       data:
         'Red Hat Enterprise Linux Server-6':
-          - '/boot/grub2/grub.cfg':
+          - '/etc/grub.conf':
               tag: 'CIS-1.5.3'
               pattern: '^password'
         CentOS Linux-7:
@@ -1236,6 +1217,11 @@ grep:
               tag: 'CIS-6.3.4'
               pattern: "pam_unix.so"
               match_output: "remember=5"  # number of passwords to remember
+        'CentOS Linux-7':
+          - '/etc/pam.d/system-auth':
+              tag: 'CIS-6.3.4'
+              pattern: "pam_unix.so"
+              match_output: "remember=5"  # number of passwords to remember
       description: 'PAM Password Reuse (Scored)'
 
     limit_su_command_access:
@@ -1245,6 +1231,17 @@ grep:
               tag: 'CIS-6.5'
               pattern: "pam_wheel.so"
               match_output: "use_uid"  # number of passwords to remember
+          - '/etc/group':
+              tag: 'CIS-6.5'
+              pattern: "wheel"
+        'CentOS Linux-7':
+          - '/etc/pam.d/su':
+              tag: 'CIS-6.5'
+              pattern: "pam_wheel.so"
+              match_output: "use_uid"  # number of passwords to remember
+          - '/etc/group':
+              tag: 'CIS-6.5'
+              pattern: "wheel"
       description: 'Limit su command access (Scored)'
 
     passwd_expiration_days:
@@ -1351,10 +1348,6 @@ sysctl:
         - 'fs.suid_dumpable':
             tag: 'CIS-1.6.1'
             match_output: '0'
-      'CentOS-6':
-        - 'fs.suid_dumpable':
-            tag: 'CIS-1.6.1'
-            match_output: '0'
     description: 'Restrict SUID Core Dumps (Scored)'
     alert: email
     trigger: state
@@ -1365,10 +1358,6 @@ sysctl:
         - 'kernel.exec-shield':
             tag: 'CIS-1.6.2'
             match_output: '1'
-      'CentOS-6':
-        - 'kernel.exec-shield':
-            tag: 'CIS-1.6.2'
-            match_output: '1'
     description: 'Configure ExecShield (Scored)'
     alert: email
     trigger: state
@@ -1376,10 +1365,6 @@ sysctl:
   randomize_va_space:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - 'kernel.randomize_va_space':
-            tag: 'CIS-1.6.3'
-            match_output: '2'
-      'CentOS-6':
         - 'kernel.randomize_va_space':
             tag: 'CIS-1.6.3'
             match_output: '2'
@@ -1394,10 +1379,6 @@ sysctl:
   ip_forwarding:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - 'net.ipv4.ip_forward':
-            tag: 'CIS-4.1.1'
-            match_output: '0'
-      'CentOS-6':
         - 'net.ipv4.ip_forward':
             tag: 'CIS-4.1.1'
             match_output: '0'
@@ -1418,10 +1399,6 @@ sysctl:
         - 'net.ipv4.conf.default.send_redirects':
             tag: 'CIS-4.1.2'
             match_output: '0'
-      'CentOS-6':
-        - 'net.ipv4.conf.all.send_redirects':
-            tag: 'CIS-4.1.2'
-            match_output: '0'
         - 'net.ipv4.conf.default.send_redirects':
             tag: 'CIS-4.1.2'
             match_output: '0'
@@ -1439,13 +1416,6 @@ sysctl:
   source_routed_packet_acceptance:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - 'net.ipv4.conf.all.accept_source_route':
-            tag: 'CIS-4.2.1'
-            match_output: '0'
-        - 'net.ipv4.conf.default.accept_source_route':
-            tag: 'CIS-4.2.1'
-            match_output: '0'
-      'CentOS-6':
         - 'net.ipv4.conf.all.accept_source_route':
             tag: 'CIS-4.2.1'
             match_output: '0'
@@ -1472,13 +1442,6 @@ sysctl:
         - 'net.ipv4.conf.default.accept_redirects':
             tag: 'CIS-4.2.2'
             match_output: '0'
-      'CentOS-6':
-        - 'net.ipv4.conf.all.accept_redirects':
-            tag: 'CIS-4.2.2'
-            match_output: '0'
-        - 'net.ipv4.conf.default.accept_redirects':
-            tag: 'CIS-4.2.2'
-            match_output: '0'
       'CentOS Linux-7':
         - 'net.ipv4.conf.all.accept_redirects':
             tag: 'CIS-4.2.2'
@@ -1493,13 +1456,6 @@ sysctl:
   secure_icmp_redirect_acceptance:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - 'net.ipv4.conf.all.secure_redirects':
-            tag: 'CIS-4.2.3'
-            match_output: '0'
-        - 'net.ipv4.conf.default.secure_redirects':
-            tag: 'CIS-4.2.3'
-            match_output: '0'
-      'CentOS-6':
         - 'net.ipv4.conf.all.secure_redirects':
             tag: 'CIS-4.2.3'
             match_output: '0'
@@ -1526,13 +1482,6 @@ sysctl:
         - 'net.ipv4.conf.default.log_martians':
             tag: 'CIS-4.2.4'
             match_output: '1'
-      'CentOS-6':
-        - 'net.ipv4.conf.all.log_martians':
-            tag: 'CIS-4.2.4'
-            match_output: '1'
-        - 'net.ipv4.conf.default.log_martians':
-            tag: 'CIS-4.2.4'
-            match_output: '1'
       'CentOS Linux-7':
         - 'net.ipv4.conf.all.log_martians':
             tag: 'CIS-4.2.4'
@@ -1550,10 +1499,6 @@ sysctl:
         - 'net.ipv4.icmp_echo_ignore_broadcasts':
             tag: 'CIS-4.2.5'
             match_output: '1'
-      'CentOS-6':
-        - 'net.ipv4.icmp_echo_ignore_broadcasts':
-            tag: 'CIS-4.2.5'
-            match_output: '1'
       'CentOS Linux-7':
         - 'net.ipv4.icmp_echo_ignore_broadcasts':
             tag: 'CIS-4.2.5'
@@ -1565,10 +1510,6 @@ sysctl:
   bad_error_message_protection:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - 'net.ipv4.icmp_ignore_bogus_error_responses':
-            tag: 'CIS-4.2.6'
-            match_output: '1'
-      'CentOS-6':
         - 'net.ipv4.icmp_ignore_bogus_error_responses':
             tag: 'CIS-4.2.6'
             match_output: '1'
@@ -1586,10 +1527,6 @@ sysctl:
         - 'net.ipv4.tcp_syncookies':
             tag: 'CIS-4.2.8'
             match_output: '1'
-      'CentOS-6':
-        - 'net.ipv4.tcp_syncookies':
-            tag: 'CIS-4.2.8'
-            match_output: '1'
       'CentOS Linux-7':
         - 'net.ipv4.tcp_syncookies':
             tag: 'CIS-4.2.8'
@@ -1599,24 +1536,6 @@ sysctl:
     trigger: state
 
 service:
-  # # Must not be installed
-  # blacklist:
-  #   # Unique ID for this set of audits
-  #   telnet:
-  #     data:
-  #       # 'osfinger' grain, for multiplatform support
-  #       CentOS-6:
-  #         # service name : tag
-  #         - 'telnet': 'CIS-2.1.1'
-  #       # Catch-all, if no osfinger match was found
-  #       '*':
-  #         # service name : tag
-  #         - 'telnet': 'telnet-bad'
-  #     # description/alert/trigger are currently ignored, but may be used in the future
-  #     description: 'Telnet is evil'
-  #     alert: email
-  #     trigger: state
-
   # Must be installed, no version checking (yet)
   whitelist:
     iptables_running:             # best practice to verify the process is running

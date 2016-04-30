@@ -51,25 +51,27 @@ from distutils.version import LooseVersion
 
 log = logging.getLogger(__name__)
 
-__tags__ = None
-__data__ = None
-
 
 def __virtual__():
     if salt.utils.is_windows():
         return False, 'This audit module only runs on linux'
-    global __tags__
-    global __data__
-    yamldir = os.path.dirname(__file__)
-    __data__ = _get_yaml(yamldir)
-    __tags__ = _get_tags(__data__)
     return True
 
 
-def audit(tags, verbose=False):
+def audit(data_list, tags, verbose=False):
     '''
     Run the grep audits contained in the YAML files processed by __virtual__
     '''
+    __data__ = {}
+    for data in data_list:
+        _merge_yaml(__data__, data)
+    __tags__ = _get_tags(__data__)
+
+    log.trace('grep audit __data__:')
+    log.trace(__data__)
+    log.trace('grep audit __tags__:')
+    log.trace(__tags__)
+
     ret = {'Success': [], 'Failure': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
@@ -143,23 +145,6 @@ def audit(tags, verbose=False):
     return ret
 
 
-def _get_yaml(dirname):
-    '''
-    Iterate over the current directory for all yaml files, read them in,
-    merge them, and return the __data__
-    '''
-    ret = {}
-    try:
-        for yamlpath in os.listdir(dirname):
-            if yamlpath.endswith('.yaml'):
-                with open(os.path.join(dirname, yamlpath)) as fh_:
-                    data = yaml.safe_load(fh_)
-                _merge_yaml(ret, data)
-    except:
-        return {}
-    return ret
-
-
 def _merge_yaml(ret, data):
     '''
     Merge two yaml dicts together at the grep:blacklist and grep:whitelist level
@@ -169,8 +154,9 @@ def _merge_yaml(ret, data):
     for topkey in ('blacklist', 'whitelist'):
         if topkey in data.get('grep', {}):
             if topkey not in ret['grep']:
-                ret['grep'][topkey] = {}
-            ret['grep'][topkey].update(data['grep'][topkey])
+                ret['grep'][topkey] = []
+            for key, val in data['grep'][topkey].iteritems():
+                ret['grep'][topkey].append({key: val})
     return ret
 
 
@@ -182,33 +168,35 @@ def _get_tags(data):
     distro = __grains__.get('osfinger')
     for toplist, toplevel in data.get('grep', {}).iteritems():
         # grep:blacklist
-        for audit_id, audit_data in toplevel.iteritems():
-            # grep:blacklist:telnet
-            tags_dict = audit_data.get('data', {})
-            # grep:blacklist:telnet:data
-            tags = tags_dict.get(distro, tags_dict.get('*', []))
-            # grep:blacklist:telnet:data:Debian-8
-            if isinstance(tags, dict):
-                # malformed yaml, convert to list of dicts
-                tmp = []
-                for name, tag in tags.iteritems():
-                    tmp.append({name: tag})
-                tags = tmp
-            for item in tags:
-                for name, tag in item.iteritems():
-                    tag_data = {}
-                    # Whitelist could have a dictionary, not a string
-                    if isinstance(tag, dict):
-                        tag_data = copy.deepcopy(tag)
-                        tag = tag_data.pop('tag')
-                    if tag not in ret:
-                        ret[tag] = []
-                    formatted_data = {'name': name,
-                                      'tag': tag,
-                                      'module': 'grep',
-                                      'type': toplist}
-                    formatted_data.update(tag_data)
-                    formatted_data.update(audit_data)
-                    formatted_data.pop('data')
-                    ret[tag].append(formatted_data)
+        for audit_dict in toplevel:
+            # grep:blacklist:0
+            for audit_id, audit_data in audit_dict.iteritems():
+                # grep:blacklist:0:telnet
+                tags_dict = audit_data.get('data', {})
+                # grep:blacklist:0:telnet:data
+                tags = tags_dict.get(distro, tags_dict.get('*', []))
+                # grep:blacklist:0:telnet:data:Debian-8
+                if isinstance(tags, dict):
+                    # malformed yaml, convert to list of dicts
+                    tmp = []
+                    for name, tag in tags.iteritems():
+                        tmp.append({name: tag})
+                    tags = tmp
+                for item in tags:
+                    for name, tag in item.iteritems():
+                        tag_data = {}
+                        # Whitelist could have a dictionary, not a string
+                        if isinstance(tag, dict):
+                            tag_data = copy.deepcopy(tag)
+                            tag = tag_data.pop('tag')
+                        if tag not in ret:
+                            ret[tag] = []
+                        formatted_data = {'name': name,
+                                          'tag': tag,
+                                          'module': 'grep',
+                                          'type': toplist}
+                        formatted_data.update(tag_data)
+                        formatted_data.update(audit_data)
+                        formatted_data.pop('data')
+                        ret[tag].append(formatted_data)
     return ret

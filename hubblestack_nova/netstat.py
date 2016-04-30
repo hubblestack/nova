@@ -3,45 +3,36 @@
 Hubble Nova plugin for FreeBSD pkgng audit
 
 :maintainer: HubbleStack
-:maturity: 20160421
-:platform: FreeBSD
+:maturity: 20160428
+:platform: Unix
 :requires: SaltStack
 '''
 from __future__ import absolute_import
+import salt.utils
 import logging
 
 log = logging.getLogger(__name__)
 
 
 def __virtual__():
-    if 'FreeBSD' not in __grains__['os']:
-        return False, 'This audit module only runs on FreeBSD'
     return True
 
 
 def audit(data_list, tags, verbose=False):
     '''
-    Run the pkg.audit command
+    Run the network.netstat command
     '''
     ret = {'Success': [], 'Failure': []}
 
     __tags__ = []
     for data in data_list:
-        if 'pkgng_audit' in data:
-            __tags__ = ['pkgng_audit']
+        if 'netstat' in data:
+            __tags__ = ['netstat']
             break
-
-    log.trace('pkgng audit __tags__:')
-    log.trace(__tags__)
 
     if not __tags__:
         # No yaml data found, don't do any work
         return ret
 
-    salt_ret = __salt__['pkg.audit']()
-    if '0 problem(s)' not in salt_ret:
-        ret['Failure'].append(salt_ret)
-    else:
-        ret['Success'].append(salt_ret)
-
+    ret['Success'].extend(__salt__['network.netstat']())
     return ret
