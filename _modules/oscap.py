@@ -44,6 +44,8 @@ from __future__ import absolute_import
 
 # Import python libs
 import logging
+import salt.minion
+import salt.fileclient
 
 from salt import utils
 
@@ -61,12 +63,26 @@ def __virtual__():
     return True
 
 
-def scan(data, result='results.xml', report='report.html'):
+def scan(path):
     '''
     scan function
     '''
-    ret = {}
-    cmd = '{0} xccdf eval --results {1} --report {2} {3}'.format(_OSCAP, result, report, data)
-    salt_ret = __salt__['cmd.run'](cmd, python_shell=False)
+    ret = {'Vulnerabilities': [], 'Total': ''}
 
-    return salt_ret
+    cmd = '{0} oval eval {1}'.format(_OSCAP, path)
+    log.debug(cmd)
+    salt_ret = __salt__['cmd.run_all'](cmd, python_shell=False)
+
+    ## Definition oval:com.redhat.rhsa:def:20140675: false
+    items = salt_ret['stdout'].split('\n')
+    for item in items:
+        if 'true' in item:
+            if 'rhsa' in item:
+                rhsa = item.split(':')[3]
+                year = item.split(':')[3][:4]
+                num = item.split(':')[3][4:]
+                url = 'https://rhn.redhat.com/errata/RHSA-' + year + '-' + num + '.html'
+                ret['Vulnerabilities'].append('RHSA-' + item.split(':')[3] + ' : ' + url)
+
+    ret['Total'] = len(ret['Vulnerabilities'])
+    return ret
