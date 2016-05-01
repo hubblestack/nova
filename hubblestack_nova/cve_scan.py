@@ -5,7 +5,7 @@ Hubble Nova plugin for FreeBSD pkgng audit
 :maintainer: HubbleStack
 :maturity: 20160428
 :platform: Unix
-:requires: SaltStack
+:requires: SaltStack + oscap module
 '''
 from __future__ import absolute_import
 import salt.utils
@@ -15,6 +15,8 @@ log = logging.getLogger(__name__)
 
 
 def __virtual__():
+    if not (utils.is_linux() and utils.which('oscap')):
+        return False, 'This module requires Linux and the oscap binary'
     return True
 
 
@@ -29,7 +31,7 @@ def audit(data_list, tags, verbose=False):
     for data in data_list:
         if 'cve_scan' in data:
             __tags__ = ['cve_scan']
-            for k,v in data.items():
+            for k, v in data.items():
                 __feed__ = v
             break
 
