@@ -15,9 +15,9 @@ log = logging.getLogger(__name__)
 
 
 def __virtual__():
-    if not (utils.is_linux() and utils.which('oscap')):
-        return False, 'This module requires Linux and the oscap binary'
-    return True
+    if salt.utils.is_linux() and salt.utils.which('oscap'):
+        return True
+    return False, 'This module requires Linux and the oscap binary'
 
 
 def audit(data_list, tags, verbose=False):
@@ -31,8 +31,7 @@ def audit(data_list, tags, verbose=False):
     for data in data_list:
         if 'cve_scan' in data:
             __tags__ = ['cve_scan']
-            for k, v in data.items():
-                __feed__ = v
+            __feed__ = data['cve_scan']
             break
 
     if not __tags__:
