@@ -80,7 +80,7 @@ def audit(data_list, tags, verbose=False):
                     passed = salt_ret
 
                 if tag_data['type'] == 'blacklist':
-                    passed = ~passed
+                    passed = not passed
 
                 if passed:
                     ret['Success'].append(tag_data)
