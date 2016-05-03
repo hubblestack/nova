@@ -145,11 +145,138 @@ def audit(configs='',
         results['Failure'].extend(ret.get('Failure', []))
         results['Controlled'].extend(ret.get('Controlled', []))
 
-    total_audits = len(results['Success']) + len(results['Failure']) + len(results['Controlled'])
-    if show_compliance and total_audits:
-        compliance = float(len(results['Success']) + len(results['Controlled']))/total_audits
-        compliance = int(compliance * 100)
-        results['Compliance'] = '{0}%'.format(compliance)
+    if show_compliance:
+        compliance = _calculate_compliance(results)
+        if compliance:
+            results['Compliance'] = compliance
+
+    if not show_success:
+        results.pop('Success')
+
+    return results
+
+
+def top(topfile='top.nova',
+        verbose=None,
+        show_success=None,
+        show_compliance=None):
+    '''
+    Compile and run all yaml data from the specified nova topfile.
+
+    Nova topfiles look very similar to saltstack topfiles, except the top-level
+    key is always ``nova``, as nova doesn't have a concept of environments.
+
+    .. code-block:: yaml
+
+        nova:
+          '*':
+            - cve_scan
+            - CIS-CentOS-7-L1-scored
+          'web*':
+            - firewall
+            - CIS-CentOS-7-L2-scored
+            - CIS-CentOS-7-apache24-L1-scored
+          'G@os_family:debian':
+            - netstat
+            - CIS-Debian-7-L2-scored: 'CIS*'
+            - CIS-Debian-7-mysql57-L1-scored: 'CIS 2.1.2'
+
+    Additionally, all nova topfile matches are compound matches, so you never
+    need to define a match type like you do in saltstack topfiles.
+
+    Each list item is a string representing the dot-separated location of a
+    yaml file which will be run with hubble.audit. You can also specify a
+    tag glob to use as a filter for just that yaml file, using a colon
+    after the yaml file (turning it into a dictionary). See the last two lines
+    in the yaml above for examples.
+
+
+    Arguments:
+
+    topfile
+        The path of the topfile, relative to your hubblestack_nova directory.
+
+    verbose
+        Whether to show additional information about audits, including
+        description, remediation instructions, etc. The data returned depends
+        on the audit module. Defaults to False. Configurable via
+        `hubblestack.nova.verbose` in minion config/pillar.
+
+    show_success
+        Whether to show successful audits in addition to failed audits.
+        Defaults to True. Configurable via `hubblestack.nova.show_success` in
+        minion config/pillar.
+
+    show_compliance
+        Whether to show compliance as a percentage (successful checks divided
+        by total checks). Defaults to True. Configurable via
+        `hubblestack.nova.show_compliance` in minion config/pillar.
+
+    CLI Examples:
+
+    .. code-block:: bash
+
+        salt '*' hubble.top
+        salt '*' hubble.top foo/bar/top.nova
+        salt '*' hubble.top foo/bar.nova verbose=True
+    '''
+    if __salt__['config.get']('hubblestack.nova.autoload', True):
+        load()
+    if not __nova__:
+        return False, 'No nova modules/data have been loaded.'
+
+    if verbose is None:
+        verbose = __salt__['config.get']('hubblestack.nova.verbose', False)
+    if show_success is None:
+        show_success = __salt__['config.get']('hubblestack.nova.show_success', True)
+    if show_compliance is None:
+        show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
+
+    results = {}
+
+    # Get a list of yaml to run
+    top_data = _get_top_data(topfile)
+
+    # Will be a combination of strings and single-item dicts. The strings
+    # have no tag filters, so we'll treat them as tag filter '*'. If we sort
+    # all the data by tag filter we can batch where possible under the same
+    # tag.
+    data_by_tag = {}
+    for data in top_data:
+        if isinstance(data, str):
+            if '*' not in data_by_tag:
+                data_by_tag['*'] = []
+            data_by_tag['*'].append(data)
+        elif isinstance(data, dict):
+            for key, tag in data:
+                if tag not in data_by_tag:
+                    data_by_tag[tag] = []
+                data_by_tag[tag].append(key)
+        else:
+            if 'Errors' not in results:
+                results['Errors'] = {}
+            results['Errors'][topfile] = {'error': 'topfile malformed, list '
+                                                   'entries must be strings or dicts'}
+            return results
+
+    # Run the audits
+    for tag, data in data_by_tag:
+        ret = audit(configs=configs,
+                    tags=tag,
+                    verbose=verbose,
+                    show_success=True,
+                    show_compliance=False)
+
+        # Merge in the results
+        for key, val in ret:
+            if key not in results:
+                results[key] = []
+            results[key].extend(val)
+
+    if show_compliance:
+        compliance = _calculate_compliance(results)
+        if compliance:
+            results['Compliance'] = compliance
 
     if not show_success:
         results.pop('Success')
@@ -247,6 +374,19 @@ def _hubble_dir():
                             saltenv,
                             nova_dir)
     return cachedir
+
+
+def _calculate_compliance(results):
+    '''
+    Calculate compliance numbers given the results of audits
+    '''
+    total_audits = len(results['Success']) + len(results['Failure'])
+    if total_audits:
+        compliance = float(len(results['Success']))/total_audits
+        compliance = int(compliance * 100)
+        compliance = '{0}%'.format(compliance)
+        return compliance
+    return None
 
 
 class NovaLazyLoader(LazyLoader):
