@@ -19,7 +19,7 @@ firewall:
         tag: 'FIREWALL-TCP-21'
         table: 'filter'
         chain: INPUT
-        rule: '-p -tcp --dport 21 -m state --state ESTABLISHED,RELATED -j ACCEPT'
+        rule: '-p tcp --dport 21 -m state --state ESTABLISHED,RELATED -j ACCEPT'
         family: 'ipv4'
       description: 'ftp iptables rule check'
       alert: email
