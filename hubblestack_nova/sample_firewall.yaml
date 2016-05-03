@@ -1,0 +1,27 @@
+firewall:
+  whitelist:
+
+    ssh:
+      data:
+        tag: 'FIREWALL-TCP-22'
+        table: 'filter'
+        chain: INPUT
+        rule: '-p tcp --dport 22 -m state --state ESTABLISHED,RELATED -j ACCEPT'
+        family: 'ipv4'
+      description: 'ssh iptables rule check'
+      alert: email
+      trigger: state
+
+  blacklist:
+
+    ftp:
+      data:
+        tag: 'FIREWALL-TCP-21'
+        table: 'filter'
+        chain: INPUT
+        rule: '-p tcp --dport 21 -m state --state ESTABLISHED,RELATED -j ACCEPT'
+        family: 'ipv4'
+      description: 'ftp iptables rule check'
+      alert: email
+      trigger: state
+
