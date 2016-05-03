@@ -413,59 +413,45 @@ pkg:
         - avahi-daemon: CIS-3.3
       description: Disable Avahi Server (Scored)
     dhcp:
-      alert: email
       data:
         CentOS Linux-7:
         - dhcp: CIS-3.5
       description: Remove DHCP server (Scored)
-      trigger: state
     nis:
-      alert: email
       data:
         CentOS Linux-7:
         - ypbind: CIS-2.1.5
         - ypserv: CIS-2.1.6
       description: Remove nis client and nis server (Scored)
-      trigger: state
     rsh:
-      alert: email
       data:
         CentOS Linux-7:
         - rsh-server: CIS-2.1.3
         - rsh: CIS-2.1.4
       description: Remove rsh and rsh-server (Scored)
-      trigger: state
     talk:
-      alert: email
       data:
         CentOS Linux-7:
         - talk: CIS-2.1.9
         - talk-server: CIS-2.1.10
       description: Remove talk and talk-server (Scored)
-      trigger: state
     telnet:
-      alert: email
       data:
         CentOS Linux-7:
         - telnet-server: CIS-2.1.1
         - telnet: CIS-2.1.2
       description: Remove telnet and telnet-server (Scored)
-      trigger: state
     tftp:
-      alert: email
       data:
         CentOS Linux-7:
         - tftp: CIS-2.1.7
         - tftp-server: CIS-2.1.8
       description: Remove tftp and tftp-server (Scored)
-      trigger: state
     xinetd:
-      alert: email
       data:
         CentOS Linux-7:
         - xinetd: CIS-2.1.11
       description: Remove xinetd (Scored)
-      trigger: state
     xorg-x11-server-common:
       data:
         CentOS Linux-7:
@@ -478,12 +464,10 @@ pkg:
         - aide: CIS-1.3.1
       description: Install AIDE (Scored)
     anacron:
-      alert: email
       data:
         CentOS Linux-7:
         - cronie-anacron: CIS-6.1.1
       description: Enable anacron Daemon (Scored)
-      trigger: state
     firewalld:
       data:
         CentOS Linux-7:
@@ -493,15 +477,12 @@ pkg:
       data: {}
       description: Install IPtables (Scored)
     rsyslog:
-      alert: email
       data:
         CentOS Linux-7:
         - rsyslog: CIS-5.1.1
       description: Install rsyslog (Scored)
-      trigger: state
 stat:
   anacrontab:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/anacrontab:
@@ -513,9 +494,7 @@ stat:
           user: root
     description: /etc/anacrontab file be owned by root and must have permissions 600
       (Scored)
-    trigger: state
   at_allow:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/at.allow:
@@ -526,9 +505,7 @@ stat:
           uid: 0
           user: root
     description: /etc/at.allow must be owned by root and have persmissions 600 (Scored)
-    trigger: state
   at_cron_allow:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/cron.deny:
@@ -560,9 +537,7 @@ stat:
           uid: 0
           user: root
     description: Restrict at/cron to authorized users (Scored)
-    trigger: state
   cron_d:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/cron.d:
@@ -573,9 +548,7 @@ stat:
           uid: 0
           user: root
     description: /etc/cron.d must be owned by root and must have permissions 700 (Scored)
-    trigger: state
   cron_daily:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/cron.daily:
@@ -587,9 +560,7 @@ stat:
           user: root
     description: /etc/cron.daily must be owned by root and must have permissions 700
       (Scored)
-    trigger: state
   cron_hourly:
-    alert: email
     data:
       CentOS Linux-7:
       - etc/cron.hourly:
@@ -601,9 +572,7 @@ stat:
           user: root
     description: /etc/cron.hourly must be owned by root and must have permissions
       700 (Scored)
-    trigger: state
   cron_monthly:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/cron.monthly:
@@ -615,9 +584,7 @@ stat:
           user: root
     description: /etc/cron.monthly must be owned by root and must have permissions
       700 (Scored)
-    trigger: state
   cron_weekly:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/cron.weekly:
@@ -629,9 +596,7 @@ stat:
           user: root
     description: /etc/cron.weekly must be owned by root and must have permissions
       700 (Scored)
-    trigger: state
   crontab:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/crontab:
@@ -642,9 +607,7 @@ stat:
           uid: 0
           user: root
     description: /etc/crontab must be owned by root and have persmissions 600 (Scored)
-    trigger: state
   group_own:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/group:
@@ -654,18 +617,14 @@ stat:
           uid: 0
           user: root
     description: /etc/group must be owned by root (Scored)
-    trigger: state
   group_perm:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/group:
           mode: 644
           tag: CIS-9.1.5
     description: /etc/group must have permissions 000 (Scored)
-    trigger: state
   grub_conf_own:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/grub2/grub.cfg:
@@ -675,18 +634,14 @@ stat:
           uid: 0
           user: root
     description: Grub must be owned by root (Scored)
-    trigger: state
   grub_conf_perm:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/grub2/grub.cfg:
           mode: 600
           tag: CIS-1.5.2
     description: Grub must have permissions 600 (Scored)
-    trigger: state
   gshadow_own:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/gshadow:
@@ -696,36 +651,28 @@ stat:
           uid: 0
           user: root
     description: /etc/gshadow must be owned by root (Scored)
-    trigger: state
   gshadow_perm:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/gshadow:
           mode: 0
           tag: CIS-9.1.4
     description: /etc/gshadow must have permissions 000 (Scored)
-    trigger: state
   hosts_allow:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/hosts.allow:
           mode: 644
           tag: CIS-4.5.3
     description: /etc/hosts.allow must have permissions 644 (Scored)
-    trigger: state
   hosts_deny:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/hosts.deny:
           mode: 644
           tag: CIS-4.5.5
     description: /etc/hosts.deny must have persmissions 644 (Scored)
-    trigger: state
   passwd_own:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/passwd:
@@ -734,18 +681,14 @@ stat:
           uid: 0
           user: root
     description: /etc/passwd must be owned by root (Scored)
-    trigger: state
   passwd_perm:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/passwd:
           mode: 644
           tag: CIS-9.1.2
     description: /etc/passwd must have permissions 644 (Scored)
-    trigger: state
   shadow_own:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/shadow:
@@ -755,18 +698,14 @@ stat:
           uid: 0
           user: root
     description: /etc/shadow must be owned by root (Scored)
-    trigger: state
   shadow_perm:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/shadow:
           mode: 0
           tag: CIS-9.1.3
     description: /etc/shadow must have permissions 000 (Scored)
-    trigger: state
   sshd_config:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/ssh/sshd_config:
@@ -778,9 +717,7 @@ stat:
           user: root
     description: /etc/ssh/sshd_config must be owned by root and must have permissions
       600 (Scored)
-    trigger: state
   warning_banner:
-    alert: email
     data:
       CentOS Linux-7:
       - /etc/motd:
@@ -806,24 +743,18 @@ stat:
           user: root
     description: Files containing the warning banners must be owned by root and must
       have permissions 644 (Scored)
-    trigger: state
 sysctl:
   bad_error_message_protection:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.icmp_ignore_bogus_error_responses:
           match_output: '1'
           tag: CIS-4.2.6
     description: Enable Bad Error Message Protection (Scored)
-    trigger: state
   exec_shield:
-    alert: email
     data: {}
     description: Configure ExecShield (Scored)
-    trigger: state
   icmp_redirect_acceptance:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.conf.all.accept_redirects:
@@ -833,27 +764,21 @@ sysctl:
           match_output: '0'
           tag: CIS-4.2.2
     description: Disable ICMP Redirect Acceptance (Scored)
-    trigger: state
   ignore_broadcast_requests:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.icmp_echo_ignore_broadcasts:
           match_output: '1'
           tag: CIS-4.2.5
     description: Enable Ignore Broadcast Requests (Scored)
-    trigger: state
   ip_forwarding:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.ip_forward:
           match_output: '0'
           tag: CIS-4.1.1
     description: Disable IP Forwarding (Scored)
-    trigger: state
   log_suspicious_packets:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.conf.all.log_martians:
@@ -863,23 +788,17 @@ sysctl:
           match_output: '1'
           tag: CIS-4.2.4
     description: Log Suspicious Activity (Scored)
-    trigger: state
   randomize_va_space:
-    alert: email
     data:
       CentOS Linux-7:
       - kernel.randomize_va_space:
           match_output: '2'
           tag: CIS-1.6.2
     description: Enable Randomized Virtual Memory Region Placement (Scored)
-    trigger: state
   restrict_suid_core_dumps:
-    alert: email
     data: {}
     description: Restrict SUID Core Dumps (Scored)
-    trigger: state
   secure_icmp_redirect_acceptance:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.conf.all.secure_redirects:
@@ -889,9 +808,7 @@ sysctl:
           match_output: '0'
           tag: CIS-4.2.3
     description: Disable Secure ICMP Redirect Acceptance (Scored)
-    trigger: state
   send_packet_redirect:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.conf.all.send_redirects:
@@ -901,9 +818,7 @@ sysctl:
           match_output: '0'
           tag: CIS-4.1.2
     description: Disable Send Packet Redirect (Scored)
-    trigger: state
   source_routed_packet_acceptance:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.conf.all.accept_source_route:
@@ -913,13 +828,10 @@ sysctl:
           match_output: '0'
           tag: CIS-4.2.1
     description: Disable Source Routed Packet Acceptance (Scored)
-    trigger: state
   tcp_syn_cookies:
-    alert: email
     data:
       CentOS Linux-7:
       - net.ipv4.tcp_syncookies:
           match_output: '1'
           tag: CIS-4.2.8
     description: Enable TCP SYN cookies (Scored)
-    trigger: state

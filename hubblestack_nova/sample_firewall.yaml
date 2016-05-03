@@ -9,8 +9,6 @@ firewall:
         rule: '-p tcp --dport 22 -m state --state ESTABLISHED,RELATED -j ACCEPT'
         family: 'ipv4'
       description: 'ssh iptables rule check'
-      alert: email
-      trigger: state
 
   blacklist:
 
@@ -22,6 +20,4 @@ firewall:
         rule: '-p tcp --dport 21 -m state --state ESTABLISHED,RELATED -j ACCEPT'
         family: 'ipv4'
       description: 'ftp iptables rule check'
-      alert: email
-      trigger: state
 

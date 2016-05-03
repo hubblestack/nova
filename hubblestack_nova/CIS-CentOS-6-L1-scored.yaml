@@ -13,8 +13,6 @@ pkg:
           - 'telnet-server': 'CIS-2.1.1'
           - 'telnet': 'CIS-2.1.2'
       description: 'Remove telnet and telnet-server'
-      alert: email
-      trigger: state
 
     rsh:
       data:
@@ -22,8 +20,6 @@ pkg:
           - 'rsh-server': 'CIS-2.1.3'
           - 'rsh': 'CIS-2.1.4'
       description: 'Remove rsh and rsh-server'
-      alert: email
-      trigger: state
 
     nis:
       data:
@@ -31,8 +27,6 @@ pkg:
           - 'ypbind': 'CIS-2.1.5'
           - 'ypserv': 'CIS-2.1.6'
       description: 'Remove nis client and nis server'
-      alert: email
-      trigger: state
 
     tftp:
       data:
@@ -40,8 +34,6 @@ pkg:
           - 'tftp': 'CIS-2.1.7'
           - 'tftp-server': 'CIS-2.1.8'
       description: 'Remove tftp and tftp-server'
-      alert: email
-      trigger: state
 
     talk:
       data:
@@ -49,24 +41,18 @@ pkg:
           - 'talk': 'CIS-2.1.9'
           - 'talk-server': 'CIS-2.1.10'
       description: 'Remove talk and talk-server'
-      alert: email
-      trigger: state
 
     xinetd:
       data:
         'CentOS-6':
           - 'xinetd': 'CIS-2.1.11'
       description: 'Remove xinetd'
-      alert: email
-      trigger: state
 
     dhcp:
       data:
         'CentOS-6':
           - 'dhcp': 'CIS-3.5'
       description: 'Remove DHCP server'
-      alert: email
-      trigger: state
 
   whitelist:
 
@@ -75,16 +61,12 @@ pkg:
         'CentOS-6':
           'rsyslog': 'CIS-5.1.1'
       description: 'Install rsyslog'
-      alert: email
-      trigger: state
 
     anacron:
       data:
         'CentOS-6':
           'cronie-anacron': 'CIS-6.1.1'
       description: 'Enable anacron Daemon'
-      alert: email
-      trigger: state
 
 
 
@@ -99,8 +81,6 @@ stat:
             group: 'root'
             gid: 0
     description: 'Grub must be owned by root'
-    alert: email
-    trigger: state
 
   grub_conf_perm:
     data:
@@ -109,8 +89,6 @@ stat:
             tag: 'CIS-1.5.2'
             mode: 600
     description: 'Grub must have permissions 600'
-    alert: email
-    trigger: state
 
   hosts_allow:
     data:
@@ -119,8 +97,6 @@ stat:
             tag: 'CIS-4.5.3'
             mode: 644
     description: '/etc/hosts.allow must have permissions 644'
-    alert: email
-    trigger: state
 
   hosts_deny:
     data:
@@ -129,8 +105,6 @@ stat:
             tag: 'CIS-4.5.5'
             mode: 644
     description: '/etc/hosts.deny must have persmissions 644'
-    alert: email
-    trigger: state
 
   anacrontab:
     data:
@@ -143,8 +117,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/anacrontab file be owned by root and must have permissions 600'
-    alert: email
-    trigger: state
 
   crontab:
     data:
@@ -157,8 +129,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/crontab must be owned by root and have persmissions 600'
-    alert: email
-    trigger: state
 
   cron_hourly:
     data:
@@ -171,8 +141,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/cron.hourly must be owned by root and must have permissions 700'
-    alert: email
-    trigger: state
 
   cron_daily:
     data:
@@ -185,8 +153,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/cron.daily must be owned by root and must have permissions 700'
-    alert: email
-    trigger: state
 
   cron_weekly:
     data:
@@ -199,8 +165,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/cron.weekly must be owned by root and must have permissions 700'
-    alert: email
-    trigger: state
 
   cron_monthly:
     data:
@@ -213,8 +177,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/cron.monthly must be owned by root and must have permissions 700'
-    alert: email
-    trigger: state
 
   cron_d:
     data:
@@ -227,8 +189,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/cron.d must be owned by root and must have permissions 700'
-    alert: email
-    trigger: state
 
   at_allow:
     data:
@@ -241,8 +201,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/at.allow must be owned by root and have persmissions 600'
-    alert: email
-    trigger: state
 
   at_cron_allow:
     data:
@@ -276,8 +234,6 @@ stat:
             group: 'root'
             gid: 0
     description: 'Restrict at/cron to authorized users'
-    alert: email
-    trigger: state
 
   sshd_config:
     data:
@@ -290,8 +246,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/ssh/sshd_config must be owned by root and must have permissions 600'
-    alert: email
-    trigger: state
 
   warning_banner:
     data:
@@ -318,8 +272,6 @@ stat:
             group: 'root'
             gid: 0
     description: 'Files containing the warning banners must be owned by root and must have permissions 644'
-    alert: email
-    trigger: state
 
   passwd_perm:
     data:
@@ -328,8 +280,6 @@ stat:
             tag: 'CIS-9.1.2'
             mode: 644
     description: '/etc/passwd must have permissions 644'
-    alert: email
-    trigger: state
 
   passwd_own:
     data:
@@ -341,8 +291,6 @@ stat:
             group: 'root'
             uid: 0
     description: '/etc/passwd must be owned by root'
-    alert: email
-    trigger: state
 
   shadow_perm:
     data:
@@ -351,8 +299,6 @@ stat:
             tag: 'CIS-9.1.3'
             mode: 0
     description: '/etc/shadow must have permissions 000'
-    alert: email
-    trigger: state
 
   shadow_own:
     data:
@@ -364,8 +310,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/shadow must be owned by root'
-    alert: email
-    trigger: state
 
   gshadow_perm:
     data:
@@ -374,8 +318,6 @@ stat:
             tag: 'CIS-9.1.4'
             mode: 0
     description: '/etc/gshadow must have permissions 000'
-    alert: email
-    trigger: state
 
   gshadow_own:
     data:
@@ -387,8 +329,6 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/gshadow must be owned by root'
-    alert: email
-    trigger: state
 
   group_perm:
     data:
@@ -397,8 +337,6 @@ stat:
             tag: 'CIS-9.1.5'
             mode: 644
     description: '/etc/group must have permissions 000'
-    alert: email
-    trigger: state
 
   group_own:
     data:
@@ -410,32 +348,25 @@ stat:
             group: 'root'
             gid: 0
     description: '/etc/group must be owned by root'
-    alert: email
-    trigger: state
 
 
 
 sysctl:
   bad_error_message_protection:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.icmp_ignore_bogus_error_responses:
           match_output: '1'
           tag: CIS-4.2.6
     description: Enable Bad Error Message Protection (Scored)
-    trigger: state
   exec_shield:
-    alert: email
     data:
       CentOS-6:
       - kernel.exec-shield:
           match_output: '1'
           tag: CIS-1.6.2
     description: Configure ExecShield (Scored)
-    trigger: state
   icmp_redirect_acceptance:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.conf.all.accept_redirects:
@@ -445,27 +376,21 @@ sysctl:
           match_output: '0'
           tag: CIS-4.2.2
     description: Disable ICMP Redirect Acceptance
-    trigger: state
   ignore_broadcast_requests:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.icmp_echo_ignore_broadcasts:
           match_output: '1'
           tag: CIS-4.2.5
     description: Enable Ignore Broadcast Requests (Scored)
-    trigger: state
   ip_forwarding:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.ip_forward:
           match_output: '0'
           tag: CIS-4.1.1
     description: Disable IP Forwarding (Scored)
-    trigger: state
   log_suspicious_packets:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.conf.all.log_martians:
@@ -475,18 +400,14 @@ sysctl:
           match_output: '1'
           tag: CIS-4.2.4
     description: Log Suspicious Activity (Scored)
-    trigger: state
   randomize_va_space:
-    alert: email
     data:
       CentOS-6:
       - kernel.randomize_va_space:
           match_output: '2'
           tag: CIS-1.6.3
     description: Enable Randomized Virtual Memory Region Placement (Scored)
-    trigger: state
   send_packet_redirect:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.conf.all.send_redirects:
@@ -496,9 +417,7 @@ sysctl:
           match_output: '0'
           tag: CIS-4.1.2
     description: Disable Send Packet Redirect (Scored)
-    trigger: state
   source_routed_packet_acceptance:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.conf.all.accept_source_route:
@@ -508,16 +427,13 @@ sysctl:
           match_output: '0'
           tag: CIS-4.2.1
     description: Disable Source Routed Packet Acceptance (Scored)
-    trigger: state
   tcp_syn_cookies:
-    alert: email
     data:
       CentOS-6:
       - net.ipv4.tcp_syncookies:
           match_output: '1'
           tag: CIS-4.2.8
     description: Enable TCP SYN cookies (Scored)
-    trigger: state
 
 
 grep:
