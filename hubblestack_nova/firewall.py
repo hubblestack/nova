@@ -41,12 +41,13 @@ def audit(data_list, tags, verbose=False):
                 chain = tag_data['chain']
                 family = tag_data['family']
 
-                passed = __salt__['iptables.check'](table=table, chain=chain, rule=rule, family=family)
+                salt_ret = __salt__['iptables.check'](table=table, chain=chain, rule=rule, family=family)
 
-                if passed == 'Error: Chain needs to be specified':
+                if salt_ret not in (True, False):
+                    log.error(salt_ret)
                     passed = False
-                if passed == 'Error: Rule needs to be specified':
-                    passed = False
+                else:
+                    passed = salt_ret
 
                 if passed:
                     ret['Success'].append(tag_data)
@@ -107,6 +108,8 @@ def _get_tags(data):
                     ret[tag] = []
                 formatted_data = copy.deepcopy(tags_dict)
                 formatted_data['type'] = toplist
+                formatted_data['tag'] = tag
+                formatted_data['module'] = 'firewall'
                 formatted_data.update(audit_data)
                 formatted_data.pop('data')
                 ret[tag].append(formatted_data)
