@@ -101,7 +101,7 @@ def audit(configs='',
     configs = [os.path.join(os.path.sep, os.path.join(*(con.split('.yaml')[0]).split('.')))
                for con in configs]
 
-    results = {'Success': [], 'Failure': []}
+    results = {'Success': [], 'Failure': [], 'Controlled': []}
 
     # Compile a list of audit data sets which we need to run
     to_run = set()
@@ -143,6 +143,7 @@ def audit(configs='',
         # Compile the results
         results['Success'].extend(ret.get('Success', []))
         results['Failure'].extend(ret.get('Failure', []))
+        results['Controlled'].extend(ret.get('Controlled', []))
 
     total_audits = len(results['Success']) + len(results['Failure'])
     if show_compliance and total_audits:
