@@ -62,10 +62,13 @@ def audit(data_list, tags, verbose=False):
     log.trace('service audit __tags__:')
     log.trace(__tags__)
 
-    ret = {'Success': [], 'Failure': []}
+    ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
             for tag_data in __tags__[tag]:
+                if 'control' in tag_data:
+                    ret['Controlled'].append(tag_data)
+                    continue
                 rule = tag_data['rule']
                 table = tag_data['table']
                 chain = tag_data['chain']
