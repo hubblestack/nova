@@ -1,11 +1,41 @@
+# -*- encoding: utf-8 -*-
+'''
+Hubble Nova plugin for using iptables to verify firewall rules
+
+:maintainer: HubbleStack
+:maturity: 20160503
+:platform: Linux
+:requires: SaltStack
+
+This audit module requires yaml data to execute. It will search the local
+directory for any .yaml files, and if it finds a top-level 'firewall' key, it will
+use that data.
+
+Sample YAML data, with inline comments:
+
+
+firewall:
+  whitelist:    # whitelist or blacklist
+
+    ssh:    # unique id
+      data:
+        tag: 'FIREWALL-TCP-22'  # audit tag
+        table: 'filter' #iptables table to check
+        chain: INPUT    # INPUT / OUTPUT / FORWARD
+        rule: '-p tcp --dport 22 -m state --state ESTABLISHED,RELATED -j ACCEPT'    # rule to check
+        family: 'ipv4'  # iptables family
+      description: 'ssh iptables rule check' # description of the check
+      # The rest of these attributes are optional, and currently not used
+      alert: email
+      trigger: state
+'''
+
 from __future__ import absolute_import
 import logging
 
 import fnmatch
 import copy
 import salt.utils
-
-from distutils.version import LooseVersion
 
 log = logging.getLogger(__name__)
 
