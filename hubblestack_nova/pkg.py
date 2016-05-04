@@ -98,10 +98,13 @@ def audit(data_list, tags, verbose=False):
     log.trace('pkg audit __tags__:')
     log.trace(__tags__)
 
-    ret = {'Success': [], 'Failure': []}
+    ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
             for tag_data in __tags__[tag]:
+                if 'control' in tag_data:
+                    ret['Controlled'].append(tag_data)
+                    continue
                 name = tag_data['name']
                 audittype = tag_data['type']
 
@@ -159,6 +162,7 @@ def audit(data_list, tags, verbose=False):
     if not verbose:
         failure = []
         success = []
+        controlled = []
 
         tags_descriptions = set()
 
@@ -178,6 +182,16 @@ def audit(data_list, tags, verbose=False):
                 success.append({tag: description})
                 tags_descriptions.add((tag, description))
 
+        control_reasons = set()
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            control_reason = tag_data.get('control', '')
+            if (tag, control_reason) not in control_reasons:
+                controlled.append({tag: control_reason})
+                control_reasons.add((tag, control_reason))
+
+        ret['Controlled'] = controlled
         ret['Success'] = success
         ret['Failure'] = failure
 
