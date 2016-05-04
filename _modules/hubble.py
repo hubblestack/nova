@@ -85,7 +85,9 @@ def audit(configs=None,
         salt '*' hubble.audit foo,bar.baz verbose=True
     '''
     if configs is None:
-        return top()
+        return top(verbose=verbose,
+                   show_success=show_success,
+                   show_compliance=show_compliance)
 
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
