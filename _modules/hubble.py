@@ -394,6 +394,33 @@ def _calculate_compliance(results):
     return None
 
 
+def _get_top_data(topfile):
+    '''
+    Helper method to retrieve and parse the nova topfile
+    '''
+    topfile = os.path.join(_hubble_dir(), topfile)
+
+    try:
+        with open(topfile) as handle:
+            topdata = yaml.safe_load(handle)
+    except Exception as e:
+        raise CommandExecutionError('Could not load topfile: {0}'.format(e))
+
+    if not isinstance(topdata, dict) or 'nova' not in topdata or \
+            not(isinstance(topdata['nova'], dict)):
+        raise CommandExecutionError('Nova topfile not formatted correctly')
+
+    topdata = topdata['nova']
+
+    ret = []
+
+    for match, data in topdata.iteritems():
+        if __salt__['match.compound'](match):
+            ret.extend(data)
+
+    return ret
+
+
 class NovaLazyLoader(LazyLoader):
     '''
     Leverage the SaltStack LazyLoader so we don't have to reimplement
