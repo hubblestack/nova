@@ -129,7 +129,8 @@ def audit(data_list, tags, verbose=False):
         ret['Success'] = success
         ret['Failure'] = failure
 
-    if len(ret['Controlled']) == 0: ret.pop('Controlled')
+    if not ret['Controlled']:
+        ret.pop('Controlled')
 
     return ret
 
