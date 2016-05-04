@@ -134,10 +134,13 @@ def audit(data_list, tags, verbose=False):
 
         for tag_data in ret['Controlled']:
             tag = tag_data['tag']
+            description = tag_data.get('description')
             control_reason = tag_data.get('control', '')
-            if (tag, control_reason) not in control_reasons:
-                controlled.append({tag: control_reason})
-                control_reasons.add((tag, control_reason))
+            if (tag, description, control_reason) not in control_reasons:
+                dict = {'description': description,
+                        'control': control_reason}
+                controlled.append({tag: dict})
+                control_reasons.add((tag, description, control_reason))
 
 
         ret['Controlled'] = controlled
