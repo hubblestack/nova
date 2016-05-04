@@ -137,9 +137,9 @@ def audit(data_list, tags, verbose=False):
             description = tag_data.get('description')
             control_reason = tag_data.get('control', '')
             if (tag, description, control_reason) not in control_reasons:
-                dict = {'description': description,
+                tag_dict = {'description': description,
                         'control': control_reason}
-                controlled.append({tag: dict})
+                controlled.append({tag: tag_dict})
                 control_reasons.add((tag, description, control_reason))
 
 
@@ -147,6 +147,8 @@ def audit(data_list, tags, verbose=False):
         ret['Success'] = success
         ret['Failure'] = failure
 
+    if not ret['Controlled']:
+        ret.pop('Controlled')
 
     return ret
 
