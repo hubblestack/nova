@@ -141,7 +141,7 @@ def audit(configs='',
                 continue
 
         # Merge in the results
-        for key, val in ret:
+        for key, val in ret.iteritems():
             if key not in results:
                 results[key] = []
             results[key].extend(val)
@@ -249,7 +249,7 @@ def top(topfile='top.nova',
                 data_by_tag['*'] = []
             data_by_tag['*'].append(data)
         elif isinstance(data, dict):
-            for key, tag in data:
+            for key, tag in data.iteritems():
                 if tag not in data_by_tag:
                     data_by_tag[tag] = []
                 data_by_tag[tag].append(key)
@@ -261,15 +261,15 @@ def top(topfile='top.nova',
             return results
 
     # Run the audits
-    for tag, data in data_by_tag:
-        ret = audit(configs=configs,
+    for tag, data in data_by_tag.iteritems():
+        ret = audit(configs=data,
                     tags=tag,
                     verbose=verbose,
                     show_success=True,
                     show_compliance=False)
 
         # Merge in the results
-        for key, val in ret:
+        for key, val in ret.iteritems():
             if key not in results:
                 results[key] = []
             results[key].extend(val)
