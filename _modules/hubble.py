@@ -35,7 +35,7 @@ from salt.loader import LazyLoader
 __nova__ = {}
 
 
-def audit(configs='',
+def audit(configs=None,
           tags='*',
           verbose=None,
           show_success=None,
@@ -51,6 +51,9 @@ def audit(configs='',
         treated as a single config. Otherwise it will be treated as a
         directory. All configs found in a recursive search of the specified
         directories will be included in the audit.
+
+        If configs is not provided, this function will call ``hubble.top``
+        instead.
 
     tags
         Glob pattern string for tags to include in the audit. This way you can
@@ -81,6 +84,9 @@ def audit(configs='',
         salt '*' hubble.audit foo,bar tags='CIS*'
         salt '*' hubble.audit foo,bar.baz verbose=True
     '''
+    if configs is None:
+        return top()
+
     if __salt__['config.get']('hubblestack.nova.autoload', True):
         load()
     if not __nova__:
@@ -109,13 +115,16 @@ def audit(configs='',
         for key in __nova__.__data__:
             key_path_split = key.split('.yaml')[0].split(os.path.sep)
             matches = True
-            for i, path in enumerate(config.split(os.path.sep)):
-                if i >= len(key_path_split) or path != key_path_split[i]:
-                    matches = False
+            if config != os.path.sep:
+                for i, path in enumerate(config.split(os.path.sep)):
+                    if i >= len(key_path_split) or path != key_path_split[i]:
+                        matches = False
             if matches:
                 # Found a match, add the audit data to the set
                 to_run.add(key)
     data_list = [__nova__.__data__[key] for key in to_run]
+    log.trace('hubble.py configs:')
+    log.trace(configs)
     log.trace('hubble.py data_list:')
     log.trace(data_list)
     # Run the audits
