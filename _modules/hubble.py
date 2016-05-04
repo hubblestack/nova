@@ -101,7 +101,7 @@ def audit(configs='',
     configs = [os.path.join(os.path.sep, os.path.join(*(con.split('.yaml')[0]).split('.')))
                for con in configs]
 
-    results = {'Success': [], 'Failure': [], 'Controlled': []}
+    results = {}
 
     # Compile a list of audit data sets which we need to run
     to_run = set()
@@ -140,10 +140,11 @@ def audit(configs='',
                                           'data': ret}
                 continue
 
-        # Compile the results
-        results['Success'].extend(ret.get('Success', []))
-        results['Failure'].extend(ret.get('Failure', []))
-        results['Controlled'].extend(ret.get('Controlled', []))
+        # Merge in the results
+        for key, val in ret:
+            if key not in results:
+                results[key] = []
+            results[key].extend(val)
 
     if show_compliance:
         compliance = _calculate_compliance(results)
@@ -380,9 +381,13 @@ def _calculate_compliance(results):
     '''
     Calculate compliance numbers given the results of audits
     '''
-    total_audits = len(results['Success']) + len(results['Failure'])
+    success = len(results.get('Success', []))
+    failure = len(results.get('Failure', []))
+    control = len(results.get('Controlled', []))
+    total_audits = success + failure + control
+
     if total_audits:
-        compliance = float(len(results['Success']))/total_audits
+        compliance = float(success + control)/total_audits
         compliance = int(compliance * 100)
         compliance = '{0}%'.format(compliance)
         return compliance
