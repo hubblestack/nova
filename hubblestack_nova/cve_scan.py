@@ -27,16 +27,19 @@ def audit(data_list, tags, verbose=False):
     ret = {'Success': [], 'Failure': []}
 
     __tags__ = []
-    __feed__ = ''
+    __feed__ = []
     for data in data_list:
         if 'cve_scan' in data:
             __tags__ = ['cve_scan']
-            __feed__ = data['cve_scan']
-            break
+            if isinstance(data['cve_scan'], str):
+                __feed__.append(data['cve_scan'])
+            else: # assume list
+                __feed__.extend(data['cve_scan'])
 
     if not __tags__:
         # No yaml data found, don't do any work
         return ret
 
-    ret['Failure'].append(__salt__['oscap.scan'](__feed__))
+    for feed in __feed__:
+        ret['Failure'].append(__salt__['oscap.scan'](feed))
     return ret
