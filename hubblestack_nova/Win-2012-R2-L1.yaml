@@ -1,0 +1,56 @@
+# secedit provides at least three value_types which are expected in the
+# 'match_output' field
+# 'binary' - 'Enabled' or 'Disabled'
+# 'multi' - 'No auditing', 'Success', 'Failure', or 'Success, Failure'
+# 'less' - less than number in 'match_output'
+# 'more' - more than number in 'match_output'
+# 'equal' - equal to number in 'match_output'
+# 'alert' and 'trigger' are not used at this time
+# blacklist is not used at this time
+
+secedit:
+  #blacklist:
+  whitelist:
+    Password_Complexity:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'PasswordComplexity': 
+              tag: 'CIS-1.1.1.6'
+              match_output: 'Enabled'
+              value_type: 'binary'
+      description: 'Set Password must meet complexity requirements to Enabled (Scored)'
+      alert: email
+      trigger: state
+
+    Clear_Text_Passwords:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'ClearTextPassword': 
+              tag: 'CIS-1.1.1.7'
+              match_output: 'Disabled'
+              value_type: 'binary'
+      description: 'Set Store passwords using reversible encryption to Disabled (Scored)'
+      alert: email
+      trigger: state
+
+    Maximum_Password_Age:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'MaximumPasswordAge': 
+              tag: 'CIS-1.1.1.9'
+              match_output: '60'
+              value_type: 'less'
+      description: 'Set Maximum password age to 60 or fewer days (Scored)'
+      alert: email
+      trigger: state
+
+    Audit_System_Events:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'AuditSystemEvents': 
+              tag: 'secedit-policies'
+              match_output: 'Success, Failure'
+              value_type: 'multi'
+      description: 'Audit System Events'
+      alert: email
+      trigger: state
