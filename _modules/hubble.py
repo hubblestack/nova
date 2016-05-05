@@ -162,7 +162,7 @@ def audit(configs=None,
         if compliance:
             results['Compliance'] = compliance
 
-    if not show_success:
+    if not show_success and 'Success' in results:
         results.pop('Success')
 
     return results
@@ -290,7 +290,7 @@ def top(topfile='top.nova',
         if compliance:
             results['Compliance'] = compliance
 
-    if not show_success:
+    if not show_success and 'Success' in results:
         results.pop('Success')
 
     return results
