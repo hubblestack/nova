@@ -111,7 +111,7 @@ def audit(data_list, tags, verbose=False):
                     for d in diff:
                         expected_str = '{0} {1} {2} '.format(expected_str, d, expected[d])
                         found_str = '{0} {1} {2} '.format(found_str, d, diff[d])
-                    tag_data['reason'] = 'expected: {0} / found: {1}'.format(expected_str, found_str)
+                    tag_data['reason'] = 'expected {0} / found {1}'.format(expected_str, found_str)
 
                 if passed:
                     ret['Success'].append(tag_data)
