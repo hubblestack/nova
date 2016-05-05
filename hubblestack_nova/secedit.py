@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 __virtualname__ = 'secedit'
 
 def __virtual__():
-    if not salt.utils.is_windows():
+    if not salt.utils.is_windows() or not HAS_WINDOWS_MODULES:
         return False, 'This audit module only runs on Windows'
     return True
 
@@ -42,10 +42,18 @@ def audit(data_list, tags, verbose=False):
     for data in data_list:
         _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
-    ret = {'Success': [], 'Failure': []}
+    log.trace('secedit audit __data__:')
+    log.trace('__data__')
+    log.trace('secedit audit __tags__:')
+    log.trace(__tags__)
+
+    ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
             for tag_data in __tags__[tag]:
+                if 'control' in tag_data:
+                    ret['Controlled'].append(tag_data)
+                    continue
                 name = tag_data['name']
                 audittype = tag_data['type']
 
@@ -98,6 +106,7 @@ def audit(data_list, tags, verbose=False):
     if not verbose:
         failure = []
         success = []
+        controlled = []
 
         tags_descriptions = set()
 
@@ -117,8 +126,24 @@ def audit(data_list, tags, verbose=False):
                 success.append({tag: description})
                 tags_descriptions.add((tag, description))
 
+        control_reasons = set()
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            control_reason = tag_data.get('control', '')
+            description = tag_data.get('description')
+            if (tag, description, control_reason) not in control_reasons:
+                tag_dict = {'description': description,
+                            'control': control_reason}
+                controlled.append({tag: tag_dict})
+                control_reasons.add((tag, description, control_reason))
+
+        ret['Controlled'] = controlled
         ret['Success'] = success
         ret['Failure'] = failure
+
+    if not ret['Controlled']:
+        ret.pop('Controlled')
 
     return ret
 
@@ -157,8 +182,9 @@ def _merge_yaml(ret, data):
     for topkey in ('blacklist', 'whitelist'):
         if topkey in data.get('secedit', {}):
             if topkey not in ret['secedit']:
-                ret['secedit'][topkey] = {}
-            ret['secedit'][topkey].update(data['secedit'][topkey])
+                ret['secedit'][topkey] = []
+            for key, val in data['secedit'][topkey].iteritems():
+                ret['secedit'][topkey].append({key: val})
     return ret
 
 
@@ -170,35 +196,36 @@ def _get_tags(data):
     distro = __grains__.get('osfullname')
     for toplist, toplevel in data.get('secedit', {}).iteritems():
         # secedit:whitelist
-        for audit_id, audit_data in toplevel.iteritems():
-            # secedit:whitelist:PasswordComplexity
-            tags_dict = audit_data.get('data', {})
-            # secedit:whitelist:PasswordComplexity:data
-            tags = tags_dict.get(distro, tags_dict.get('*', []))
-            # secedit:whitelist:PasswordComplexity:data:Debian-8
-            if isinstance(tags, dict):
-                # malformed yaml, convert to list of dicts
-                tmp = []
-                for name, tag in tags.iteritems():
-                    tmp.append({name: tag})
-                tags = tmp
-            for item in tags:
-                for name, tag in item.iteritems():
-                    tag_data = {}
-                    # Whitelist could have a dictionary, not a string
-                    if isinstance(tag, dict):
-                        tag_data = copy.deepcopy(tag)
-                        tag = tag_data.pop('tag')
-                    if tag not in ret:
-                        ret[tag] = []
-                    formatted_data = {'name': name,
-                                      'tag': tag,
-                                      'module': 'secedit',
-                                      'type': toplist}
-                    formatted_data.update(tag_data)
-                    formatted_data.update(audit_data)
-                    formatted_data.pop('data')
-                    ret[tag].append(formatted_data)
+        for audit_dict in toplevel:
+            for audit_id, audit_data in audit_dict.iteritems():
+                # secedit:whitelist:PasswordComplexity
+                tags_dict = audit_data.get('data', {})
+                # secedit:whitelist:PasswordComplexity:data
+                tags = tags_dict.get(distro, tags_dict.get('*', []))
+                # secedit:whitelist:PasswordComplexity:data:Debian-8
+                if isinstance(tags, dict):
+                    # malformed yaml, convert to list of dicts
+                    tmp = []
+                    for name, tag in tags.iteritems():
+                        tmp.append({name: tag})
+                    tags = tmp
+                for item in tags:
+                    for name, tag in item.iteritems():
+                        tag_data = {}
+                        # Whitelist could have a dictionary, not a string
+                        if isinstance(tag, dict):
+                            tag_data = copy.deepcopy(tag)
+                            tag = tag_data.pop('tag')
+                        if tag not in ret:
+                            ret[tag] = []
+                        formatted_data = {'name': name,
+                                          'tag': tag,
+                                          'module': 'secedit',
+                                          'type': toplist}
+                        formatted_data.update(tag_data)
+                        formatted_data.update(audit_data)
+                        formatted_data.pop('data')
+                        ret[tag].append(formatted_data)
     return ret
 
 
