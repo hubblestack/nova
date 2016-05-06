@@ -39,7 +39,8 @@ def audit(configs=None,
           tags='*',
           verbose=None,
           show_success=None,
-          show_compliance=None):
+          show_compliance=None,
+          called_from_top=None):
     '''
     Primary entry point for audit calls.
 
@@ -75,6 +76,10 @@ def audit(configs=None,
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
         `hubblestack.nova.show_compliance` in minion config/pillar.
+
+    called_from_top
+        Ignore this argument. It is used for distinguishing between user-calls
+        of this function and calls from hubble.top.
 
     CLI Examples:
 
@@ -114,6 +119,7 @@ def audit(configs=None,
     # Compile a list of audit data sets which we need to run
     to_run = set()
     for config in configs:
+        found_for_config = False
         for key in __nova__.__data__:
             key_path_split = key.split('.yaml')[0].split(os.path.sep)
             matches = True
@@ -123,7 +129,15 @@ def audit(configs=None,
                         matches = False
             if matches:
                 # Found a match, add the audit data to the set
+                found_for_config = True
                 to_run.add(key)
+        if not found_for_config:
+            # No matches were found for this entry, add an error
+            if 'Errors' not in results:
+                results['Errors'] = []
+            results['Errors'].append({config: {'error': 'No matching profiles found for {0}'
+                                                        .format(config)}})
+
     data_list = [__nova__.__data__[key] for key in to_run]
     log.trace('hubble.py configs:')
     log.trace(configs)
@@ -139,16 +153,16 @@ def audit(configs=None,
             ret = func(data_list, tags, verbose=verbose)
         except Exception as exc:
             if 'Errors' not in results:
-                results['Errors'] = {}
-            results['Errors'][key] = {'error': 'exception occurred',
-                                      'data': str(exc)}
+                results['Errors'] = []
+            results['Errors'].append({key: {'error': 'exception occurred',
+                                            'data': str(exc)}})
             continue
         else:
             if not isinstance(ret, dict):
                 if 'Errors' not in results:
-                    results['Errors'] = {}
-                results['Errors'][key] = {'error': 'bad return type',
-                                          'data': ret}
+                    results['Errors'] = []
+                results['Errors'].append({key: {'error': 'bad return type',
+                                                'data': ret}})
                 continue
 
         # Merge in the results
@@ -161,6 +175,13 @@ def audit(configs=None,
         compliance = _calculate_compliance(results)
         if compliance:
             results['Compliance'] = compliance
+
+    for key in results.keys():
+        if not results[key]:
+            results.pop(key)
+
+    if not called_from_top and not results:
+        results['Messages'] = 'No audits matched this host in the specified profiles.'
 
     if not show_success and 'Success' in results:
         results.pop('Success')
@@ -277,7 +298,8 @@ def top(topfile='top.nova',
                     tags=tag,
                     verbose=verbose,
                     show_success=True,
-                    show_compliance=False)
+                    show_compliance=False,
+                    called_from_top=True)
 
         # Merge in the results
         for key, val in ret.iteritems():
@@ -289,6 +311,13 @@ def top(topfile='top.nova',
         compliance = _calculate_compliance(results)
         if compliance:
             results['Compliance'] = compliance
+
+    for key in results.keys():
+        if not results[key]:
+            results.pop(key)
+
+    if not results:
+        results['Messages'] = 'No audits matched this host in the specified profiles.'
 
     if not show_success and 'Success' in results:
         results.pop('Success')
