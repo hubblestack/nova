@@ -70,7 +70,7 @@ def audit(data_list, tags, verbose=False):
 
                 # Whitelisted packages (must be installed)
                 elif audittype == 'whitelist':
-                    regedit_ret = _findOptionValueInReg(tag_data['hive'],
+                    regedit_ret = _find_option_value_in_reg(tag_data['hive'],
                                                             tag_data['reg_key'],
                                                             tag_data['name'])
                     if 'binary' in tag_data['value_type']:
@@ -138,7 +138,7 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _findOptionValueInReg(reg_hive, reg_key, reg_value):
+def _find_option_value_in_reg(reg_hive, reg_key, reg_value):
     '''
     helper function to retrieve Windows registry settings for a particular
     option
