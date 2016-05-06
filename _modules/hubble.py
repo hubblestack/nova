@@ -39,7 +39,8 @@ def audit(configs=None,
           tags='*',
           verbose=None,
           show_success=None,
-          show_compliance=None):
+          show_compliance=None,
+          called_from_top=None):
     '''
     Primary entry point for audit calls.
 
@@ -75,6 +76,10 @@ def audit(configs=None,
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
         `hubblestack.nova.show_compliance` in minion config/pillar.
+
+    called_from_top
+        Ignore this argument. It is used for distinguishing between user-calls
+        of this function and calls from hubble.top.
 
     CLI Examples:
 
@@ -171,12 +176,15 @@ def audit(configs=None,
         if compliance:
             results['Compliance'] = compliance
 
-    if not show_success and 'Success' in results:
-        results.pop('Success')
-
     for key in results.keys():
         if not results[key]:
             results.pop(key)
+
+    if not called_from_top and not results:
+        results['Messages'] = 'No audits matched this host in the specified profiles.'
+
+    if not show_success and 'Success' in results:
+        results.pop('Success')
 
     return results
 
@@ -290,7 +298,8 @@ def top(topfile='top.nova',
                     tags=tag,
                     verbose=verbose,
                     show_success=True,
-                    show_compliance=False)
+                    show_compliance=False,
+                    called_from_top=True)
 
         # Merge in the results
         for key, val in ret.iteritems():
@@ -303,12 +312,15 @@ def top(topfile='top.nova',
         if compliance:
             results['Compliance'] = compliance
 
-    if not show_success and 'Success' in results:
-        results.pop('Success')
-
     for key in results.keys():
         if not results[key]:
             results.pop(key)
+
+    if not results:
+        results['Messages'] = 'No audits matched this host in the specified profiles.'
+
+    if not show_success and 'Success' in results:
+        results.pop('Success')
 
     return results
 
