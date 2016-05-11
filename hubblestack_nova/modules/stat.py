@@ -185,7 +185,20 @@ def _get_tags(data):
     for audit_dict in data.get('stat', []):
         for audit_id, audit_data in audit_dict.iteritems():
             tags_dict = audit_data.get('data', {})
-            tags = tags_dict.get(distro, [])
+            tags = None
+            for osfinger in tags_dict:
+                if osfinger == '*':
+                    continue
+                osfinger_list = osfinger.split(',')
+                for osfinger_glob in osfinger_list:
+                    if fnmatch.fnmatch(distro, osfinger_glob):
+                        tags = tags_dict.get(osfinger)
+                        break
+                if tags is not None:
+                    break
+            # If we didn't find a match, check for a '*'
+            if tags is None:
+                tags = tags_dict.get('*', [])
             if isinstance(tags, dict):
                 # malformed yaml, convert to list of dicts
                 tmp = []
