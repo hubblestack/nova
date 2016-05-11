@@ -189,7 +189,7 @@ def _get_tags(data):
             for osfinger in tags_dict:
                 if osfinger == '*':
                     continue
-                osfinger_list = osfinger.split(',')
+                osfinger_list = [finger.strip() for finger in osfinger.split(',')]
                 for osfinger_glob in osfinger_list:
                     if fnmatch.fnmatch(distro, osfinger_glob):
                         tags = tags_dict.get(osfinger)
