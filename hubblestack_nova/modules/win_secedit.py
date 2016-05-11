@@ -59,7 +59,7 @@ def audit(data_list, tags, verbose=False):
 
                 # Blacklisted audit (do not include)
                 if audittype == 'blacklist':
-                    secedit_ret = _findOptionValueInSeceditFile(tag_data['name'])
+                    secedit_ret = _find_option_value_in_seceditfile(tag_data['name'])
                     if 'binary' in tag_data['value_type']:
                         secedit_ret = _binary_convert(secedit_ret)
                     elif 'multi' in tag_data['value_type']:
@@ -82,7 +82,7 @@ def audit(data_list, tags, verbose=False):
 
                 # Whitelisted packages (must be installed)
                 elif audittype == 'whitelist':
-                    secedit_ret = _findOptionValueInSeceditFile(tag_data['name'])
+                    secedit_ret = _find_option_value_in_seceditfile(tag_data['name'])
                     if 'binary' in tag_data['value_type']:
                         secedit_ret = _binary_convert(secedit_ret)
                     if 'multi' in tag_data['value_type']:
@@ -148,7 +148,7 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _findOptionValueInSeceditFile(option):
+def _find_option_value_in_seceditfile(option):
     '''
     helper function to dump/parse a `secedit /export` file for a particular
     option

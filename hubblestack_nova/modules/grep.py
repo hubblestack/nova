@@ -27,6 +27,11 @@ grep:
               tag: 'CIS-1.1.1'  # audit tag
               pattern: '/tmp'  # grep pattern
               match_output: 'nodev'  # string to check for in output of grep command (optional)
+              match_output_regex: True  # whether to use regex when matching output (default: False)
+              grep_args:  # extra args to grep
+                - '-E'
+                - '-i'
+                - '-B2'
         '*':  # wildcard, will be run if no direct osfinger match
           - '/etc/fstab':
               tag: 'CIS-1.1.1'
@@ -46,6 +51,7 @@ import yaml
 import os
 import copy
 import salt.utils
+import re
 
 from distutils.version import LooseVersion
 
@@ -90,31 +96,36 @@ def audit(data_list, tags, verbose=False):
                     ret['Failure'].append(tag_data)
                     continue
 
-                # Blacklisted packages (must not be installed)
+                grep_args = tag_data.get('grep_args', [])
+                if isinstance(grep_args, str):
+                    grep_args = [grep_args]
+
+                grep_ret = __salt__['file.grep'](name,
+                                                 tag_data['pattern'],
+                                                 *grep_args).get('stdout')
+
+                found = False
+                if grep_ret:
+                    found = True
+                if 'match_output' in tag_data:
+                    if not tag_data.get('match_output_regex'):
+                        if tag_data['match_output'] not in grep_ret:
+                            found = False
+                    else:  # match with regex
+                        if not re.match(tag_data['match_output'], grep_ret):
+                            found = False
+
+
+
+                # Blacklisted pattern (must not be found)
                 if audittype == 'blacklist':
-                    grep_ret = __salt__['file.grep'](name, tag_data['pattern']).get('stdout')
-
-                    found = False
-                    if grep_ret:
-                        found = True
-                    if 'match_output' in tag_data and tag_data['match_output'] not in grep_ret:
-                        found = False
-
                     if found:
                         ret['Failure'].append(tag_data)
                     else:
                         ret['Success'].append(tag_data)
 
-                # Whitelisted packages (must be installed)
+                # Whitelisted pattern (must be found)
                 elif audittype == 'whitelist':
-                    grep_ret = __salt__['file.grep'](name, tag_data['pattern']).get('stdout')
-
-                    found = False
-                    if grep_ret:
-                        found = True
-                    if 'match_output' in tag_data and tag_data['match_output'] not in grep_ret:
-                        found = False
-
                     if found:
                         ret['Success'].append(tag_data)
                     else:
