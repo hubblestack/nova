@@ -95,23 +95,19 @@ def audit(data_list, tags, verbose=False):
                     continue
 
                 passed = True
-                diff = {}
+                reason_dict = {}
                 for e in expected.keys():
                     r = salt_ret[e]
                     if e == 'mode' and r != '0':
                         r = r[1:]
                     if str(expected[e]) != str(r):
                         passed = False
-                        if e not in ['group', 'user']:
-                            diff[e] = str(r)
+                        reason = { 'expected': str(expected[e]),
+                                   'current': str(r) }
+                        reason_dict[e] = reason
 
-                if diff:
-                    expected_str = ''
-                    found_str = ''
-                    for d in diff:
-                        expected_str = '{0} {1} {2} '.format(expected_str, d, expected[d])
-                        found_str = '{0} {1} {2} '.format(found_str, d, diff[d])
-                    tag_data['reason'] = 'expected {0} / found {1}'.format(expected_str, found_str)
+                if reason_dict:
+                    tag_data['reason'] = reason_dict
 
                 if passed:
                     ret['Success'].append(tag_data)
