@@ -67,10 +67,12 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/bashrc:
-            pattern: '^umask 077'
+            pattern: ^umask
+            match_pattern: '027'
             tag: CIS-5.4.4
         - /etc/profile.d/*:
-            pattern: '^umask 077'
+            pattern: ^umask
+            match_pattern: '027'
             tag: CIS-5.4.4
       description: Set Default umask for Users (Scored)
     disble_mount_cramfs:
@@ -283,19 +285,24 @@ grep:
             pattern: pam_pwquality.so
             tag: CIS-5.3.1
         - /etc/security/pwquality.conf:
-            pattern: minlen=14
+            pattern: minlen
+            match_output: '14'
             tag: CIS-5.3.1
         - /etc/security/pwquality.conf:
-            pattern: dcredit=-1
+            pattern: dcredit
+            match_output: '-1'
             tag: CIS-5.3.1
         - /etc/security/pwquality.conf:
-            pattern: ucredit=-1
+            pattern: ucredit
+            match_output: '-1'
             tag: CIS-5.3.1
         - /etc/security/pwquality.conf:
-            pattern: ocredit=-1
+            pattern: ocredit
+            match_output: '-1'
             tag: CIS-5.3.1
         - /etc/security/pwquality.conf:
-            pattern: lcredit=-1
+            pattern: lcredit
+            match_output: '-1'
             tag: CIS-5.3.1
       description: PAM cracklib policy (Scored)
     passwd_change_min_days:
@@ -341,7 +348,7 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/sysconfig/init:
-            match_output: umask 027
+            match_output: '027'
             pattern: umask
             tag: CIS-9.1.1
       description: Set Daemon umask (Scored)
