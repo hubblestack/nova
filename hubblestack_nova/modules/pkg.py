@@ -233,7 +233,20 @@ def _get_tags(data):
                 # pkg:blacklist:0:telnet
                 tags_dict = audit_data.get('data', {})
                 # pkg:blacklist:0:telnet:data
-                tags = tags_dict.get(distro, tags_dict.get('*', []))
+                tags = None
+                for osfinger in tags_dict:
+                    if osfinger == '*':
+                        continue
+                    osfinger_list = [finger.strip() for finger in osfinger.split(',')]
+                    for osfinger_glob in osfinger_list:
+                        if fnmatch.fnmatch(distro, osfinger_glob):
+                            tags = tags_dict.get(osfinger)
+                            break
+                    if tags is not None:
+                        break
+                # If we didn't find a match, check for a '*'
+                if tags is None:
+                    tags = tags_dict.get('*', [])
                 # pkg:blacklist:0:telnet:data:Debian-8
                 if isinstance(tags, dict):
                     # malformed yaml, convert to list of dicts
