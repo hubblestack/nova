@@ -83,6 +83,76 @@ grep:
               - '-r'
             tag: CIS-1.1.1.1
       description: Disable mounting cramfs filesystems (Scored).
+    disble_mount_freevxfs:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/modprobe.d:
+            match_output: /bin/true
+            pattern: freevxfs
+            grep_args:
+              - '-r'
+            tag: CIS-1.1.1.2
+      description: Disable mounting freevxfs filesystems (Scored).
+    disble_mount_jffs2:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/modprobe.d:
+            match_output: /bin/true
+            pattern: jffs2
+            grep_args:
+              - '-r'
+            tag: CIS-1.1.1.3
+      description: Disable mounting jffs2 filesystems (Scored).
+    disble_mount_hfs:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/modprobe.d:
+            match_output: /bin/true
+            pattern: hfs
+            grep_args:
+              - '-r'
+            tag: CIS-1.1.1.4
+      description: Disable mounting hfs filesystems (Scored).
+    disble_mount_hfsplus:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/modprobe.d:
+            match_output: /bin/true
+            pattern: hfsplus
+            grep_args:
+              - '-r'
+            tag: CIS-1.1.1.5
+      description: Disable mounting hfsplus filesystems (Scored).
+    disble_mount_squashfs:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/modprobe.d:
+            match_output: /bin/true
+            pattern: squashfs
+            grep_args:
+              - '-r'
+            tag: CIS-1.1.1.6
+      description: Disable mounting squashfs filesystems (Scored).
+    disble_mount_udf:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/modprobe.d:
+            match_output: /bin/true
+            pattern: udf
+            grep_args:
+              - '-r'
+            tag: CIS-1.1.1.7
+      description: Disable mounting udf filesystems (Scored).
+    disble_mount_far:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/modprobe.d:
+            match_output: /bin/true
+            pattern: vfat
+            grep_args:
+              - '-r'
+            tag: CIS-1.1.1.8
+      description: Disable mounting FAT filesystems (Scored).
     fstab_dev_shm_partition_nodev:
       data:
         Red Hat Enterprise Linux Server-7:
