@@ -95,12 +95,19 @@ def audit(data_list, tags, verbose=False):
                     continue
 
                 passed = True
+                reason_dict = {}
                 for e in expected.keys():
                     r = salt_ret[e]
                     if e == 'mode' and r != '0':
                         r = r[1:]
                     if str(expected[e]) != str(r):
                         passed = False
+                        reason = { 'expected': str(expected[e]),
+                                   'current': str(r) }
+                        reason_dict[e] = reason
+
+                if reason_dict:
+                    tag_data['reason'] = reason_dict
 
                 if passed:
                     ret['Success'].append(tag_data)
