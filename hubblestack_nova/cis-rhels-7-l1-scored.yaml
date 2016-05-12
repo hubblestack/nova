@@ -70,9 +70,11 @@ grep:
             pattern: ^umask
             match_pattern: '027'
             tag: CIS-5.4.4
-        - /etc/profile.d/*:
+        - /etc/profile.d:
             pattern: ^umask
             match_pattern: '027'
+            grep_args:
+              - '-r'
             tag: CIS-5.4.4
       description: Set Default umask for Users (Scored)
     disble_mount_cramfs:
