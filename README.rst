@@ -84,17 +84,18 @@ certain hosts. This is supported via compensating control configuration.
 You can skip a check globally by adding a ``control: <reason>`` key to the check
 itself. This key should be added at the same level as ``description`` and
 ``trigger`` pieces of a check. In this case, the check will never run, and will
-be output under the ``Controlled`` results key.
+output under the ``Controlled`` results key.
 
-For more fine-grained control using topfiles, you can use a separate yaml
-top-level key called ``control``. Generally, you'll put this top-level key
-inside of a separate yaml file and only include it in the top-data for the
-hosts for which it is relevant.
+Nova also supports separate control profiles, for more fine-grained control
+using topfiles. You can use a separate yaml top-level key called ``control``.
+Generally, you'll put this top-level key inside of a separate yaml file and
+only include it in the top-data for the hosts for which it is relevant.
 
-The data is just a list of tags which will be converted from ``Failure`` to
-``Controlled`` after the audits have been run. Reasons can also be provided,
-and the format is such that additional features can be added later. Here is
-some sample data:
+For these separate control configs, the audits will always run, whether they
+are controlled or not. However, controlled audits which fail will be converted
+from ``Failure`` to ``Controlled`` in a post-processing operation.
+
+The control config syntax is as follows:
 
 .. code-block:: yaml
 
@@ -103,6 +104,9 @@ some sample data:
       - some_other_tag:
           reason: This is the reason we control the check
       - a_third_tag_with_no_reason
+
+Note that providing a reason for the control is optional. Any of the three
+formats shown in the yaml list above will work.
 
 Once you have your compensating control config, just target the yaml to the
 hosts you want to control using your topfile. In this case, all the audits will
