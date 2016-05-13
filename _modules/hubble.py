@@ -171,6 +171,47 @@ def audit(configs=None,
                 results[key] = []
             results[key].extend(val)
 
+    processed_controls = {}
+    # Inspect the data for compensating control data
+    for audit_data in data_list:
+        control_config = audit_data.get('control', [])
+        for control in control_config:
+            if isinstance(control, str):
+                processed_controls[control] = {}
+            else:  # dict
+                for control_tag, control_data in control.iteritems():
+                    if isinstance(control_data, str):
+                        processed_controls[control_tag] = {'reason': control_data}
+                    else:  # dict
+                        processed_controls[control_tag] = control_data
+
+    log.trace('hubble.py control data:')
+    log.trace(processed_controls)
+
+    # Look through the failed results to find audits which match our control config
+    failures_to_remove = []
+    for i, failure in enumerate(results.get('Failure', [])):
+        if isinstance(failure, str):
+            if failure in processed_controls:
+                failures_to_remove.append(i)
+                if 'Controlled' not in results:
+                    results['Controlled'] = []
+                results['Controlled'].append(
+                        {failure: processed_controls[failure].get('reason')})
+        else:  # dict
+            for failure_tag in failure:
+                if failure_tag in processed_controls:
+                    failures_to_remove.append(i)
+                    if 'Controlled' not in results:
+                        results['Controlled'] = []
+                    results['Controlled'].append(
+                            {failure_tag: processed_controls[failure_tag].get('reason')})
+
+    # Remove controlled failures from results['Failure']
+    if failures_to_remove:
+        for failure_index in reversed(sorted(set(failures_to_remove))):
+            results['Failure'].pop(failure_index)
+
     if show_compliance:
         compliance = _calculate_compliance(results)
         if compliance:
