@@ -7,11 +7,11 @@ Hubble Nova plugin for using iptables to verify firewall rules
 :platform: Linux
 :requires: SaltStack
 
-This audit module requires yaml data to execute. It will search the local
-directory for any .yaml files, and if it finds a top-level 'firewall' key, it will
-use that data.
+This audit module requires yaml data to execute. Running hubble.audit will search the local
+directory for any .yaml files and it will pass all the data to this module.
+If this module find a top-level 'firewall' key, it will use the data under that key.
 
-Sample YAML data, with inline comments:
+Sample YAML data used by firewall.py, with inline comments:
 
 
 firewall:
@@ -20,14 +20,60 @@ firewall:
     ssh:    # unique id
       data:
         tag: 'FIREWALL-TCP-22'  # audit tag
-        table: 'filter' #iptables table to check
-        chain: INPUT    # INPUT / OUTPUT / FORWARD
-        rule: '-p tcp --dport 22 -m state --state ESTABLISHED,RELATED -j ACCEPT'    # rule to check
-        family: 'ipv4'  # iptables family
+        table: 'filter' # iptables table to check   (REQUIRED)
+        chain: INPUT    # INPUT / OUTPUT / FORWARD  (REQUIRED)
+        rule:   #dict containing the elements for building the rule
+          proto: tcp
+          dport: 22
+          match: state
+          connstate: RELATED,ESTABLISHED
+          jump: ACCEPT
+        family: 'ipv4'  # iptables family   (REQUIRED)
       description: 'ssh iptables rule check' # description of the check
       # The rest of these attributes are optional, and currently not used
       alert: email
       trigger: state
+
+A few words about the auditing logic
+The audit function uses the iptables.build_rule salt
+execution module to build the actual iptables rule to be checked.
+How the rules are built?
+The elements in the rule dictionary will be used to build the iptables rule.
+
+Note: table, chain and family are not required under the rule key.
+Note: iptables.build_rule does not verify the syntax of the iptables rules.
+
+Here is a list of accepted iptables rules elements, based on the iptables.build_rule source code:
+    - command
+    - position
+    - full
+    - target
+    - jump
+    - proto/protocol
+    - if
+    - of
+    - match
+    - match-set
+    - connstate
+    - dport
+    - sport
+    - dports
+    - sports
+    - comment
+    - set
+    - jump
+    - if it's the case, jump arguments can be passed -- see more details bellow
+
+Jump arguments
+    (comments inside the iptables.build_rule source code)
+    # All jump arguments as extracted from man iptables-extensions, man iptables,
+    # man xtables-addons and http://www.iptables.info/en/iptables-targets-and-jumps.html
+
+Check the following links for more details:
+    - iptables.build_rule SaltStack documentation
+    (https://docs.saltstack.com/en/latest/ref/modules/all/salt.modules.iptables.html#salt.modules.iptables.build_rule)
+    - iptables salt execution module source code (search for the build_rule function inside):
+    (https://github.com/saltstack/salt/blob/develop/salt/modules/iptables.py)
 '''
 
 from __future__ import absolute_import
@@ -69,11 +115,33 @@ def audit(data_list, tags, verbose=False):
                 if 'control' in tag_data:
                     ret['Controlled'].append(tag_data)
                     continue
-                rule = tag_data['rule']
                 table = tag_data['table']
                 chain = tag_data['chain']
                 family = tag_data['family']
 
+                # creating the arguments for the iptables.build_rule salt execution module
+                args = {'table': table,
+                        'chain': chain,
+                        'family': family}
+
+                # since table, chain and family are already given for checking the existence of the rule,
+                # they are not needed here
+                if 'table' in tag_data['rule']:
+                    tag_data['rule'].pop('table')
+                if 'chain' in tag_data['rule']:
+                    tag_data['rule'].pop('chain')
+                if 'family' in tag_data['rule']:
+                    tag_data['rule'].pop('family')
+
+                args.update(tag_data['rule'])
+
+                # building the rule using iptables.build_rule
+                rule = __salt__['iptables.build_rule'](**args)
+
+                # replacing all the elements of the rule with the actual rule (for verbose mode)
+                tag_data['rule'] = rule
+
+                # checking the existence of the rule
                 salt_ret = __salt__['iptables.check'](table=table, chain=chain, rule=rule, family=family)
 
                 if salt_ret not in (True, False):
