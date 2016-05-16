@@ -525,11 +525,6 @@ pkg:
         Red Hat Enterprise Linux Server-7:
         - aide: CIS-1.3.1
       description: Install AIDE (Scored)
-    anacron:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - cronie-anacron: CIS-9.1.3
-      description: Enable anacron Daemon (Scored)
     firewalld:
       data: {}
       description: Enable firewalld (Scored)
@@ -566,18 +561,6 @@ service:
         - rsyslog: CIS-4.2.1_running
       description: rsyslogd should be running
 stat:
-  anacrontab:
-    data:
-      Red Hat Enterprise Linux Server-7:
-      - /etc/anacrontab:
-          gid: 0
-          group: root
-          mode: 600
-          tag: CIS-9.1.4
-          uid: 0
-          user: root
-    description: /etc/anacrontab file be owned by root and must have permissions 600
-      (Scored)
   at_allow:
     data:
       Red Hat Enterprise Linux Server-7:
