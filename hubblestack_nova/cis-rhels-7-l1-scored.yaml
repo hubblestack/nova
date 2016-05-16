@@ -34,14 +34,15 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/grub.conf:
-            pattern: ^password
+            pattern: password
             tag: CIS-1.4.2
       description: Set Boot Loader Password (Scored)
     configure_ntp:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/ntp.conf:
-            pattern: restrict default
+            pattern: ^restrict
+            match_output: default
             tag: CIS-2.2.1.2
         - /etc/ntp.conf:
             pattern: restrict -6 default
@@ -67,11 +68,11 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/bashrc:
-            pattern: ^umask
+            pattern: umask
             match_pattern: '027'
             tag: CIS-5.4.4
         - /etc/profile.d:
-            pattern: ^umask
+            pattern: umask
             match_pattern: '027'
             grep_args:
               - '-r'
@@ -346,19 +347,11 @@ grep:
             pattern: ^*.*[^I][^I]*@
             tag: CIS-4.2.1.4
       description: Configure rsyslog to Send Logs to a Remote Log Host (Scored)
-    set_daemon_umask:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - /etc/sysconfig/init:
-            match_output: '027'
-            pattern: umask
-            tag: CIS-9.1.1
-      description: Set Daemon umask (Scored)
     sshd_approved_cipher:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/ssh/sshd_config:
-            match_output: 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr'
+            match_output: 'aes256-ctr,aes192-ctr,aes128-ctr'
             pattern: Ciphers
             tag: CIS-5.2.11
       description: Use Only Approved Cipher in Counter Mode (Scored)
@@ -552,11 +545,6 @@ pkg:
       description: Install rsyslog (Scored)
 service:
   whitelist:
-    anacron_running:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - cronie-anacron: CIS-6.1.1_running
-      description: anacron should be running
     auditd_running:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -571,11 +559,11 @@ service:
       data:
         Red Hat Enterprise Linux Server-7:
         - iptables: CIS-3.6.1_running
-      description: rsyslogd should be running
+      description: iptables should be running
     rsyslogd_running:
       data:
         Red Hat Enterprise Linux Server-7:
-        - rsyslogd: CIS-4.2.1_running
+        - rsyslog: CIS-4.2.1_running
       description: rsyslogd should be running
 stat:
   anacrontab:
@@ -866,13 +854,6 @@ sysctl:
           match_output: '1'
           tag: CIS-3.2.6
     description: Enable Bad Error Message Protection (Scored)
-  exec_shield:
-    data:
-      Red Hat Enterprise Linux Server-7:
-      - kernel.exec-shield:
-          match_output: '1'
-          tag: CIS-9.2.1
-    description: Configure ExecShield (Scored)
   icmp_redirect_acceptance:
     data:
       Red Hat Enterprise Linux Server-7:
