@@ -91,6 +91,10 @@ def audit(data_list, tags, verbose=False):
                         secedit_ret = _get_operation(secedit_ret,
                                                      tag_data['value_type'],
                                                      tag_data['match_output'])
+                    if 'priv' in tag_data['value_type']:
+                        if 'no one' in tag_data['match_output']:
+                            if 'Not Defined' or None in secedit_ret:
+                                secedit_ret = 'no one'
 
                     found = False
                     if secedit_ret:
