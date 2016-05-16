@@ -539,6 +539,12 @@ pkg:
         - rsyslog: CIS-4.2.1.1_installed
       description: Install rsyslog (Scored)
 service:
+  blacklist:
+    autofs:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - autofs: CIS-1.1.22
+      description: Disable Automounting (Scored)
   whitelist:
     auditd_running:
       data:
