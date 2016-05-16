@@ -95,12 +95,19 @@ def audit(data_list, tags, verbose=False):
                     continue
 
                 passed = True
+                reason_dict = {}
                 for e in expected.keys():
                     r = salt_ret[e]
                     if e == 'mode' and r != '0':
                         r = r[1:]
                     if str(expected[e]) != str(r):
                         passed = False
+                        reason = { 'expected': str(expected[e]),
+                                   'current': str(r) }
+                        reason_dict[e] = reason
+
+                if reason_dict:
+                    tag_data['reason'] = reason_dict
 
                 if passed:
                     ret['Success'].append(tag_data)
@@ -174,7 +181,20 @@ def _get_tags(data):
     for audit_dict in data.get('stat', []):
         for audit_id, audit_data in audit_dict.iteritems():
             tags_dict = audit_data.get('data', {})
-            tags = tags_dict.get(distro, [])
+            tags = None
+            for osfinger in tags_dict:
+                if osfinger == '*':
+                    continue
+                osfinger_list = [finger.strip() for finger in osfinger.split(',')]
+                for osfinger_glob in osfinger_list:
+                    if fnmatch.fnmatch(distro, osfinger_glob):
+                        tags = tags_dict.get(osfinger)
+                        break
+                if tags is not None:
+                    break
+            # If we didn't find a match, check for a '*'
+            if tags is None:
+                tags = tags_dict.get('*', [])
             if isinstance(tags, dict):
                 # malformed yaml, convert to list of dicts
                 tmp = []

@@ -6,18 +6,12 @@ firewall:
         tag: 'FIREWALL-TCP-22'
         table: 'filter'
         chain: INPUT
-        rule: '-p tcp --dport 22 -m state --state ESTABLISHED,RELATED -j ACCEPT'
         family: 'ipv4'
-      description: 'ssh iptables rule check'
-
-  blacklist:
-
-    ftp:
-      data:
-        tag: 'FIREWALL-TCP-21'
-        table: 'filter'
-        chain: INPUT
-        rule: '-p tcp --dport 21 -m state --state ESTABLISHED,RELATED -j ACCEPT'
-        family: 'ipv4'
-      description: 'ftp iptables rule check'
+        rule:
+          proto: tcp
+          dport: 22
+          match: state
+          connstate: RELATED,ESTABLISHED
+          jump: ACCEPT
+        description: 'ssh iptables rule check'
 
