@@ -26,6 +26,7 @@ import sys
 import six
 import inspect
 import yaml
+import traceback
 
 import salt
 import salt.utils
@@ -152,10 +153,12 @@ def audit(configs=None,
         try:
             ret = func(data_list, tags, verbose=verbose)
         except Exception as exc:
+            log.error('Exception occurred in nova module:')
+            log.error(traceback.format_exc())
             if 'Errors' not in results:
                 results['Errors'] = []
             results['Errors'].append({key: {'error': 'exception occurred',
-                                            'data': str(exc)}})
+                                            'data': traceback.format_exc().splitlines()[-1]}})
             continue
         else:
             if not isinstance(ret, dict):

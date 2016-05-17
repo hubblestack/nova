@@ -11,10 +11,6 @@ requiring a specific version or a minimum or maximum version.
 :platform: All
 :requires: SaltStack
 
-This audit module requires yaml data to execute. It will search the local
-directory for any .yaml files, and if it finds a top-level 'pkg' key, it will
-use that data.
-
 Sample YAML data, with inline comments:
 
 
