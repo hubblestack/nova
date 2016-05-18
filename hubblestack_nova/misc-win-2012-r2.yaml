@@ -54,6 +54,16 @@ secedit:
       alert: email
       trigger: state
 
+    Access_Credential_Manager_as_a_trusted_caller:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - SeTrustedCredManAccessPrivilege: 
+              tag: 'CIS-2.1.1'
+              match_output: 'no one'
+              value_type: 'priv'
+      description: 'Ensure Access Credential Manager as a trusted caller is set to No One (Scored)'
+      alert: email
+      trigger: state
 # regedit provides at least three value_types which are expected in the 'match_output' field:
 # 1. 'binary' - 'Enabled' or 'Disabled'
 # 2. 'multi' - 'No auditing', 'Success', 'Failure', or 'Success, Failure'
