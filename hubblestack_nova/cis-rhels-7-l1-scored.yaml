@@ -30,6 +30,15 @@ grep:
             pattern: gpgcheck
             tag: CIS-1.2.2
       description: Verify that gpgcheck is Globally Activated (Scored)
+    aide_filesystem_scans:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/cron.d:
+            pattern: aide
+            grep_args:
+              - '-r'
+            tag: CIS-1.3.2
+      description: Ensure filesystem integrity is regularly checked (Scored)
     boot_loader_passwd:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -37,6 +46,66 @@ grep:
             pattern: password
             tag: CIS-1.4.2
       description: Set Boot Loader Password (Scored)
+    chargen_diabled:
+      data:
+        Red Hat Enterprise Server-7:
+        - /etc/xinetd.d/chargen-dgram:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.1
+        - /etc/xinetd.d/chargen-stream:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.1
+      description: Ensure that chargen service in not enabled (Scored)
+    daytime_disabled:
+      data:
+        Red Hat Enterprise Server-7:
+        - /etc/xinetd.d/daytime-dgram:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.2
+        - /etc/xinetd.d/daytime-stream:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.2
+      description: Ensure that daytime service in not enabled (Scored)
+    discard_diabled:
+      data:
+        Red Hat Enterprise Server-7:
+        - /etc/xinetd.d/discard-dgram:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.3
+        - /etc/xinetd.d/discard-stream:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.3
+      description: Ensure that discard service in not enabled (Scored)
+    echo_diabled:
+      data:
+        Red Hat Enterprise Server-7:
+        - /etc/xinetd.d/echo-dgram:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.4
+        - /etc/xinetd.d/echo-stream:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.4
+      description: Ensure that echo service in not enabled (Scored)
+    time_diabled:
+      data:
+        Red Hat Enterprise Server-7:
+        - /etc/xinetd.d/time-dgram:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.5
+        - /etc/xinetd.d/time-stream:
+            pattern: disable
+            match_output: yes
+            tag: CIS-2.1.5
+      description: Ensure that time service in not enabled (Scored)
     configure_ntp:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -64,6 +133,14 @@ grep:
             tag: CIS-2.2.1.3
             pattern: 'chrony'
       description: Configure chronyd (Scored)
+    local_mail:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/postfix/main.cf:
+            pattern: ^inet_interfaces
+            match_output: localhost
+            tag: CIS-2.2.15
+      description: Ensure mail transfer Agent is configured for local-only (Scored) 
     default_umask:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -257,6 +334,44 @@ grep:
             pattern: /tmp
             tag: CIS-1.1.7
       description: Bind Mount the /var/tmp directory to /tmp (Scored)
+    hosts_allow:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/hosts.allow:
+            pattern: ALL
+            tag: CIS-3.4.2
+      description: Ensure hosts.allow is configured (Scored)
+    hosts_deny:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/hosts.deny:
+            pattern:  ALL
+            tag: CIS-3.4.3
+      description: Ensure hosts.deny is configured (Scored)
+    firewall_default_deny:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/sysconfig/iptables:
+            pattern: :INPUT
+            match_output: DROP
+            tag: CIS-3.6.2
+        - /etc/sysconfig/iptables:
+            pattern: :FORWARD
+            match_pattern: DROP
+            tag: CIS-3.6.2
+        - /etc/sysconfig/iptables:
+            pattern: :OUTPUT
+            match_output: DROP
+            tag: CIS-3.6.2
+      description: Ensure default deny firewall policy (Scored)
+    firewall_accept_lo:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/sysconfig/iptables:
+            pattern: lo
+            match_output: ACCEPT
+            tag: CIS-3.6.3
+      description: Ensure loopback traffic is configured (Scored) 
     limit_password_reuse:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -469,11 +584,29 @@ pkg:
         Red Hat Enterprise Linux Server-7:
         - avahi-daemon: CIS-2.2.3
       description: Disable Avahi Server (Scored)
+    cups:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - cups: CIS-2.2.4
+      description: Ensure CUPS is not enabled (Scored)
     dhcp:
       data:
         Red Hat Enterprise Linux Server-7:
         - dhcp: CIS-2.2.5
       description: Remove DHCP server (Scored)
+    slapd:
+      data:
+        Red Hat Entetrprise Linux Server-7:
+        - openldap-servers: CIS-2.2.6
+      description: Ensure LDAP is not enabled (Scored)
+    ftp:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - perl-ftpd: CIS-2.2.9
+        - proftpd: CIS-2.2.9
+        - pure-ftpd: CIS-2.2.9
+        - vsftpd: CIS-2.2.9
+      description:  Ensure FTP is not enabled (Scored)
     nis:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -483,7 +616,7 @@ pkg:
     rsh:
       data:
         Red Hat Enterprise Linux Server-7:
-        - rsh-server: CIS-2.1.3
+        - rsh-server: CIS-2.1.6
         - rsh: CIS-2.3.2
       description: Remove rsh and rsh-server (Scored)
     talk:
@@ -519,6 +652,11 @@ pkg:
         Red Hat Enterprise Linux Server-7:
         - prelink: CIS-1.5.4
       description: Ensure prelink is disabled (Scored)
+    ldap_clients:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - openldap-clients: CIS-2.3.5
+      description: Ensure LDAP client is not installed (Scored)
   whitelist:
     aide:
       data:
@@ -528,6 +666,11 @@ pkg:
     firewalld:
       data: {}
       description: Enable firewalld (Scored)
+    tcp_wrappers:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - tcp_wrappers: CIS-3.4.1
+      description: Ensure tcp_wrappers are installed (Scored)
     iptables:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -545,6 +688,51 @@ service:
         Red Hat Enterprise Linux Server-7:
         - autofs: CIS-1.1.22
       description: Disable Automounting (Scored)
+    rsync:
+      data:
+        Red Hat Enterprise Linux Server-7
+        - rsyncd: CIS-2.1.10
+      description:  Ensure rsyncd is not enabled (Scored)
+    nfs:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - nfs: 2.2.7
+      description:  Ensure nfs is not enabled (Scored)
+    rpc:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - rpcbind: CIS-2.2.7
+      description: Ensure RPC service is not enabled (Scored)
+    named:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - named: CIS-2.2.8
+      description: Ensure DNS service is not enabled (Scored)
+    httpd:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - httpd: CIS-2.2.10
+      description:  Ensure HTTP server is not enabled (Scored)
+    pop3_imap:
+      data:
+        Red Hat Enterprise LInux Server-7:
+        - dovecot: CIS-2.2.11
+      description: Ensure POP3 and IMAP server is not enabled (Scored)
+    samba:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - smb: CIS-2.2.12
+      description: Ensure SAMBA is not enabled (Scored)
+    http_proxy:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - squid: CIS-2.2.13
+      description: Ensure HTTP Proxy is not enabled (Scored)
+    snmp:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - snmpd: CIS-2.2.14
+      description:  Ensure SNMP is not enabled (Scored)
   whitelist:
     auditd_running:
       data:
@@ -877,6 +1065,26 @@ sysctl:
           match_output: '1'
           tag: CIS-3.2.4
     description: Log Suspicious Activity (Scored)
+  ipv6_adverts:
+    data:
+      Red Hat Enterprise Linux Server-7:
+      - net.ipv6.conf.all.accept_ra
+          match_output: '0'
+          tag: CIS 3.3.1
+      - net.ipv6.conf.default.accept_ra
+          match_output: '0'
+          tag: CIS-3.3.1
+    description:  ENsure IPV6 Router advertisements are not accepted (Scored)
+  ipv6_redir:
+    data:
+      Red Hat Enterprise Linux Server-7:
+      - net.ipv6.conf.all.accept_redirects
+          match_output: '0'
+          tag: CIS-3.3.2
+      - net.ipv6.conf.default.accept_redirects
+          match_output: '0'
+          tag: CIS-3.3.2
+    description: Ensure IPV6 redirects are not accepted
   randomize_va_space:
     data:
       Red Hat Enterprise Linux Server-7:
