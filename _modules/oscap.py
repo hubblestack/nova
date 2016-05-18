@@ -40,6 +40,8 @@ from __future__ import absolute_import
 # Import python libs
 import logging
 
+# Import salt libs
+from salt.ext.six.moves.urllib.parse import urlparse  # pylint: disable=no-name-in-module
 from salt import utils
 
 __virtualname__ = 'oscap'
@@ -60,10 +62,10 @@ def scan(filename):
     '''
     scan function
     '''
-    if not filename.startswith('salt://'):
+    parsed = urlparse(filename)
+    if not parsed.scheme:
         filename = 'salt://' + filename
-    if filename.startswith('salt://'):
-        cached_source = __salt__['cp.cache_file'](filename)
+    cached_source = __salt__['cp.cache_file'](filename)
 
     ret = {'Vulnerabilities': []}
 
