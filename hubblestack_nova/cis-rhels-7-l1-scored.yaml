@@ -259,13 +259,6 @@ grep:
             pattern: /dev/shm
             tag: CIS-1.1.16
       description: Add nosuid Option to /dev/shm Partition (Scored)
-    fstab_home_partition:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - /etc/fstab:
-            pattern: /home
-            tag: CIS-1.1.13
-      description: Create Separate Partition for /home (Scored)
     fstab_home_partition_nodev:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -274,13 +267,6 @@ grep:
             pattern: /home
             tag: CIS-1.1.14
       description: Add nodev Option to /home (Scored)
-    fstab_tmp_partition:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - /etc/fstab:
-            pattern: /tmp
-            tag: CIS-1.1.2
-      description: Create Separate Partition for /tmp (Scored)
     fstab_tmp_partition_nodev:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -305,35 +291,6 @@ grep:
             pattern: /tmp
             tag: CIS-1.1.4
       description: Set nosuid option for /tmp Partition (Scored)
-    fstab_var_log_audit_partition:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - /etc/fstab:
-            pattern: /var/log/audit
-            tag: CIS-1.1.12
-      description: Create Separate Partition for /var/log/audit (Scored)
-    fstab_var_log_partition:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - /etc/fstab:
-            pattern: /var/log
-            tag: CIS-1.1.11
-      description: Create Separate Partition for /var/log (Scored)
-    fstab_var_partition:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - /etc/fstab:
-            pattern: /var
-            tag: CIS-1.1.6
-      description: Create Separate Partition for /var (Scored)
-    fstab_var_tmp_bind_mount:
-      data:
-        Red Hat Enterprise Linux Server-7:
-        - /etc/fstab:
-            match_output: /var/tmp
-            pattern: /tmp
-            tag: CIS-1.1.7
-      description: Bind Mount the /var/tmp directory to /tmp (Scored)
     hosts_allow:
       data:
         Red Hat Enterprise Linux Server-7:
