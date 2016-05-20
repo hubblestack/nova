@@ -372,6 +372,29 @@ grep:
             match_output: ACCEPT
             tag: CIS-3.6.3
       description: Ensure loopback traffic is configured (Scored) 
+    rsyslog_file_perms:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/rsyslog.conf:
+            pattern: '^\$FileCreateMode'
+            match_output: '0640'
+            tag: CIS-4.2.1.3
+      description: Ensure rsyslog file perms (Scored)
+    rsyslog_remote_logging:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/rsyslog.conf:
+            pattern: ^*.*[^I][^I]*@
+            tag: CIS-4.2.1.4
+      description: Configure rsyslog to Send Logs to a Remote Log Host (Scored)
+    syslog-ng_file_perms:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/syslog-ng/syslog-ng.conf:
+            pattern: ^options
+            match_output: 'perm(0640)'
+            tag: CIS-4.2.2.3
+      description: Ensure syslog-ng file perms configured (Scored)
     limit_password_reuse:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -380,6 +403,16 @@ grep:
             pattern: pam_unix.so
             tag: CIS-5.3.3
       description: PAM Password Reuse (Scored)
+    password_hash:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/pam.d/password-auth:
+            pattern: """'^password\s+sufficient\s+pam_unix.so'"""
+            match_output: sha512
+            grep_args:
+              - '-E'
+            tag: CIS-5.3.4
+      description: Ensure password hashing algorithm is SHA-512 (Scored)
     limit_su_command_access:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -447,6 +480,15 @@ grep:
             pattern: PASS_WARN_DAYS
             tag: CIS-5.4.1.3
       description: Set Password Expiring Warning Days (Scored)
+    passwd_inactiive:
+      data:
+    passwd_inactive:
+      data: 
+        Red Hat Enterprise Linux Server-7:
+        - /etc/default/useradd:
+            pattern: INACTIVE=30
+            tag: CIS-5.4.1.4
+      decription:  Ensure inactive password lock is '30' days (or less) (Scored)
     restrict_core_dumps:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -505,6 +547,14 @@ grep:
             pattern: ^ClientAliveCountMax
             tag: CIS-5.2.13
       description: Set Idle Timeout Interval for User Login (Scored)
+    sshd_gracetime:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/ssh/sshd_config:
+            pattern: ^LoginGraceTime
+            match_output: '60'
+            tag: CIS-5.2.14
+      description: Ensure SSH Login Grace Time is set to 1 miniute (or less) (Scored)
     sshd_ignore_rhosts:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -577,6 +627,14 @@ grep:
             pattern: ^X11Forwarding
             tag: CIS-5.2.4
       description: Disable SSH X11 Forwarding (Scored)
+    lockout_account:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - /etc/pam.d/system-auth
+            pattern: pam_faillock.so
+            match_output: deny=5
+            tag: CIS-5.3.2
+      description: Ensure lockout for failed password attempts is configured (Scored)
 pkg:
   blacklist:
     avahi-daemon:
@@ -676,11 +734,16 @@ pkg:
         Red Hat Enterprise Linux Server-7:
         - iptables: CIS-3.6.1_installed
       description: Install IPtables (Scored)
-    rsyslog:
+    syslog:
       data:
         Red Hat Enterprise Linux Server-7:
-        - rsyslog: CIS-4.2.1.1_installed
+        - rsyslog: CIS-4.2.3
       description: Install rsyslog (Scored)
+    syslog-ng:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - syslog-ng: CIS-4.2.3
+      description: Install syslog-ng
 service:
   blacklist:
     autofs:
@@ -690,7 +753,7 @@ service:
       description: Disable Automounting (Scored)
     rsync:
       data:
-        Red Hat Enterprise Linux Server-7
+        Red Hat Enterprise Linux Server-7:
         - rsyncd: CIS-2.1.10
       description:  Ensure rsyncd is not enabled (Scored)
     nfs:
@@ -752,8 +815,12 @@ service:
     rsyslogd_running:
       data:
         Red Hat Enterprise Linux Server-7:
-        - rsyslog: CIS-4.2.1_running
+        - rsyslog: CIS-4.2.1.1_running
       description: rsyslogd should be running
+    syslog-ng_running:
+      data:
+        Red Hat Enterprise Linux Server-7:
+        - syslog-ng: CIS-4.2.2.1_running
 stat:
   at_allow:
     data:
@@ -1068,20 +1135,20 @@ sysctl:
   ipv6_adverts:
     data:
       Red Hat Enterprise Linux Server-7:
-      - net.ipv6.conf.all.accept_ra
+      - net.ipv6.conf.all.accept_ra:
           match_output: '0'
           tag: CIS 3.3.1
-      - net.ipv6.conf.default.accept_ra
+      - net.ipv6.conf.default.accept_ra:
           match_output: '0'
           tag: CIS-3.3.1
     description:  ENsure IPV6 Router advertisements are not accepted (Scored)
   ipv6_redir:
     data:
       Red Hat Enterprise Linux Server-7:
-      - net.ipv6.conf.all.accept_redirects
+      - net.ipv6.conf.all.accept_redirects:
           match_output: '0'
           tag: CIS-3.3.2
-      - net.ipv6.conf.default.accept_redirects
+      - net.ipv6.conf.default.accept_redirects:
           match_output: '0'
           tag: CIS-3.3.2
     description: Ensure IPV6 redirects are not accepted
