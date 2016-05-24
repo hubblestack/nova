@@ -1,11 +1,9 @@
 Nova
 ====
 
-Nova plugins are designed specifically for auditing the compliance and security level
-of an existing system. These plugins are designed to alow an administrator to
-run security checks or even groups of security checks within their SaltStack
-installation. This allows for real-time insight into the compliance level of
-running systems.
+Nova is designed to audit the compliance and security level of an existing
+system. It is composed of multiple modules, which ingest YAML configuration
+files to run a series of audits on a system.
 
 Installation
 ============
@@ -51,6 +49,9 @@ list of paths.  These paths can be files or directories. If a path is a
 directory, all modules below that directory will be run. If it is a file, that
 file will be run.
 
+If ``hubble.audit`` is run without targeting any audit configs or directories,
+it will instead run ``hubble.top`` with no arguments.
+
 The second argument is a glob pattern, against which audit tags will be
 matched. All audits have an accompanying tag. Nova modules are designed to take
 this argument, compare it to each tag that module handles, and only run those
@@ -63,17 +64,57 @@ Here are some example calls:
 
 .. code-block:: bash
 
-    # Run all yaml configs and tags under salt://hubblestack_nova/
+    # Run hubble.top with the default topfile (top.nova)
     salt '*' hubble.audit
 
     # Run all yaml configs and tags under salt://hubblestack_nova/foo/
     # Will also run salt://hubblestack_nova/foo.yaml if it exists
-    salt '*' hubble.audit modules=foo
+    salt '*' hubble.audit foo
 
     # Run all yaml configs and tags under salt://hubblestack_nova/foo/ and
     # salt://hubblestack_nova/bar, but only run audits with tags starting
     # with "CIS"
-    salt '*' hubble.audit modules=foo,bar tags='CIS*'
+    salt '*' hubble.audit foo,bar tags='CIS*'
+
+
+Nova Topfiles
+-------------
+
+Nova topfiles look very similar to saltstack topfiles, except the top-level
+key is always ``nova``, as nova doesn't have environments.
+
+.. code-block:: yaml
+
+    nova:
+      '*':
+        - cve_scan
+        - cis_gen
+      'web*':
+        - firewall
+        - cis-centos-7-l2-scored
+        - cis-centos-7-apache24-l1-scored
+      'G@os_family:debian':
+        - netstat
+        - cis-debian-7-l2-scored: 'CIS*'
+        - cis-debian-7-mysql57-l1-scored: 'CIS 2.1.2'
+
+Additionally, all nova topfile matches are compound matches, so you never
+need to define a match type like you do in saltstack topfiles.
+
+Each list item is a string representing the dot-separated location of a
+yaml file which will be run with hubble.audit. You can also specify a
+tag glob to use as a filter for just that yaml file, using a colon
+after the yaml file (turning it into a dictionary). See the last two lines
+in the yaml above for examples.
+
+Examples:
+
+.. code-block:: bash
+
+    salt '*' hubble.top
+    salt '*' hubble.top foo/bar/top.nova
+    salt '*' hubble.top foo/bar.nova verbose=True
+
 
 Compensating Control Configuration
 ----------------------------------

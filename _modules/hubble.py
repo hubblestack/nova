@@ -248,15 +248,15 @@ def top(topfile='top.nova',
         nova:
           '*':
             - cve_scan
-            - CIS-CentOS-7-L1-scored
+            - cis_gen
           'web*':
             - firewall
-            - CIS-CentOS-7-L2-scored
-            - CIS-CentOS-7-apache24-L1-scored
+            - cis-centos-7-l2-scored
+            - cis-centos-7-apache24-l1-scored
           'G@os_family:debian':
             - netstat
-            - CIS-Debian-7-L2-scored: 'CIS*'
-            - CIS-Debian-7-mysql57-L1-scored: 'CIS 2.1.2'
+            - cis-debian-7-l2-scored: 'CIS*'
+            - cis-debian-7-mysql57-l1-scored: 'CIS 2.1.2'
 
     Additionally, all nova topfile matches are compound matches, so you never
     need to define a match type like you do in saltstack topfiles.
