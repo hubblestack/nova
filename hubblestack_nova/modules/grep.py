@@ -32,6 +32,7 @@ grep:
                 - '-E'
                 - '-i'
                 - '-B2'
+              match_on_file_missing: True  # See (1) below
         '*':  # wildcard, will be run if no direct osfinger match
           - '/etc/fstab':
               tag: 'CIS-1.1.1'
@@ -42,6 +43,14 @@ grep:
         of resource exhaustion if it is not bound to a separate partition.
       alert: email
       trigger: state
+
+
+(1) If `match_on_file_missing` is ommitted, success/failure will be determined
+entirely based on the grep command and other arguments. If it's set to True and
+the file is missing, then it will be considered a match (success for whitelist,
+failure for blacklist). If it's set to False and the file is missing, then it
+will be considered a non-match (success for blacklist, failure for whitelist).
+If the file exists, this setting is ignored.
 '''
 from __future__ import absolute_import
 import logging
@@ -115,7 +124,11 @@ def audit(data_list, tags, verbose=False):
                         if not re.match(tag_data['match_output'], grep_ret):
                             found = False
 
-
+                if not os.path.exists(name) and 'match_on_file_missing' in tag_data:
+                    if tag_data['match_on_file_missing']:
+                        found = True
+                    else:
+                        found = False
 
                 # Blacklisted pattern (must not be found)
                 if audittype == 'blacklist':
