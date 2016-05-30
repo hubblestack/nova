@@ -1,0 +1,7 @@
+ssl:
+  google:
+    endpoint: 'www.google.com'  # or null if file is defined
+    file: null                  # /path/to/the/pem/file if endpoint is null
+    port: 443                   # or null if endpoint is null
+    warning: 10                 # number of days until expiration to get a warning
+    critical: 5                 # number of days until expiration to get a critical warning
