@@ -1,6 +1,8 @@
 openssl:
   google:
-    endpoint: 'www.google.com'  # or null if file is defined
-    file: null                  # /path/to/the/pem/file if endpoint is null
-    port: 443                   # or null if endpoint is null
-    days_to_expire: 30          # number of days until expiration
+    data:
+      endpoint: 'www.google.com'  # or null if file is defined
+      file: null                  # /path/to/the/pem/file if endpoint is null
+      port: 443                   # or null if endpoint is null
+      days_to_expire: 30          # number of days until expiration
+    description: 'google certificate'
