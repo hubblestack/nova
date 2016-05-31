@@ -1,4 +1,4 @@
-ssl:
+openssl:
   google:
     endpoint: 'www.google.com'  # or null if file is defined
     file: null                  # /path/to/the/pem/file if endpoint is null
