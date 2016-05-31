@@ -4,6 +4,8 @@ import logging
 import fnmatch
 import copy
 import salt.utils
+import datetime
+import time
 
 import ssl
 
@@ -88,3 +90,16 @@ def _load_x509_from_file(cert_file_path):
     except OpenSSL.crypto.Error:
         x509 = None
     return x509
+
+
+def _get_x509_days_left(x509):
+    date_fmt = '%Y%m%d%H%M%SZ'
+    current_datetime = datetime.datetime.utcnow()
+    notAfter = time.strptime(x509.get_notAfter(), date_fmt)
+    notBefore = time.strptime(x509.get_notBefore(), date_fmt)
+
+    ret = {'notAfter': (datetime.datetime(*notAfter[:6]) - current_datetime).days,
+           'notBefore': (datetime.datetime(*notBefore[:6]) - current_datetime).days}
+
+    return ret
+
