@@ -3,6 +3,15 @@ import logging
 
 import fnmatch
 import copy
+import salt.utils
+
+import ssl
+
+try:
+    import OpenSSL
+    _HAS_OPENSSL = True
+except ImportError:
+    _HAS_OPENSSL = False
 
 log = logging.getLogger(__name__)
 
@@ -14,6 +23,8 @@ def __virtual__():
         return False, 'This audit module only runs on linux'
     if not salt.utils.which('iptables'):
         return (False, 'The iptables execution module cannot be loaded: iptables not installed.')
+    if not _HAS_OPENSSL:
+        return (False, 'The python-OpenSSL library is missing')
     return True
 
 
@@ -41,3 +52,39 @@ def _get_tags(data):
             formatted_data.pop('data')
             ret[tag].append(formatted_data)
     return ret
+
+
+def _load_x509(source, port=443, from_file=False):
+    if not from_file:
+        cert = _load_x509_from_endpoint(source, port)
+    else:
+        cert = _load_x509_from_file(source)
+    return cert
+
+
+def _load_x509_from_endpoint(server, port=443):
+    try:
+        cert = ssl.get_server_certificate((server, port))
+    except Exception:
+        cert = None
+    if not cert:
+        return None
+
+    try:
+        x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
+    except OpenSSL.crypto.Error:
+        x509 = None
+    return x509
+
+
+def _load_x509_from_file(cert_file_path):
+    try:
+        cert_file = open(cert_file_path)
+    except IOError:
+        return None
+
+    try:
+        x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert_file.read())
+    except OpenSSL.crypto.Error:
+        x509 = None
+    return x509
