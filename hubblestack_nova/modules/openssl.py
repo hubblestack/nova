@@ -30,9 +30,104 @@ def __virtual__():
     return True
 
 
+def audit(data_list, tags, verbose=False):
+    __data__ = {}
+    for data in data_list:
+        _merge_yaml(__data__, data)
+    __tags__ = _get_tags(__data__)
+
+    log.trace('service audit __data__:')
+    log.trace(__data__)
+    log.trace('service audit __tags__:')
+    log.trace(__tags__)
+
+    ret = {'Success': [], 'Failure': [], 'Controlled': []}
+    for tag in __tags__:
+        if fnmatch.fnmatch(tag, tags):
+            for tag_data in __tags__[tag]:
+                if 'control' in tag_data:
+                    ret['Controlled'].append(tag_data)
+                    continue
+
+                endpoint = tag_data.get('endpoint', None)
+                file = tag_data.get('file', None)
+                notAfter = tag_data.get('notAfter', 0)
+                notBefore = tag_data.get('notBefore', 0)
+                port = tag_data.get('port', 443)
+                fail_if_notBefore = tag_data.get('fail_if_not_before', False)
+
+                if not endpoint and not file:
+                    failing_reason = 'No certificate to be checked'
+                    tag_data['reason'] = failing_reason
+                    ret['Failure'].append(tag_data)
+                    continue
+
+                if endpoint and file:
+                    failing_reason = 'Only one certificate per check is allowed'
+                    tag_data['reason'] = failing_reason
+                    ret['Failure'].append(tag_data)
+                    continue
+
+                x509 = _load_x509(endpoint, port) if endpoint else _load_x509(file, from_file=True)
+                (passed, failing_reason) = _check_x509(x509=x509,
+                                                       notBefore=notBefore,
+                                                       notAfter=notAfter,
+                                                       fail_if_notBefore=fail_if_notBefore)
+
+                if passed:
+                    ret['Success'].append(tag_data)
+                else:
+                    tag_data['reason'] = failing_reason
+                    ret['Failure'].append(tag_data)
+
+    if not verbose:
+        failure = []
+        success = []
+        controlled = []
+
+        tags_descriptions = set()
+
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            description = tag_data.get('description')
+            if (tag, description) not in tags_descriptions:
+                failure.append({tag: description})
+                tags_descriptions.add((tag, description))
+
+        tags_descriptions = set()
+
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            description = tag_data.get('description')
+            if (tag, description) not in tags_descriptions:
+                success.append({tag: description})
+                tags_descriptions.add((tag, description))
+
+        control_reasons = set()
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            description = tag_data.get('description')
+            control_reason = tag_data.get('control', '')
+            if (tag, description, control_reason) not in control_reasons:
+                tag_dict = {'description': description,
+                            'control': control_reason}
+                controlled.append({tag: tag_dict})
+                control_reasons.add((tag, description, control_reason))
+
+        ret['Controlled'] = controlled
+        ret['Success'] = success
+        ret['Failure'] = failure
+
+    if not ret['Controlled']:
+        ret.pop('Controlled')
+
+    return ret
+
+
 def _merge_yaml(ret, data):
     if 'openssl' not in ret:
-        ret['openssl'] = {}
+        ret['openssl'] = []
     for key, val in data.get('openssl', {}).iteritems():
         ret['openssl'].append({key: val})
     return ret
@@ -41,7 +136,6 @@ def _merge_yaml(ret, data):
 def _get_tags(data):
     ret = {}
     for audit_dict in data.get('openssl', {}):
-        pprint(audit_dict)
         for audit_id, audit_data in audit_dict.iteritems():
             tags_dict = audit_data.get('data', {})
             tag = tags_dict.pop('tag')
@@ -56,12 +150,30 @@ def _get_tags(data):
     return ret
 
 
+def _check_x509(x509=None, notBefore=0, notAfter=0, fail_if_notBefore=False):
+    if not x509:
+        return (False, 'No certificate to be checked')
+    if x509.has_expired():
+        return (False, 'The certificate is expired')
+
+    stats = _get_x509_days_left(x509)
+
+    if notAfter >= stats['notAfter']:
+        return (False, 'The certificate will expire in less then {0} days'.format(notAfter))
+    if notBefore <= stats['notBefore']:
+        if notBefore == 0 and fail_if_notBefore:
+            return (False, 'The certificate is not yet valid ({0} days left until it will be valid)'.format(stats['notBefore']))
+        return (False, 'The certificate will be valid in more then {0} days'.format(notBefore))
+
+    return (True, '')
+
+
 def _load_x509(source, port=443, from_file=False):
     if not from_file:
-        cert = _load_x509_from_endpoint(source, port)
+        x509 = _load_x509_from_endpoint(source, port)
     else:
-        cert = _load_x509_from_file(source)
-    return cert
+        x509 = _load_x509_from_file(source)
+    return x509
 
 
 def _load_x509_from_endpoint(server, port=443):
