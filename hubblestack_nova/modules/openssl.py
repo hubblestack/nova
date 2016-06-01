@@ -23,8 +23,6 @@ __data__ = None
 def __virtual__():
     if salt.utils.is_windows():
         return False, 'This audit module only runs on linux'
-    if not salt.utils.which('iptables'):
-        return (False, 'The iptables execution module cannot be loaded: iptables not installed.')
     if not _HAS_OPENSSL:
         return (False, 'The python-OpenSSL library is missing')
     return True
