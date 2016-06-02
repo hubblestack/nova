@@ -1,3 +1,71 @@
+'''
+Hubble Nova module for auditing SSL certificates
+
+:maintainer: HubbleStack
+:maturity: 20160601
+:platform: Linux
+:requires: SaltStack, python-OpenSSL
+
+This audit module requires YAML data to execute. It will search the yaml data received for the topkey 'openssl'.
+
+Sample YAML data, with intline comments:
+
+openssl:
+  google:
+    data:
+      tag: 'CERT-001'                   # required
+      endpoint: 'www.google.com'        # required only if file is not defined
+      file: null                        # required only if endpoint is not defined
+      port: 443                         # optional
+      notAfter: 15                      # optional
+      notBefore: 2                      # optional
+      fail_if_not_before: False         # optional
+    description: 'google certificate'
+
+Some words about the elements in the data dictionary:
+    - tag: this is the tag of the check
+    - endpoint:
+        - the ssl endpoint to check
+        - the module will download the SSL certificate of the endpoint
+        - endpoint is required only if file is not defined (read bellow)
+    file:
+        - the path to the pem file containing the SSL certificate to be checked
+        - the path is relative to the minion
+        - the module will try to read the certificate from this file
+        - if no certificate can be loaded by the OpenSSL library, the check will be failed
+        - file is required only if endpoint is not defined (read more about this bellow)
+    port:
+        - the port is required only if both:
+            - the endpoint is defined
+            - https is configured on another port the 443 on the endpoint
+        - WARNING: if the port is not the on configured for https on the endpoint, downloading the certificate from
+          the endpoint will timeout and the check will be failed
+        - if endpoint is defined but the port is not, the module will try, by default, to use port 443
+    notAfter:
+        - the minimum number of days left until the certificate should expire
+        - if the certificate will expire in less then the value given here, the check will fail
+        - if notAfter is missing, the default value is 0; basically, the if the expiration date is in the future, the
+          check will be passed
+    notBefore:
+        - the expected number of days until the certificate becomes valid
+        - this is useful only if you expect the certificate to be valid after a certain date
+        - if missing, 0 is the default value (read more bellow)
+    fail_if_notBefore:
+        - if True, the check will fail only if notBefore is 0 (or missing): if the certificate is not valid yet, but
+          it is expected to be
+        - the default value is False - the check will fail only if the certificate expiration date is valid
+
+Some notes:
+    - if BOTH file and endpoint are present / missing, the check will fail; only one certificate has to be present for
+      each check
+    - the YAML supports also the control key, just as the other modules do
+
+Known issues: for unknown reasons (yet), the module can fail downloading the certificate from certain endpoints. When
+this happens, the check will be failed.
+
+'''
+
+
 from __future__ import absolute_import
 import logging
 
