@@ -24,6 +24,7 @@ import salt
 import salt.utils
 import salt.utils.http
 
+from distutils.version import LooseVersion
 from datetime import datetime
 from time import time as current_time
 
@@ -79,30 +80,39 @@ def audit(data_list, tags, verbose=False):
 
 	ret = {'Success':[], 'Failure':[]}    
 	
-	affected_pkgs = get_cve_vulnerabilities(os, osmajorrelease)
+	affected_pkgs = _get_cve_vulnerabilities(os, osmajorrelease)
 	local_pkgs = __salt__['pkg.list_pkgs']()
 	
 	
 	for pkgObj in affected_pkgs:
+
 		if pkgObj.get_pkg() in local_pkgs:
+
 			local_version = local_pkgs[pkgObj.get_pkg()].split('-')
 			affected_version = pkgObj.get_version().split('-')
-			is_local_greater = None # Represents local == affected
+			is_local_greater = None # None represents local == affected
+
+			# Compare from higher order to lower order
 			for index in range(len(affected_version)):
+				
 				local_check = LooseVersion(local_version[index])
 				affected_check = LooseVersion(affected_version[index])
+				
+				# If they're the same, continue to check lower order
 				if local_check == affected_check:
 					continue
 				else:
 					is_local_greater = local_check > affected_check
 					break
+			
 			if pkgObj.get_operator == 'lt':
 				if is_local_greater is False:
 					ret['Failure'].append(pkgObj.report())
 				else:
 					ret['Success'].append(pkgObj.get_pkg())
+			
 			elif pkgObj.get_operator() == 'le':
-				if is_local_greater is not True:
+				if is_local_greater is not True: # Can either be None or False
 					ret['Failure'].append(pkgObj.report())
 				else:
 					ret['Success'].append(pkgObj.get_pkg())
@@ -112,7 +122,7 @@ def audit(data_list, tags, verbose=False):
 
 
 
-def get_cve_vulnerabilities(os, os_version):
+def _get_cve_vulnerabilities(os, os_version):
 	"""
 	Returns list of vulnerable package objects.
 	"""
@@ -121,7 +131,7 @@ def get_cve_vulnerabilities(os, os_version):
 
 	try:
 		cve_query = salt.utils.http.query(
-			'http://vulners.com/api/v3/search/lucene/?query=type:%s' % os,
+			'http://vulners.com/api/v3/search/lucene/?query=type:%s' % os.lower(),
 			decode_type='json'
 		)
 	except Exception: # Ask about error handling...
