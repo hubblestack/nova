@@ -6,11 +6,11 @@
 :requires: SaltStack
 
 
-Sample YAML data, without inline comments:
+Sample YAML data
 
 cve_scan_v2:
-    ttl: 
-    url: salt://
+    ttl: 86400
+    url: http://vulners.com/api/v3/search/lucene/
 '''
 from __future__ import absolute_import
 import logging
@@ -65,7 +65,7 @@ def audit(data_list, tags, verbose=False):
                 offset = page_num * 20
                 page_num += 1
                 cve_query = salt.utils.http.query(
-                    'http://vulners.com/api/v3/search/lucene/?query=order:last year&type:%s&skip=%s' % (os_name,offset)
+                    '%s?query=order:last year&type:%s&skip=%s' % (url, os_name,offset),
                     decode_type='json'
                 )
                 if len(cve_query['data']['search']) < 20:
