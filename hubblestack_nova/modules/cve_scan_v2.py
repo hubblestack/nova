@@ -31,8 +31,8 @@ def __virtual__():
 
 def audit(data_list, tags, verbose=False):
 
-    
-    os_name = __grains__['os'].lower()
+    os_name = 'centos' 
+    #os_name = __grains__['os'].lower()
 
     cache = {}
     
@@ -71,7 +71,7 @@ def audit(data_list, tags, verbose=False):
                 if len(cve_query['data']['search']) < 20:
                     is_next_page = False
 
-                if page_num = 0:
+                if page_num == 0:
                     master_json = cve_query
                     ###### For testing just use one page
                     # break ######## TODO : REMOVE ME 
@@ -114,7 +114,7 @@ def audit(data_list, tags, verbose=False):
                     ret['Failure'].append(pkgObj.report())
                 else:
                     ret['Success'].append(pkgObj.get_pkg())
-
+    return ret
 def _get_cve_vulnerabilities(query_results):
     '''
     Returns list of vulnerable package objects.
