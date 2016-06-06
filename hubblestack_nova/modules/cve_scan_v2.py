@@ -49,16 +49,17 @@ def audit(data_list, tags, verbose=False):
 			if "cache" not in data["cve_scan_v2"]:
 				continue
 
-			cached_scans = data["cve_scan_v2"]["cache"]
+			cached_scans = data["cve_scan_v2"]["cache"] # cve_scan_v2:cache
+			
 			if os not in cached_scans:
 				continue
 
-			cached_data = cached_scans[os]
+			cached_data = cached_scans[os] # cve_scan_v2:cache:CentOS
 
 			curr_datetime = datetime.fromtimestamp(current_time)
 
 			try:
-				cached_timestamp = float(cached_data["timestamp"])
+				cached_timestamp = float(cached_data["timestamp"]) # cve_scan_v2:cache:CentOS:timestamp
 			except ValueError, e:
 				#yaml not formatted correctly
 				continue
@@ -72,13 +73,14 @@ def audit(data_list, tags, verbose=False):
 			else:
 				#Found cache less than 1 day old
 				cache = cached_data.get("data", {})
-				break
+				if cache != {}: 
+					break
+	
+	ret = {'Success':[], 'Failure':[]}   
 
-	#Check if cache less than 1 day old exists
-	if cache:
-		return cache
-
-	ret = {'Success':[], 'Failure':[]}    
+	#Check if cache less than 1 day old exists, and make sure its not empty results.
+	if cache and cache != ret:
+		return cache 
 	
 	affected_pkgs = _get_cve_vulnerabilities(os, osmajorrelease)
 	local_pkgs = __salt__['pkg.list_pkgs']()
