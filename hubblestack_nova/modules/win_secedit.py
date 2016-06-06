@@ -15,7 +15,6 @@ import copy
 import fnmatch
 import logging
 import salt.utils
-import tempfile
 
 try:
     import codecs
@@ -25,7 +24,7 @@ except ImportError:
     HAS_WINDOWS_MODULES = False
 
 log = logging.getLogger(__name__)
-__virtualname__ = __name__
+__virtualname__ = 'win_secedit'
 
 def __virtual__():
     if not salt.utils.is_windows() or not HAS_WINDOWS_MODULES:
@@ -212,7 +211,7 @@ def _secedit_export():
     specify the location of the file and the file will persist, or let the
     function create it and the file will be deleted on completion.  Should
     only be called once.'''
-    dump = tempfile.NamedTemporaryFile(suffix='.inf')
+    dump = "C:\ProgramData\{}.inf".format(uuid.uuid4())
     try:
         ret = __salt__['cmd.run']('secedit /export /cfg {0}'.format(dump))
         if ret:
@@ -245,11 +244,12 @@ def _get_account_sid():
     '''This helper function will get all the users and groups on the computer
     and return a dictionary'''
     win32 = __salt__['cmd.run']('Get-WmiObject win32_useraccount | Format-List -Property '
-                                'Name, SID', shell='powershell')
+                                'Name, SID', shell='powershell', python_shell=True)
     win32 += '\n'
     win32 += __salt__['cmd.run']('Get-WmiObject win32_group | Format-List -Property Name, '
-                                 'SID', shell='powershell')
+                                 'SID', shell='powershell', python_shell=True)
     if win32:
+
         dict_return = {}
         lines = win32.split('\n')
         lines = filter(None, lines)
@@ -302,6 +302,10 @@ def _translate_value_type(current, value, evaluator, __sidaccounts__=False):
             evaluator = evaluator.split(',')[1]
         if ',' in current:
             current = current.split(',')[1]
+        if '"' in current:
+            current = current.replace('"', '')
+        if '"' in evaluator:
+            evaluator = evaluator.replace('"', '')
         if int(current) < int(evaluator):
             if current != '0':
                 return True
