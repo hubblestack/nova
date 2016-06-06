@@ -90,31 +90,17 @@ def audit(data_list, tags, verbose=False):
 
         if pkgObj.get_pkg() in local_pkgs:
 
-            local_version = local_pkgs[pkgObj.get_pkg()].split('-')
-            affected_version = pkgObj.get_version().split('-')
-            is_local_greater = None # None represents local == affected
+            local_version = LooseVersion(local_pkgs[pkgObj.get_pkg()])
+            affected_version = LooseVersion(pkgObj.get_version())
 
-            # Compare from higher order to lower order
-            for index in range(len(affected_version)):
-                
-                local_check = LooseVersion(local_version[index])
-                affected_check = LooseVersion(affected_version[index])
-                
-                # If they're the same, continue to check lower order
-                if local_check == affected_check:
-                    continue
-                else:
-                    is_local_greater = local_check > affected_check
-                    break
-            
             if pkgObj.get_operator == 'lt':
-                if is_local_greater is False:
+                if local_version < affected_version:
                     ret['Failure'].append(pkgObj.report())
                 else:
                     ret['Success'].append(pkgObj.get_pkg())
             
             elif pkgObj.get_operator() == 'le':
-                if is_local_greater is not True: # Can either be None or False
+                if local_version <= affected_version:
                     ret['Failure'].append(pkgObj.report())
                 else:
                     ret['Success'].append(pkgObj.get_pkg())
