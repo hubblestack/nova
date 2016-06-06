@@ -9,7 +9,7 @@
 Sample YAML data, without inline comments:
 
 cve_scan_v2:
-    ttl:
+    ttl: 
     url: salt://
 '''
 from __future__ import absolute_import
@@ -19,6 +19,9 @@ import salt
 import salt.utils
 import salt.utils.http
 
+import json
+import os
+
 from distutils.version import LooseVersion
 from datetime import datetime
 from time import time as current_time
@@ -26,13 +29,10 @@ from time import time as current_time
 def __virtual__():
     return True
 
-
-
 def audit(data_list, tags, verbose=False):
 
     
-    os = __grains__['os']
-    os_version = __grains__['osmajorrelease']
+    os_name = __grains__['os'].lower()
 
     cache = {}
     
@@ -40,44 +40,59 @@ def audit(data_list, tags, verbose=False):
     #   < 1 day old cache is in any yaml file
     for data in data_list:
 
-        if "cve_scan_v2" in data:
-            if "cache" not in data["cve_scan_v2"]:
-                continue
+        if 'cve_scan_v2' in data:
 
-            cached_scans = data["cve_scan_v2"]["cache"] # cve_scan_v2:cache
-            
-            if os not in cached_scans:
-                continue
+            ttl = data['cve_scan_v2']['ttl']
+            url = data['cve_scan_v2']['url']
 
-            cached_data = cached_scans[os] # cve_scan_v2:cache:CentOS
+            cache = _get_cache(ttl, url)
 
-            curr_datetime = datetime.fromtimestamp(current_time)
+            if cache.get('result', None) == 'OK':
+                master_json = cache
+                break
 
-            try:
-                cached_timestamp = float(cached_data["timestamp"]) # cve_scan_v2:cache:CentOS:timestamp
-            except ValueError, e:
-                #yaml not formatted correctly
-                continue
+    # Query the api.
+    if not cache:
 
-            last_datetime = datetime.fromtimestamp(cached_timestamp)
-            time_delta = curr_datetime - last_datetime
+        is_next_page = True
+        page_num = 0
+        
+        # Hit the api, incrementing the offset due to the page until 
+        #   we get all the results together in one dictionary.
+        try:
+            while is_next_page:
+                
+                offset = page_num * 20
+                page_num += 1
+                cve_query = salt.utils.http.query(
+                    'http://vulners.com/api/v3/search/lucene/?query=order:last year&type:%s&skip=%s' % (os_name,offset)
+                    decode_type='json'
+                )
+                if len(cve_query['data']['search']) < 20:
+                    is_next_page = False
 
-            if time_delta.days >= 1:
-                continue
+                if page_num = 0:
+                    master_json = cve_query
+                    ###### For testing just use one page
+                    # break ######## TODO : REMOVE ME 
+                    continue
 
-            else:
-                #Found cache less than 1 day old
-                cache = cached_data.get("data", {})
-                if cache != {}: 
-                    break
-    
+                master_json = _build_json(master_json, cve_query)
+
+        except Exception as exc: # Ask about error handling...
+            print exc
+            return
+
+        #Cache results.
+        try:
+            with open('/var/cache/salt/minion/files/base/cve/%s.json', 'w') as cache_file:
+                json.dump(master_json, cache_file)
+        except Exception as exc:
+            print exc, 'wasn\'t able to cache the query.'
+                    
     ret = {'Success':[], 'Failure':[]}   
-
-    #Check if cache less than 1 day old exists, and make sure its not empty results.
-    if cache and cache != ret:
-        return cache 
     
-    affected_pkgs = _get_cve_vulnerabilities(os, osmajorrelease)
+    affected_pkgs = _get_cve_vulnerabilities(master_json)
     local_pkgs = __salt__['pkg.list_pkgs']()
     
     
@@ -100,44 +115,68 @@ def audit(data_list, tags, verbose=False):
                 else:
                     ret['Success'].append(pkgObj.get_pkg())
 
-    
-
-
-
-
-def _get_cve_vulnerabilities(os, os_version):
-    """
+def _get_cve_vulnerabilities(query_results):
+    '''
     Returns list of vulnerable package objects.
-    """
+    '''
     
     vulnerable_pkgs = []
 
-    try:
-        cve_query = salt.utils.http.query(
-            'http://vulners.com/api/v3/search/lucene/?query=type:%s' % os.lower(),
-            decode_type='json'
-        )
-    except Exception: # Ask about error handling...
+    
+    if query_results['result'].lower() != 'ok':
         return
     
-    if cve_query['result'].lower() != 'ok':
-        return
-    
-    for report in cve_query['data']['search']:
+    for report in query_results['data']['search']:
+        #data:search
         reporter = report['_source']['reporter']
         cve_list = report['_source']['cvelist']
         href = report['_source']['href']
+        score = report['_source']['cvss']['score']
         for pkg in report['_source']['affectedPackages']:
-            if pkg['OSVersion'] in ['any', osmajorrelease]:
-                vulnerable_pkg.append(vulnerablePkg(pkg['packageName'],pkg['packageVersion'], pkg['operator'], reporter, href, cve_list))   
+            #data:search:_source:affectedPackages
+            if pkg['OSVersion'] in ['any', str(__grains__['osmajorrelease'])]: # Check if os version matches grains
+                vulnerable_pkg.append(vulnerablePkg(pkg['packageName'],pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list))   
         
     return vulnerable_pkgs
 
+def _get_cache(ttl, url):
+    '''
+    If url contains valid cache, returns it,
+        Else returns empty dictionary.
+    '''
+
+    if url.startswith('salt://'):
+        path_to_json = url[len('salt://'):]
+        ########## TODO ##############
+    elif url.startswith('http://') or url.startswith('https://'):
+        # Check if we have a valid cached version.
+        path_to_cache = '/var/cache/salt/minion/files/base/cve/%s.json' % __grains__['os'].lower
+
+        try:
+            cached_time = os.path.getmtime(path_to_cache)
+        except OSError:
+            return {}
+        if current_time - cached_time < ttl:
+            try:
+                with open(path_to_cache) as json_file:
+                    return json.load(json_file)
+            except Exception:
+                return {}
+        else:
+            return {}
+
+def _build_json(master_json, next_page):
+
+    next_page_search = next_page['data']['search']
+    master_json['data']['search'].append(next_page_search)
+    return master_json
+
 
 class vulnerablePkg:
-    def __init__(self, pkg, pkg_version, operator, reporter, href, cve_list):
+    def __init__(self, pkg, pkg_version, score, operator, reporter, href, cve_list):
         self.pkg = pkg
         self.pkg_version = pkg_version
+        self.score = score
         self.operator = operator
         self.href = href
         self.cve_list = cve_list
@@ -146,6 +185,8 @@ class vulnerablePkg:
         return self.pkg
     def get_version(self):
         return self.pkg_version
+    def get_score(self):
+        return sel.score
     def get_operator(self):
         return self.operator
     def get_cve_list(self):
@@ -156,7 +197,7 @@ class vulnerablePkg:
     def report(self):
         return {
             'reporter': self.get_reporter(),
-            'operator': self.get_operator(),
+            'score': self.get_score(),
             'cve_list': self.get_cve_list(),
             'pkg': self.get_pkg()
         }
