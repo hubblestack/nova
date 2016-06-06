@@ -9,13 +9,8 @@
 Sample YAML data, without inline comments:
 
 cve_scan_v2:
-    cache:
-        CentOS:
-            datetime : 2016-06-03 23:16:39.553408
-            timestamp : 1465017399.55
-            data : 
-                Success : []
-                Failure : []
+    ttl:
+    url: salt://
 '''
 from __future__ import absolute_import
 import logging
@@ -158,3 +153,10 @@ class vulnerablePkg:
         return def_copy
     def get_reporter(self):
         return self.reporter
+    def report(self):
+        return {
+            'reporter': self.get_reporter(),
+            'operator': self.get_operator(),
+            'cve_list': self.get_cve_list(),
+            'pkg': self.get_pkg()
+        }
