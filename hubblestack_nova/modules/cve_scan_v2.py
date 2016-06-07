@@ -18,7 +18,8 @@ import logging
 import salt
 import salt.utils
 import requests
-
+import copy
+import re
 
 import json
 import os
@@ -27,7 +28,7 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from time import time as current_time
 
-log = logging.getLogger(__name__)
+log = logging.Logger(__name__)
 
 def __virtual__():
     return True
@@ -98,19 +99,18 @@ def audit(data_list, tags, verbose=False):
     
     affected_pkgs = _get_cve_vulnerabilities(master_json)
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
-            
+    
     for pkgObj in affected_pkgs:
 ##TODO: eventually should switch the loop to go through just the local_pkgs and check if it\'s in the affected packages.. much more effecient, but have to restructure affected_packages to be dictionary of pkg_name --> pkgObj
         if pkgObj.get_pkg() in local_pkgs:
-            
-            affected_version = LooseVersion(pkgObj.get_version())
-            for version_num in local_pkgs[pkgObj.get_pkg()]:
-                # Get rid of prefix if version number has one, ex '1:3.4.52'
-                if ':' in local_version:
-                    version_num = local_version[local_version.index(':')+1:]
-                
-                local_version = LooseVersion(version_num)
-    
+            affected_version = pkgObj.get_version()
+            # In order to do compare LooseVersions, eliminate trailing 'el<#>'
+            if re.search('.el\d$', affected_version):
+                affected_version = affected_version[:-4]
+            for local_version in local_pkgs[pkgObj.get_pkg()]:
+                # In order to do compare LooseVersions, eliminate trailing 'el<#>'
+                if re.search('.el\d$', local_version):
+                    local_version = local_version[:-4]
                 if _is_vulnerable(local_version, affected_version, pkgObj.get_operator()):
                     ret['Failure'].append(pkgObj.report())
                 else:
@@ -118,7 +118,7 @@ def audit(data_list, tags, verbose=False):
         
         else:
             ret['Success'].append(pkgObj.get_pkg())
-
+ 
     return ret
 def _get_cve_vulnerabilities(query_results):
     '''
@@ -139,10 +139,6 @@ def _get_cve_vulnerabilities(query_results):
         href = report['_source']['href']
         score = report['_source']['cvss']['score']
         
-        #Scan includes affectedSoftware, we only support pkgs.            
-        if 'affectedPackage' not in report['_source']:
-            continue
-
         for pkg in report['_source']['affectedPackage']:
             #data:search:_source:affectedPackages
             
@@ -151,23 +147,38 @@ def _get_cve_vulnerabilities(query_results):
                 vulnerable_pkgs.append(pkgObj)   
     return vulnerable_pkgs
 
-def _is_vulnerable(local_version, affected_version, operator='lt'):
+def _is_vulnerable(local_version, affected_version, operator):
     '''
-    Given two LooseVersion objects, and optional operator
+    Given two version strings, and operator
         returns whether the package is vulnerable or not.
     '''
-    if operator == 'lt':
-        if local_version < affected_version:
-            return True
-        else:
+    # Get rid of prefix if version number has one, ex '1:3.4.52'
+    if ':' in local_version:
+         local_version = local_version[local_version.index(':')+1:]
+    #Compare from higher order to lower order based on '-' split.
+    local_version_split = local_version.split('-')
+    affected_version_split = affected_version.split('-')
+    for order_index in range(len(local_version_split)):
+        local_version_obj = LooseVersion(local_version_split[order_index])
+        affected_version_obj = LooseVersion(affected_version_split[order_index])
+        #Check lower order bits if higher order are equal.
+        if local_version == affected_version:
+            continue
+        #Return when highest order version is not equal.
+
+        elif local_version_obj > affected_version_obj:
             return False
+        elif local_version_obj < affected_version_obj:
+            return True
+        
+    else:
+        # The packages are equal if the code has gotten to here.
+        #     Now return based on the operator.
+        if operator == 'le':
+            return True
+        elif operator == 'lt':
+            return False        
     
-    elif operator == 'le':
-        if local_version <= affected_version:
-            return True
-        else:
-            return False
-    raise ValueError("operator not a supported operation")
 
 
 
@@ -209,6 +220,9 @@ class vulnerablePkg:
         self.pkg_version = pkg_version
         self.pkg_version = pkg_version
         self.score = score
+        if operator not in ['lt', 'le']:
+            log.error('pkg:%s contains an operator that\'s not supported and waschange to < ')
+            operator = 'lt'
         self.operator = operator
         self.href = href
         self.cve_list = cve_list
@@ -218,7 +232,7 @@ class vulnerablePkg:
     def get_version(self):
         return self.pkg_version
     def get_score(self):
-        return sel.score
+        return self.score
     def get_operator(self):
         return self.operator
     def get_cve_list(self):
@@ -226,8 +240,12 @@ class vulnerablePkg:
         return def_copy
     def get_reporter(self):
         return self.reporter
+    def get_href(self):
+        return self.href
     def report(self):
         return {
+            'href': self.get_href(),
+            'version': self.get_version(),
             'reporter': self.get_reporter(),
             'score': self.get_score(),
             'cve_list': self.get_cve_list(),
