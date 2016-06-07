@@ -8,7 +8,7 @@ Hubble Nova module for auditing SSL certificates
 
 This audit module requires YAML data to execute. It will search the yaml data received for the topkey 'openssl'.
 
-Sample YAML data, with intline comments:
+Sample YAML data, with in line comments:
 
 openssl:
   google:
@@ -17,8 +17,8 @@ openssl:
       endpoint: 'www.google.com'        # required only if file is not defined
       file: null                        # required only if endpoint is not defined
       port: 443                         # optional
-      notAfter: 15                      # optional
-      notBefore: 2                      # optional
+      not_after: 15                      # optional
+      not_before: 2                      # optional
       fail_if_not_before: False         # optional
     description: 'google certificate'
 
@@ -41,17 +41,17 @@ Some words about the elements in the data dictionary:
         - WARNING: if the port is not the on configured for https on the endpoint, downloading the certificate from
           the endpoint will timeout and the check will be failed
         - if endpoint is defined but the port is not, the module will try, by default, to use port 443
-    notAfter:
+    not_after:
         - the minimum number of days left until the certificate should expire
         - if the certificate will expire in less then the value given here, the check will fail
-        - if notAfter is missing, the default value is 0; basically, the if the expiration date is in the future, the
+        - if not_after is missing, the default value is 0; basically, the if the expiration date is in the future, the
           check will be passed
-    notBefore:
+    not_before:
         - the expected number of days until the certificate becomes valid
         - this is useful only if you expect the certificate to be valid after a certain date
         - if missing, 0 is the default value (read more bellow)
-    fail_if_notBefore:
-        - if True, the check will fail only if notBefore is 0 (or missing): if the certificate is not valid yet, but
+    fail_if_not_before:
+        - if True, the check will fail only if not_before is 0 (or missing): if the certificate is not valid yet, but
           it is expected to be
         - the default value is False - the check will fail only if the certificate expiration date is valid
 
@@ -117,10 +117,10 @@ def audit(data_list, tags, verbose=False):
 
                 endpoint = tag_data.get('endpoint', None)
                 file = tag_data.get('file', None)
-                notAfter = tag_data.get('notAfter', 0)
-                notBefore = tag_data.get('notBefore', 0)
+                not_after = tag_data.get('not_after', 0)
+                not_before = tag_data.get('not_before', 0)
                 port = tag_data.get('port', 443)
-                fail_if_notBefore = tag_data.get('fail_if_not_before', False)
+                fail_if_not_before = tag_data.get('fail_if_not_before', False)
 
                 if not endpoint and not file:
                     failing_reason = 'No certificate to be checked'
@@ -136,9 +136,9 @@ def audit(data_list, tags, verbose=False):
 
                 x509 = _load_x509(endpoint, port) if endpoint else _load_x509(file, from_file=True)
                 (passed, failing_reason) = _check_x509(x509=x509,
-                                                       notBefore=notBefore,
-                                                       notAfter=notAfter,
-                                                       fail_if_notBefore=fail_if_notBefore)
+                                                       not_before=not_before,
+                                                       not_after=not_after,
+                                                       fail_if_not_before=fail_if_not_before)
 
                 if passed:
                     ret['Success'].append(tag_data)
@@ -216,7 +216,7 @@ def _get_tags(data):
     return ret
 
 
-def _check_x509(x509=None, notBefore=0, notAfter=0, fail_if_notBefore=False):
+def _check_x509(x509=None, not_before=0, not_after=0, fail_if_not_before=False):
     if not x509:
         return (False, 'No certificate to be checked')
     if x509.has_expired():
@@ -224,12 +224,12 @@ def _check_x509(x509=None, notBefore=0, notAfter=0, fail_if_notBefore=False):
 
     stats = _get_x509_days_left(x509)
 
-    if notAfter >= stats['notAfter']:
-        return (False, 'The certificate will expire in less then {0} days'.format(notAfter))
-    if notBefore <= stats['notBefore']:
-        if notBefore == 0 and fail_if_notBefore:
-            return (False, 'The certificate is not yet valid ({0} days left until it will be valid)'.format(stats['notBefore']))
-        return (False, 'The certificate will be valid in more then {0} days'.format(notBefore))
+    if not_after >= stats['not_after']:
+        return (False, 'The certificate will expire in less then {0} days'.format(not_after))
+    if not_before <= stats['not_before']:
+        if not_before == 0 and fail_if_not_before:
+            return (False, 'The certificate is not yet valid ({0} days left until it will be valid)'.format(stats['not_before']))
+        return (False, 'The certificate will be valid in more then {0} days'.format(not_before))
 
     return (True, '')
 
@@ -273,11 +273,11 @@ def _load_x509_from_file(cert_file_path):
 def _get_x509_days_left(x509):
     date_fmt = '%Y%m%d%H%M%SZ'
     current_datetime = datetime.datetime.utcnow()
-    notAfter = time.strptime(x509.get_notAfter(), date_fmt)
-    notBefore = time.strptime(x509.get_notBefore(), date_fmt)
+    not_after = time.strptime(x509.get_notAfter(), date_fmt)
+    not_before = time.strptime(x509.get_notBefore(), date_fmt)
 
-    ret = {'notAfter': (datetime.datetime(*notAfter[:6]) - current_datetime).days,
-           'notBefore': (datetime.datetime(*notBefore[:6]) - current_datetime).days}
+    ret = {'not_after': (datetime.datetime(*not_after[:6]) - current_datetime).days,
+           'not_before': (datetime.datetime(*not_before[:6]) - current_datetime).days}
 
     return ret
 
