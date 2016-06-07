@@ -71,7 +71,6 @@ def audit(data_list, tags, verbose=False):
                 offset = page_num * 20
                 page_num += 1 
                 url_final = '%s?query=type:%s&order:last year&skip=%s' % (url,os_name, offset)
-                log.error(url_final)
                 cve_query = requests.get(url_final)
                 cve_json = json.loads(cve_query.text)
                 
@@ -104,29 +103,22 @@ def audit(data_list, tags, verbose=False):
 ##TODO: eventually should switch the loop to go through just the local_pkgs and check if it\'s in the affected packages.. much more effecient, but have to restructure affected_packages to be dictionary of pkg_name --> pkgObj
         if pkgObj.get_pkg() in local_pkgs:
             
-            local_pkg = local_pkgs[pkgObj.get_pkg()]
-            affected_pkg = pkgObj.get_version()
-            
-            local_version = LooseVersion(local_pkg)
             affected_version = LooseVersion(pkgObj.get_version())
-            
-            log.error(str(local_version) + '---' + str(affected_version)) 
-            if pkgObj.get_operator == 'lt':
-                log.error(local_version, affected_version)
-                if local_version < affected_version:
-                    ret['Failure'].append(pkgObj.report())
-                else:
-                    
-                    ret['Success'].append(pkgObj.get_pkg())
-            
-            elif pkgObj.get_operator() == 'le':
-                if local_version <= affected_version:
+            for version_num in local_pkgs[pkgObj.get_pkg()]:
+                # Get rid of prefix if version number has one, ex '1:3.4.52'
+                if ':' in local_version:
+                    version_num = local_version[local_version.index(':')+1:]
+                
+                local_version = LooseVersion(version_num)
+    
+                if _is_vulnerable(local_version, affected_version, pkgObj.get_operator()):
                     ret['Failure'].append(pkgObj.report())
                 else:
                     ret['Success'].append(pkgObj.get_pkg())
+        
         else:
             ret['Success'].append(pkgObj.get_pkg())
-    
+
     return ret
 def _get_cve_vulnerabilities(query_results):
     '''
@@ -158,6 +150,26 @@ def _get_cve_vulnerabilities(query_results):
                 pkgObj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list)
                 vulnerable_pkgs.append(pkgObj)   
     return vulnerable_pkgs
+
+def _is_vulnerable(local_version, affected_version, operator='lt'):
+    '''
+    Given two LooseVersion objects, and optional operator
+        returns whether the package is vulnerable or not.
+    '''
+    if operator == 'lt':
+        if local_version < affected_version:
+            return True
+        else:
+            return False
+    
+    elif operator == 'le':
+        if local_version <= affected_version:
+            return True
+        else:
+            return False
+    raise ValueError("operator not a supported operation")
+
+
 
 def _get_cache(ttl, url):
     '''
@@ -195,10 +207,7 @@ class vulnerablePkg:
     def __init__(self, pkg, pkg_version, score, operator, reporter, href, cve_list):
         self.pkg = pkg
         self.pkg_version = pkg_version
-        if ':' in pkg_version:
-            log.error("there was a colon")
-            import time
-            time.sleep(10)
+        self.pkg_version = pkg_version
         self.score = score
         self.operator = operator
         self.href = href
