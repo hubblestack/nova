@@ -18,6 +18,8 @@ import logging
 import salt
 import salt.utils
 import salt.utils.http
+import requests
+
 
 import json
 import os
@@ -25,15 +27,17 @@ import os
 from distutils.version import LooseVersion
 from datetime import datetime
 from time import time as current_time
+import time
+log = logging.getLogger(__name__)
 
+log.error("LOG START:")
 def __virtual__():
     return True
 
 def audit(data_list, tags, verbose=False):
-
-    os_name = 'centos' 
-    #os_name = __grains__['os'].lower()
-
+     
+    os_name = __grains__['os'].lower()
+    log.error(os_name)
     cache = {}
     
     # Go through data_list and check if 
@@ -44,9 +48,9 @@ def audit(data_list, tags, verbose=False):
 
             ttl = data['cve_scan_v2']['ttl']
             url = data['cve_scan_v2']['url']
-
+            log.error(str(ttl) + url)
             cache = _get_cache(ttl, url)
-
+            log.error("got past cache and got %s", cache)
             if cache.get('result', None) == 'OK':
                 master_json = cache
                 break
@@ -64,29 +68,32 @@ def audit(data_list, tags, verbose=False):
                 
                 offset = page_num * 20
                 page_num += 1
-                cve_query = salt.utils.http.query(
-                    '%s?query=order:last year&type:%s&skip=%s' % (url, os_name,offset),
-                    decode_type='json'
-                )
-                if len(cve_query['data']['search']) < 20:
+                cve_query = requests.get(
+                    '%s?query=order:last 10 days&type:%s&skip=%s' % (url, os_name,offset))
+                
+                cve_json = json.loads(cve_query.text)
+                
+                if len(cve_json['data']['search']) < 20:
                     is_next_page = False
 
-                if page_num == 0:
-                    master_json = cve_query
+                if page_num == 1:
+                    master_json = cve_json
                     ###### For testing just use one page
                     # break ######## TODO : REMOVE ME 
                     continue
 
-                master_json = _build_json(master_json, cve_query)
-
+                master_json = _build_json(master_json, cve_json)
+                if page_num == 1:
+                    log.error(master_json)
         except Exception as exc: # Ask about error handling...
             print exc
             return
 
         #Cache results.
         try:
-            with open('/var/cache/salt/minion/files/base/cve/%s.json', 'w') as cache_file:
-                json.dump(master_json, cache_file)
+            with open('/var/cache/salt/minion/files/base/cve/%s.json' % os_name, 'w') as cache_file:
+                json.dump(master_json, cache_file) 
+		log.err("cached the json")
         except Exception as exc:
             print exc, 'wasn\'t able to cache the query.'
                     
@@ -128,10 +135,17 @@ def _get_cve_vulnerabilities(query_results):
     
     for report in query_results['data']['search']:
         #data:search
+        log.error(type(report))
+	if type(report) == list:
+            log.error(report[0])
+        if 'affectedPackages' not in report['_source']:
+            continue
         reporter = report['_source']['reporter']
         cve_list = report['_source']['cvelist']
         href = report['_source']['href']
         score = report['_source']['cvss']['score']
+               
+
         for pkg in report['_source']['affectedPackages']:
             #data:search:_source:affectedPackages
             if pkg['OSVersion'] in ['any', str(__grains__['osmajorrelease'])]: # Check if os version matches grains
@@ -166,7 +180,7 @@ def _get_cache(ttl, url):
             return {}
 
 def _build_json(master_json, next_page):
-
+    
     next_page_search = next_page['data']['search']
     master_json['data']['search'].append(next_page_search)
     return master_json
