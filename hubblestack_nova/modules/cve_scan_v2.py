@@ -98,19 +98,25 @@ def audit(data_list, tags, verbose=False):
     ret = {'Success':[], 'Failure':[]}   
     
     affected_pkgs = _get_cve_vulnerabilities(master_json)
-    local_pkgs = __salt__['pkg.list_pkgs']()
-        
+    local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
+            
     for pkgObj in affected_pkgs:
-           
+##TODO: eventually should switch the loop to go through just the local_pkgs and check if it\'s in the affected packages.. much more effecient, but have to restructure affected_packages to be dictionary of pkg_name --> pkgObj
         if pkgObj.get_pkg() in local_pkgs:
             
-            local_version = LooseVersion(local_pkgs[pkgObj.get_pkg()])
+            local_pkg = local_pkgs[pkgObj.get_pkg()]
+            affected_pkg = pkgObj.get_version()
+            
+            local_version = LooseVersion(local_pkg)
             affected_version = LooseVersion(pkgObj.get_version())
             
+            log.error(str(local_version) + '---' + str(affected_version)) 
             if pkgObj.get_operator == 'lt':
+                log.error(local_version, affected_version)
                 if local_version < affected_version:
                     ret['Failure'].append(pkgObj.report())
                 else:
+                    
                     ret['Success'].append(pkgObj.get_pkg())
             
             elif pkgObj.get_operator() == 'le':
@@ -120,6 +126,7 @@ def audit(data_list, tags, verbose=False):
                     ret['Success'].append(pkgObj.get_pkg())
         else:
             ret['Success'].append(pkgObj.get_pkg())
+    
     return ret
 def _get_cve_vulnerabilities(query_results):
     '''
@@ -168,8 +175,6 @@ def _get_cache(ttl, url):
         except OSError:
             return {}
         if current_time() - cached_time < ttl:
-            log.error("please print")
-            time.sleep(2)
             try:
                 with open(cache_path) as json_file:
                     json_load = json.load(json_file)
@@ -190,6 +195,10 @@ class vulnerablePkg:
     def __init__(self, pkg, pkg_version, score, operator, reporter, href, cve_list):
         self.pkg = pkg
         self.pkg_version = pkg_version
+        if ':' in pkg_version:
+            log.error("there was a colon")
+            import time
+            time.sleep(10)
         self.score = score
         self.operator = operator
         self.href = href
