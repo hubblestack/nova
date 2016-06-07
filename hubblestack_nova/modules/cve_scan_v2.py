@@ -17,7 +17,6 @@ import logging
 
 import salt
 import salt.utils
-import salt.utils.http
 import requests
 
 
@@ -27,19 +26,22 @@ import os
 from distutils.version import LooseVersion
 from datetime import datetime
 from time import time as current_time
-import time
+
 log = logging.getLogger(__name__)
 
-log.error("LOG START:")
 def __virtual__():
     return True
 
 def audit(data_list, tags, verbose=False):
-     
-    os_name = __grains__['os'].lower()
-    log.error(os_name)
+    global cache_path
+    os_name = __grains__['os'].lower() 
+    cache_path = '/var/cache/salt/minion/files/base/cve/%s.json' % (os_name)
     cache = {}
-    
+    #Make cache directory and all parent directories
+    # if it doesn't exist.
+    if not os.path.exists(os.path.dirname(cache_path)):
+        os.makedirs(os.path.dirname(cache_path))
+  
     # Go through data_list and check if 
     #   < 1 day old cache is in any yaml file
     for data in data_list:
@@ -48,9 +50,9 @@ def audit(data_list, tags, verbose=False):
 
             ttl = data['cve_scan_v2']['ttl']
             url = data['cve_scan_v2']['url']
-            log.error(str(ttl) + url)
+            if url.startswith('https'):
+                url.replace('https', 'http', 1)
             cache = _get_cache(ttl, url)
-            log.error("got past cache and got %s", cache)
             if cache.get('result', None) == 'OK':
                 master_json = cache
                 break
@@ -67,8 +69,8 @@ def audit(data_list, tags, verbose=False):
             while is_next_page:
                 
                 offset = page_num * 20
-                page_num += 1
-                url_final = '%s?query=type:%s&order:last 10 days&skip=%s' % (url,os_name, offset)
+                page_num += 1 
+                url_final = '%s?query=type:%s&order:last year&skip=%s' % (url,os_name, offset)
                 log.error(url_final)
                 cve_query = requests.get(url_final)
                 cve_json = json.loads(cve_query.text)
@@ -81,35 +83,30 @@ def audit(data_list, tags, verbose=False):
                     ###### For testing just use one page
                     # break ######## TODO : REMOVE ME 
                     continue
-
+              
                 master_json = _build_json(master_json, cve_json)
-                if page_num == 8:
-                    break
         except Exception as exc: # Ask about error handling...
-            print exc
             return
 
         #Cache results.
         try:
-            with open('/var/cache/salt/minion/files/base/cve/%s.json' % os_name, 'a+') as cache_file:
+            with open(cache_path, 'w') as cache_file:
                 json.dump(master_json, cache_file) 
-		log.err("cached the json")
-        except Exception as exc:
-            print exc, 'wasn\'t able to cache the query.'
+        except IOError as exc:
+            log.error('The results weren\'t able to be cached')
                     
     ret = {'Success':[], 'Failure':[]}   
     
     affected_pkgs = _get_cve_vulnerabilities(master_json)
     local_pkgs = __salt__['pkg.list_pkgs']()
-    
-    
+        
     for pkgObj in affected_pkgs:
-
+           
         if pkgObj.get_pkg() in local_pkgs:
-
+            
             local_version = LooseVersion(local_pkgs[pkgObj.get_pkg()])
             affected_version = LooseVersion(pkgObj.get_version())
-
+            
             if pkgObj.get_operator == 'lt':
                 if local_version < affected_version:
                     ret['Failure'].append(pkgObj.report())
@@ -123,7 +120,6 @@ def audit(data_list, tags, verbose=False):
                     ret['Success'].append(pkgObj.get_pkg())
         else:
             ret['Success'].append(pkgObj.get_pkg())
-    log.error(ret['Failure'])
     return ret
 def _get_cve_vulnerabilities(query_results):
     '''
@@ -143,16 +139,17 @@ def _get_cve_vulnerabilities(query_results):
         cve_list = report['_source']['cvelist']
         href = report['_source']['href']
         score = report['_source']['cvss']['score']
-               
+        
+        #Scan includes affectedSoftware, we only support pkgs.            
         if 'affectedPackage' not in report['_source']:
             continue
+
         for pkg in report['_source']['affectedPackage']:
             #data:search:_source:affectedPackages
             
             if pkg['OSVersion'] in ['any', str(__grains__['osmajorrelease'])]: # Check if os version matches grains
                 pkgObj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list)
                 vulnerable_pkgs.append(pkgObj)   
-                log.error(pkgObj.get_pkg()==pkg['packageName'])        
     return vulnerable_pkgs
 
 def _get_cache(ttl, url):
@@ -165,18 +162,19 @@ def _get_cache(ttl, url):
         path_to_json = url[len('salt://'):]
         ########## TODO ##############
     elif url.startswith('http://') or url.startswith('https://'):
-        # Check if we have a valid cached version.
-        path_to_cache = '/var/cache/salt/minion/files/base/cve/%s.json' % __grains__['os'].lower()
-
+        # Check if we have a valid cached version.            
         try:
-            cached_time = os.path.getmtime(path_to_cache)
+            cached_time = os.path.getmtime(cache_path)
         except OSError:
             return {}
-        if current_time - cached_time < ttl:
+        if current_time() - cached_time < ttl:
+            log.error("please print")
+            time.sleep(2)
             try:
-                with open(path_to_cache) as json_file:
-                    return json.load(json_file)
-            except Exception:
+                with open(cache_path) as json_file:
+                    json_load = json.load(json_file)
+                    return json_load
+            except IOError as e: 
                 return {}
         else:
             return {}
