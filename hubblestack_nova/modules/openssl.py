@@ -116,25 +116,25 @@ def audit(data_list, tags, verbose=False):
                     continue
 
                 endpoint = tag_data.get('endpoint', None)
-                file = tag_data.get('file', None)
+                pem_file = tag_data.get('file', None)
                 not_after = tag_data.get('not_after', 0)
                 not_before = tag_data.get('not_before', 0)
                 port = tag_data.get('port', 443)
                 fail_if_not_before = tag_data.get('fail_if_not_before', False)
 
-                if not endpoint and not file:
+                if not endpoint and not pem_file:
                     failing_reason = 'No certificate to be checked'
                     tag_data['reason'] = failing_reason
                     ret['Failure'].append(tag_data)
                     continue
 
-                if endpoint and file:
+                if endpoint and pem_file:
                     failing_reason = 'Only one certificate per check is allowed'
                     tag_data['reason'] = failing_reason
                     ret['Failure'].append(tag_data)
                     continue
 
-                x509 = _load_x509(endpoint, port) if endpoint else _load_x509(file, from_file=True)
+                x509 = _load_x509(endpoint, port) if endpoint else _load_x509(pem_file, from_file=True)
                 (passed, failing_reason) = _check_x509(x509=x509,
                                                        not_before=not_before,
                                                        not_after=not_after,
