@@ -68,9 +68,9 @@ def audit(data_list, tags, verbose=False):
                 
                 offset = page_num * 20
                 page_num += 1
-                cve_query = requests.get(
-                    '%s?query=order:last 10 days&type:%s&skip=%s' % (url, os_name,offset))
-                
+                url_final = '%s?query=type:%s&order:last 10 days&skip=%s' % (url,os_name, offset)
+                log.error(url_final)
+                cve_query = requests.get(url_final)
                 cve_json = json.loads(cve_query.text)
                 
                 if len(cve_json['data']['search']) < 20:
@@ -83,15 +83,15 @@ def audit(data_list, tags, verbose=False):
                     continue
 
                 master_json = _build_json(master_json, cve_json)
-                if page_num == 1:
-                    log.error(master_json)
+                if page_num == 8:
+                    break
         except Exception as exc: # Ask about error handling...
             print exc
             return
 
         #Cache results.
         try:
-            with open('/var/cache/salt/minion/files/base/cve/%s.json' % os_name, 'w') as cache_file:
+            with open('/var/cache/salt/minion/files/base/cve/%s.json' % os_name, 'a+') as cache_file:
                 json.dump(master_json, cache_file) 
 		log.err("cached the json")
         except Exception as exc:
@@ -121,6 +121,9 @@ def audit(data_list, tags, verbose=False):
                     ret['Failure'].append(pkgObj.report())
                 else:
                     ret['Success'].append(pkgObj.get_pkg())
+        else:
+            ret['Success'].append(pkgObj.get_pkg())
+    log.error(ret['Failure'])
     return ret
 def _get_cve_vulnerabilities(query_results):
     '''
@@ -135,22 +138,21 @@ def _get_cve_vulnerabilities(query_results):
     
     for report in query_results['data']['search']:
         #data:search
-        log.error(type(report))
-	if type(report) == list:
-            log.error(report[0])
-        if 'affectedPackages' not in report['_source']:
-            continue
+        
         reporter = report['_source']['reporter']
         cve_list = report['_source']['cvelist']
         href = report['_source']['href']
         score = report['_source']['cvss']['score']
                
-
-        for pkg in report['_source']['affectedPackages']:
+        if 'affectedPackage' not in report['_source']:
+            continue
+        for pkg in report['_source']['affectedPackage']:
             #data:search:_source:affectedPackages
+            
             if pkg['OSVersion'] in ['any', str(__grains__['osmajorrelease'])]: # Check if os version matches grains
-                vulnerable_pkg.append(vulnerablePkg(pkg['packageName'],pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list))   
-        
+                pkgObj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list)
+                vulnerable_pkgs.append(pkgObj)   
+                log.error(pkgObj.get_pkg()==pkg['packageName'])        
     return vulnerable_pkgs
 
 def _get_cache(ttl, url):
@@ -164,7 +166,7 @@ def _get_cache(ttl, url):
         ########## TODO ##############
     elif url.startswith('http://') or url.startswith('https://'):
         # Check if we have a valid cached version.
-        path_to_cache = '/var/cache/salt/minion/files/base/cve/%s.json' % __grains__['os'].lower
+        path_to_cache = '/var/cache/salt/minion/files/base/cve/%s.json' % __grains__['os'].lower()
 
         try:
             cached_time = os.path.getmtime(path_to_cache)
@@ -182,7 +184,7 @@ def _get_cache(ttl, url):
 def _build_json(master_json, next_page):
     
     next_page_search = next_page['data']['search']
-    master_json['data']['search'].append(next_page_search)
+    master_json['data']['search'].extend(next_page_search)
     return master_json
 
 
