@@ -5,6 +5,16 @@
 :platform: Linux
 :requires: SaltStack
 
+Using the vulners.com api, this cve scan module checks your machine
+for packages with known and reported vulnerabilities.
+
+Future addition:
+    Using salt:// url as the source of the vulnerabilites
+    Using a more efficient caching method so we just add on new
+        vulnerabilities and not re-query an entire year back
+    Restructure loop to go through local pkgs and check if in known
+        vulnerabilties, not vice versa like it is now
+
 
 Sample YAML data
 
@@ -37,20 +47,23 @@ def audit(data_list, tags, verbose=False):
     global cache_path
     os_name = __grains__['os'].lower() 
     cache_path = '/var/cache/salt/minion/files/base/cve/%s.json' % (os_name)
+    
     cache = {}
     #Make cache directory and all parent directories
     # if it doesn't exist.
     if not os.path.exists(os.path.dirname(cache_path)):
         os.makedirs(os.path.dirname(cache_path))
   
-    # Go through data_list and check if 
-    #   < 1 day old cache is in any yaml file
+    # Go through yaml to check for cve_scan_v2,
+    #    if its present, check for a cached version 
+    #    of the scan.
     for data in data_list:
 
         if 'cve_scan_v2' in data:
 
             ttl = data['cve_scan_v2']['ttl']
             url = data['cve_scan_v2']['url']
+            # Requests only handles http:// requests   
             if url.startswith('https'):
                 url.replace('https', 'http', 1)
             cache = _get_cache(ttl, url)
@@ -64,7 +77,7 @@ def audit(data_list, tags, verbose=False):
         is_next_page = True
         page_num = 0
         
-        # Hit the api, incrementing the offset due to the page until 
+        # Hit the api, incrementing the page offset until 
         #   we get all the results together in one dictionary.
         try:
             while is_next_page:
@@ -75,16 +88,19 @@ def audit(data_list, tags, verbose=False):
                 cve_query = requests.get(url_final)
                 cve_json = json.loads(cve_query.text)
                 
+                # Default number of searches per page is 20 so 
+                #    if we have less than that we know this is 
+                #    our last page.
                 if len(cve_json['data']['search']) < 20:
                     is_next_page = False
 
+                # First page is beginning of master_json that we build on
                 if page_num == 1:
                     master_json = cve_json
-                    ###### For testing just use one page
-                    # break ######## TODO : REMOVE ME 
                     continue
-              
+                
                 master_json = _build_json(master_json, cve_json)
+        
         except Exception as exc: # Ask about error handling...
             return
 
@@ -100,40 +116,36 @@ def audit(data_list, tags, verbose=False):
     affected_pkgs = _get_cve_vulnerabilities(master_json)
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
     
-    for pkgObj in affected_pkgs:
-##TODO: eventually should switch the loop to go through just the local_pkgs and check if it\'s in the affected packages.. much more effecient, but have to restructure affected_packages to be dictionary of pkg_name --> pkgObj
-        if pkgObj.get_pkg() in local_pkgs:
-            affected_version = pkgObj.get_version()
-            # In order to do compare LooseVersions, eliminate trailing 'el<#>'
-            if re.search('.el\d$', affected_version):
-                affected_version = affected_version[:-4]
-            for local_version in local_pkgs[pkgObj.get_pkg()]:
-                # In order to do compare LooseVersions, eliminate trailing 'el<#>'
-                if re.search('.el\d$', local_version):
-                    local_version = local_version[:-4]
-                if _is_vulnerable(local_version, affected_version, pkgObj.get_operator()):
-                    ret['Failure'].append(pkgObj.report())
+    for pkg_obj in affected_pkgs:
+##TODO: for efficiency, should switch the loop to go through just the local_pkgs and check if it's in the affected packages.. 
+        if pkg_obj.get_pkg() in local_pkgs:
+            affected_version = pkg_obj.get_version()
+            for local_version in local_pkgs[pkg_obj.get_pkg()]:
+                if _is_vulnerable(local_version, affected_version, pkg_obj.get_operator()):
+                    ret['Failure'].append(pkg_obj.report())
                 else:
-                    ret['Success'].append(pkgObj.get_pkg())
+                    ret['Success'].append(pkg_obj.get_pkg())
         
         else:
-            ret['Success'].append(pkgObj.get_pkg())
+            ret['Success'].append(pkg_obj.get_pkg())
  
     return ret
 def _get_cve_vulnerabilities(query_results):
     '''
     Returns list of vulnerable package objects.
+    ### TODO ### return map of pkg->pkg_obj for more efficient loop structure
     '''
     
     vulnerable_pkgs = []
 
-    
+    # Make sure query was successful
     if query_results['result'].lower() != 'ok':
         return
     
+
     for report in query_results['data']['search']:
-        #data:search
         
+        #data:search
         reporter = report['_source']['reporter']
         cve_list = report['_source']['cvelist']
         href = report['_source']['href']
@@ -143,8 +155,8 @@ def _get_cve_vulnerabilities(query_results):
             #data:search:_source:affectedPackages
             
             if pkg['OSVersion'] in ['any', str(__grains__['osmajorrelease'])]: # Check if os version matches grains
-                pkgObj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list)
-                vulnerable_pkgs.append(pkgObj)   
+                pkg_obj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list)
+                vulnerable_pkgs.append(pkg_obj)   
     return vulnerable_pkgs
 
 def _is_vulnerable(local_version, affected_version, operator):
@@ -155,17 +167,27 @@ def _is_vulnerable(local_version, affected_version, operator):
     # Get rid of prefix if version number has one, ex '1:3.4.52'
     if ':' in local_version:
          local_version = local_version[local_version.index(':')+1:]
+
+    # In order to do compare LooseVersions, eliminate trailing 'el<#>'
+    if re.search('.el\d$', affected_version):
+        affected_version = affected_version[:-4]
+    if re.search('.el\d$', affected_version):
+        affected_version = affected_version[:-4]
+
     #Compare from higher order to lower order based on '-' split.
     local_version_split = local_version.split('-')
     affected_version_split = affected_version.split('-')
+
     for order_index in range(len(local_version_split)):
+        
         local_version_obj = LooseVersion(local_version_split[order_index])
         affected_version_obj = LooseVersion(affected_version_split[order_index])
+        
         #Check lower order bits if higher order are equal.
         if local_version == affected_version:
             continue
-        #Return when highest order version is not equal.
 
+        #Return when highest order version is not equal.
         elif local_version_obj > affected_version_obj:
             return False
         elif local_version_obj < affected_version_obj:
@@ -186,6 +208,8 @@ def _get_cache(ttl, url):
     '''
     If url contains valid cache, returns it,
         Else returns empty dictionary.
+    ###TODO### more effective caching method, return
+            historic data and only query for new vulnerabilites
     '''
 
     if url.startswith('salt://'):
@@ -200,21 +224,27 @@ def _get_cache(ttl, url):
         if current_time() - cached_time < ttl:
             try:
                 with open(cache_path) as json_file:
-                    json_load = json.load(json_file)
-                    return json_load
+                    loaded_json = json.load(json_file)
+                    return loaded_json
             except IOError as e: 
                 return {}
         else:
             return {}
 
-def _build_json(master_json, next_page):
-    
-    next_page_search = next_page['data']['search']
-    master_json['data']['search'].extend(next_page_search)
+def _build_json(master_json, current_page):
+    '''
+    Adds all the search elements from current page
+        to our master json file and returns
+    '''
+    current_page_search = current_page['data']['search']
+    master_json['data']['search'].extend(current_page_search)
     return master_json
 
 
 class vulnerablePkg:
+    '''
+    Object representing a vulnverable pkg for the current operating system.
+    '''
     def __init__(self, pkg, pkg_version, score, operator, reporter, href, cve_list):
         self.pkg = pkg
         self.pkg_version = pkg_version
