@@ -129,7 +129,6 @@ def audit(data_list, tags, verbose=False):
                     ret['Failure'].append(pkg_obj.report())
                 else:
                     ret['Success'].append(pkg_obj.pkg)
-        
     return ret
 
 
@@ -146,10 +145,11 @@ def _get_cve_vulnerabilities(query_results):
         return
     
     # Get os version to only add vulnerabilites that apply to local system 
-    osmajorrelease = str(__grains__['osrelease']).split('.')[0]
+    osmajorrelease = __grains__.get('osmajorrelease', None)
+    osrelease = __grains__.get('osrelease', None)
 
     for report in query_results['data']['search']:
-        
+               
         #data:search
         reporter = report['_source']['reporter']
         cve_list = report['_source']['cvelist']
@@ -158,8 +158,7 @@ def _get_cve_vulnerabilities(query_results):
         
         for pkg in report['_source']['affectedPackage']:
             #data:search:_source:affectedPackages
-            
-            if pkg['OSVersion'] in ['any', osmajorrelease]: # Check if os version matches grains
+            if pkg['OSVersion'] in ['any', osmajorrelease, osrelease]: # Check if os version matches grains
                 pkg_obj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list)
                 vulnerable_pkgs.append(pkg_obj)   
     return vulnerable_pkgs
