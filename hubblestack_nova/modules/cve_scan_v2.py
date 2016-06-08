@@ -176,7 +176,7 @@ def _is_vulnerable(local_version, affected_version, operator):
     if re.search('.el\d$', affected_version):
         affected_version = affected_version[:-4]
     if re.search('.el\d$', local_version):
-        local_version = loacal_version[:-4]
+        local_version = local_version[:-4]
 
     #Compare from higher order to lower order based on '-' split.
     local_version_split = local_version.split('-')
