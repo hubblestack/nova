@@ -119,17 +119,21 @@ def audit(data_list, tags, verbose=False):
     
     affected_pkgs = _get_cve_vulnerabilities(master_json)
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
-    
-    for pkg_obj in affected_pkgs:
-    ##TODO: for efficiency, should switch the loop to go through just the local_pkgs and check if it's in the affected packages.. 
-        if pkg_obj.pkg in local_pkgs:
-            affected_version = pkg_obj.pkg_version
-            for local_version in local_pkgs[pkg_obj.pkg]:
-                if _is_vulnerable(local_version, affected_version, pkg_obj.operator):
-                    ret['Failure'].append(pkg_obj.report())
-                else:
-                    ret['Success'].append(pkg_obj.pkg)
-    return ret
+     
+    for local_pkg in local_pkgs:
+        if local_pkg in affected_pkgs:
+            vulnerable_pkg_list = affected_pkgs[local_pkg]
+            for local_version in local_pkgs[local_pkg]:
+                for affected_obj in affected_pkgs[local_pkg]: 
+                    if _is_vulnerable(local_version, affected_obj.pkg_version, affected_obj.operator):
+                        ret['Failure'].append(affected_obj.report())
+                    else:
+                        if local_pkg not in ret['Success']:
+                            ret['Success'].append(local_pkg)
+        else:
+            if local_pkg not in ret['Success']:
+                ret['Success'].append(local_pkg)
+    return ret            
 
 
 def _get_cve_vulnerabilities(query_results):
@@ -138,7 +142,7 @@ def _get_cve_vulnerabilities(query_results):
     ### TODO ### return map of pkg->pkg_obj for more efficient loop structure
     '''
     
-    vulnerable_pkgs = []
+    vulnerable_pkgs = {}
 
     # Make sure query was successful
     if query_results['result'].lower() != 'ok':
@@ -160,7 +164,12 @@ def _get_cve_vulnerabilities(query_results):
             #data:search:_source:affectedPackages
             if pkg['OSVersion'] in ['any', osmajorrelease, osrelease]: # Check if os version matches grains
                 pkg_obj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, pkg['operator'], reporter, href, cve_list)
-                vulnerable_pkgs.append(pkg_obj)   
+                if pkg_obj.pkg not in vulnerable_pkgs:
+                    vulnerable_pkgs[pkg_obj.pkg] = [pkg_obj]
+                else:
+                    #TODO add some logic that checks that this vulnerability has not been added already, logic may just include an equals condition in the vulnerablePkg class
+                    vulnerable_pkgs[pkg_obj.pkg].append(pkg_obj)
+                    
     return vulnerable_pkgs
 
 
