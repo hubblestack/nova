@@ -41,12 +41,12 @@ from time import time as current_time
 log = logging.getLogger(__name__)
 
 def __virtual__():
-    return True
+    return not salt.utils.is_windows()
 
 def audit(data_list, tags, verbose=False):
 
     os_name = __grains__['os'].lower() 
-    cache_path = '/var/cache/salt/minion/files/base/cve/%s.json' % (os_name)
+    cache_path = '/var/cache/salt/minion/cve_scan_cache/%s.json' % (os_name)
     cache = {}
     #Make cache directory and all parent directories
     # if it doesn't exist.
@@ -73,7 +73,9 @@ def audit(data_list, tags, verbose=False):
                 master_json = cache
                 break
 
-     
+    # If we don't find our module in the yaml
+    if url == None:
+        return {} 
 
     # Query the api.
     if not cache:
