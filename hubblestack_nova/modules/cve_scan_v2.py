@@ -38,13 +38,13 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from time import time as current_time
 
-log = logging.Logger(__name__)
+log = logging.getLogger(__name__)
 
 def __virtual__():
     return True
 
 def audit(data_list, tags, verbose=False):
-    global cache_path
+
     os_name = __grains__['os'].lower() 
     cache_path = '/var/cache/salt/minion/files/base/cve/%s.json' % (os_name)
     cache = {}
@@ -52,7 +52,10 @@ def audit(data_list, tags, verbose=False):
     # if it doesn't exist.
     if not os.path.exists(os.path.dirname(cache_path)):
         os.makedirs(os.path.dirname(cache_path))
-  
+    
+    ttl = None
+    url = None
+
     # Go through yaml to check for cve_scan_v2,
     #    if its present, check for a cached version 
     #    of the scan.
@@ -65,10 +68,12 @@ def audit(data_list, tags, verbose=False):
             # Requests only handles http:// requests   
             if url.startswith('https'):
                 url.replace('https', 'http', 1)
-            cache = _get_cache(ttl, url)
+            cache = _get_cache(ttl, url, cache_path)
             if cache.get('result', None) == 'OK':
                 master_json = cache
                 break
+
+     
 
     # Query the api.
     if not cache:
@@ -78,30 +83,28 @@ def audit(data_list, tags, verbose=False):
         
         # Hit the api, incrementing the page offset until 
         #   we get all the results together in one dictionary.
-        try:
-            while is_next_page:
-                
-                offset = page_num * 20
-                page_num += 1 
-                url_final = '%s?query=type:%s&order:last year&skip=%s' % (url,os_name, offset)
-                cve_query = requests.get(url_final)
-                cve_json = json.loads(cve_query.text)
-                
-                # Default number of searches per page is 20 so 
-                #    if we have less than that we know this is 
-                #    our last page.
-                if len(cve_json['data']['search']) < 20:
-                    is_next_page = False
 
-                # First page is beginning of master_json that we build on
-                if page_num == 1:
-                    master_json = cve_json
-                    continue
-                
-                master_json = _build_json(master_json, cve_json)
-        
-        except Exception as exc: # Ask about error handling...
-            return
+        while is_next_page:
+            
+            offset = page_num * 20
+            page_num += 1 
+            url_final = '%s?query=type:%s&order:last year&skip=%s' % (url, os_name, offset)
+            cve_query = requests.get(url_final)
+            cve_json = json.loads(cve_query.text)
+            
+            # Default number of searches per page is 20 so 
+            #    if we have less than that we know this is 
+            #    our last page.
+            if len(cve_json['data']['search']) < 20:
+                is_next_page = False
+
+            # First page is beginning of master_json that we build on
+            if page_num == 1:
+                master_json = cve_json
+                continue
+            
+            master_json = _build_json(master_json, cve_json)
+    
 
         #Cache results.
         try:
@@ -116,18 +119,18 @@ def audit(data_list, tags, verbose=False):
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
     
     for pkg_obj in affected_pkgs:
-##TODO: for efficiency, should switch the loop to go through just the local_pkgs and check if it's in the affected packages.. 
-        if pkg_obj.get_pkg() in local_pkgs:
-            affected_version = pkg_obj.get_version()
-            for local_version in local_pkgs[pkg_obj.get_pkg()]:
-                if _is_vulnerable(local_version, affected_version, pkg_obj.get_operator()):
+    ##TODO: for efficiency, should switch the loop to go through just the local_pkgs and check if it's in the affected packages.. 
+        if pkg_obj.pkg in local_pkgs:
+            affected_version = pkg_obj.pkg_version
+            for local_version in local_pkgs[pkg_obj.pkg]:
+                if _is_vulnerable(local_version, affected_version, pkg_obj.operator):
                     ret['Failure'].append(pkg_obj.report())
                 else:
-                    ret['Success'].append(pkg_obj.get_pkg())
+                    ret['Success'].append(pkg_obj.pkg)
         
-        else:
-            ret['Success'].append(pkg_obj.get_pkg())
     return ret
+
+
 def _get_cve_vulnerabilities(query_results):
     '''
     Returns list of vulnerable package objects.
@@ -159,6 +162,7 @@ def _get_cve_vulnerabilities(query_results):
                 vulnerable_pkgs.append(pkg_obj)   
     return vulnerable_pkgs
 
+
 def _is_vulnerable(local_version, affected_version, operator):
     '''
     Given two version strings, and operator
@@ -166,13 +170,13 @@ def _is_vulnerable(local_version, affected_version, operator):
     '''
     # Get rid of prefix if version number has one, ex '1:3.4.52'
     if ':' in local_version:
-         local_version = local_version[local_version.index(':')+1:]
+         _, _, local_version = local_version.partition(':')
 
     # In order to do compare LooseVersions, eliminate trailing 'el<#>'
     if re.search('.el\d$', affected_version):
         affected_version = affected_version[:-4]
-    if re.search('.el\d$', affected_version):
-        affected_version = affected_version[:-4]
+    if re.search('.el\d$', local_version):
+        local_version = loacal_version[:-4]
 
     #Compare from higher order to lower order based on '-' split.
     local_version_split = local_version.split('-')
@@ -202,9 +206,7 @@ def _is_vulnerable(local_version, affected_version, operator):
             return False        
     
 
-
-
-def _get_cache(ttl, url):
+def _get_cache(ttl, url, cache_path):
     '''
     If url contains valid cache, returns it,
         Else returns empty dictionary.
@@ -230,6 +232,7 @@ def _get_cache(ttl, url):
                 return {}
         else:
             return {}
+
 
 def _build_json(master_json, current_page):
     '''
@@ -257,27 +260,19 @@ class vulnerablePkg:
         self.href = href
         self.cve_list = cve_list
         self.reporter = reporter
-    def get_pkg(self):
-        return self.pkg
-    def get_version(self):
-        return self.pkg_version
-    def get_score(self):
-        return self.score
-    def get_operator(self):
-        return self.operator
+
+
     def get_cve_list(self):
         def_copy = copy.copy(self.cve_list)
         return def_copy
-    def get_reporter(self):
-        return self.reporter
-    def get_href(self):
-        return self.href
+
+
     def report(self):
         return {
-            'href': self.get_href(),
-            'version': self.get_version(),
-            'reporter': self.get_reporter(),
-            'score': self.get_score(),
+            'href': self.href,
+            'affected_version': self.pkg_version,
+            'reporter': self.reporter,
+            'score': self.score,
             'cve_list': self.get_cve_list(),
-            'pkg': self.get_pkg()
+            'affected_pkg': self.pkg
         }
