@@ -977,14 +977,14 @@ win_firewall:
               match_output: '%SYSTEMROOT%\System32\logfiles\firewall\domainfw.log'
               value_type: 'domain'
       description: 'Windows Firewall Domain Logging Name'
-    windows_firewall_domain_logging_size_limit_(kb :
+    windows_firewall_domain_logging_size_limit :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'LogMaxSizeKilobytes':
               tag: CIS-9.1.8
               match_output: '16384'
               value_type: 'domain'
-      description: 'Windows Firewall Domain Logging Size limit (KB'
+      description: 'Windows Firewall Domain Logging Size limit'
     windows_firewall_domain_logging_log_dropped_packets :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1057,14 +1057,14 @@ win_firewall:
               match_output: '%SYSTEMROOT%\System32\logfiles\firewall\privatefw.log'
               value_type: 'private'
       description: 'Windows Firewall Private Logging Name'
-    windows_firewall_private_logging_size_limit_(kb :
+    windows_firewall_private_logging_size_limit :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'LogMaxSizeKilobytes':
               tag: CIS-9.2.8
               match_output: '16384'
               value_type: 'private'
-      description: 'Windows Firewall Private Logging Size limit (KB'
+      description: 'Windows Firewall Private Logging Size limit'
     windows_firewall_private_logging_log_dropped_packets :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1137,14 +1137,14 @@ win_firewall:
               match_output: '%SYSTEMROOT%\System32\logfiles\firewall\publicfw.log'
               value_type: 'public'
       description: 'Windows Firewall Public Logging Name'
-    windows_firewall_public_logging_size_limit_(kb :
+    windows_firewall_public_logging_size_limit :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
-          - 'LogMaxSizeKilobytes(KB':
+          - 'LogMaxSizeKilobytes':
               tag: CIS-9.3.8
               match_output: '16384'
               value_type: 'public'
-      description: 'Windows Firewall Public Logging Size limit (KB'
+      description: 'Windows Firewall Public Logging Size limit'
     windows_firewall_public_logging_log_dropped_packets :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
