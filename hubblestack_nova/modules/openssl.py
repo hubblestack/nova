@@ -218,9 +218,11 @@ def _get_tags(data):
 
 def _check_x509(x509=None, not_before=0, not_after=0, fail_if_not_before=False):
     if not x509:
+        log.error('No certificate to be checked')
         return (False, 'No certificate to be checked')
     if x509.has_expired():
-        return (False, 'The certificate is expired')
+        log.info('The certificate has expired')
+        return (False, 'The certificate has expired')
 
     stats = _get_x509_days_left(x509)
 
@@ -246,6 +248,7 @@ def _load_x509_from_endpoint(server, port=443):
     try:
         cert = ssl.get_server_certificate((server, port))
     except Exception:
+        log.error('Unable to retrieve certificate from {0}'.format(server))
         cert = None
     if not cert:
         return None
@@ -253,6 +256,7 @@ def _load_x509_from_endpoint(server, port=443):
     try:
         x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
     except OpenSSL.crypto.Error:
+        log.error('Unable to load certificate from {0} into x509 object'.format(server))
         x509 = None
     return x509
 
@@ -261,11 +265,13 @@ def _load_x509_from_file(cert_file_path):
     try:
         cert_file = open(cert_file_path)
     except IOError:
+        log.error('File not found: {0}'.format(cert_file_path))
         return None
 
     try:
         x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert_file.read())
     except OpenSSL.crypto.Error:
+        log.error('Unable to load certificate from {0} into x509 object'.format(cert_file_path))
         x509 = None
     return x509
 
