@@ -371,7 +371,7 @@ def top(topfile='top.nova',
 
 def sync():
     '''
-    Sync the nove audit modules from the saltstack fileserver.
+    Sync the nova audit modules from the saltstack fileserver.
 
     The modules should be stored in the salt fileserver. By default nova will
     search the base environment for a top level ``hubblestack_nova`` directory,

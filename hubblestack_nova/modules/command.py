@@ -36,6 +36,15 @@ command:
               # Match each line of the output against our pattern
               # Any that don't match will make the audit fail (default False)
               match_output_by_line: True
+          - ?
+              |
+                echo 'this is a multi-line'
+                echo 'bash script'
+                echo 'note the special ? syntax'
+            :
+              # Shell through which the script will be run, must be abs path
+              shell: /bin/bash
+              match_output: this
         # Aggregation strategy for multiple commands. Defaults to 'and', other option is 'or'
         aggregation: 'and'
       # Catch-all, if no other osfinger match was found
@@ -99,7 +108,13 @@ def audit(data_list, tags, verbose=False):
                 command_results = []
                 for command_data in tag_data['commands']:
                     for command, command_args in command_data.iteritems():
-                        cmd_ret = __salt__['cmd.run'](command, python_shell=True)
+                        if 'shell' in command_args:
+                            cmd_ret = __salt__['cmd.run'](command,
+                                                          python_shell=True,
+                                                          shell=command_args['shell'])
+                        else:
+                            cmd_ret = __salt__['cmd.run'](command,
+                                                          python_shell=True)
 
                         found = False
                         if cmd_ret:
