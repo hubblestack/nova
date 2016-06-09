@@ -1,9 +1,10 @@
-# secedit provides at least three value_types which are expected in the 'match_output' field:
-# 1. 'binary' - 'Enabled' or 'Disabled'
-# 2. 'multi' - 'No auditing', 'Success', 'Failure', or 'Success, Failure'
-# 3. 'less' - less than number in 'match_output'
-# 3. 'more' - more than number in 'match_output'
-# 3. 'equal' - equal to number in 'match_output'
+# regedit/secedit provide 'value_type' with expected content in the 'match_output' field:
+# 1. value_type: 'binary' - match_output: 'Enabled' or 'Disabled'
+# 2. value_type: 'multi' - match_output: 'No auditing', 'Success', 'Failure', or 'Success, Failure'
+# 3. value_type: 'less' - match_output: integer (result must be less/equal to this number)
+# 3. value_type: 'more' - match_output: integer (result must be more/equal to this number)
+# 3. value_type: 'equal' - match_output: integer (result must be equal to this number)
+# 4. value_type: 'priv' - match_output: 'no one' in 'match_output' used for evaluating user rights
 # 'alert' and 'trigger' are not used at this time
 # 'blacklist' is not used at this time
 
@@ -64,15 +65,6 @@ secedit:
       description: 'Ensure Access Credential Manager as a trusted caller is set to No One (Scored)'
       alert: email
       trigger: state
-# regedit provides at least three value_types which are expected in the 'match_output' field:
-# 1. 'binary' - 'Enabled' or 'Disabled'
-# 2. 'multi' - 'No auditing', 'Success', 'Failure', or 'Success, Failure'
-# 3. 'less' - less than number in 'match_output'
-# 3. 'more' - more than number in 'match_output'
-# 3. 'equal' - equal to number in 'match_output'
-# additionally, 'hive' and 'reg_key' are expected
-# 'alert' and 'trigger' are not used at this time
-# 'blacklist' is not used at this time
 
 regedit:
   #blacklist:
@@ -87,5 +79,45 @@ regedit:
               reg_key: System\CurrentControlSet\Control\Lsa
               value_type: 'binary'
       description: 'Limit local account use of blank passwords to console logon only Enabled (Scored)'
+      alert: email
+      trigger: state
+
+# auditpol provides 'value_type' with expected content in the 'match_output' field:
+# 1. value_type: 'multi' - match_output: 'No auditing', 'Success', 'Failure', or 'Success, Failure'
+# 'alert' and 'trigger' are not used at this time
+# 'blacklist' is not used at this time
+auditpol:
+  #blacklist:
+  whitelist:
+    IPsec_Driver:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'IPsec Driver':
+              tag: 'CIS-17.9.1'
+              match_output: 'Success, Failure'
+              value_type: 'multi'
+      description: 'Ensure Audit IPsec Driver is set to Success and Failure (Scored)'
+      alert: email
+      trigger: state
+
+    credential_validation:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'Credential Validation':
+              tag: 'CIS-17.1.1'
+              match_output: 'Success, Failure'
+              value_type: 'multi'
+      description: 'Ensure Audit Credential Validation is set to Success and Failure (Scored)'
+      alert: email
+      trigger: state
+
+    audit_process_creation:
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'Process Creation':
+              tag: 'CIS-17.3.1'
+              match_output: 'Success'
+              value_type: 'multi'
+      description: 'Ensure Audit Process Creation is set to Success (Scored)'
       alert: email
       trigger: state
