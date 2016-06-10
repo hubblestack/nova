@@ -1137,7 +1137,7 @@ win_firewall:
               match_output: '%SYSTEMROOT%\System32\logfiles\firewall\publicfw.log'
               value_type: 'public'
       description: 'Windows Firewall Public Logging Name'
-    windows_firewall_public_logging_size_limit :
+    windows_firewall_public_logging_size_limit_(kb :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'LogMaxSizeKilobytes':
@@ -1353,13 +1353,13 @@ win_auditpol:
               value_type: 'equal'
       description: 'Ensure Audit System Integrity is set to Success and Failure'
 
-win_regedit:
+win_reg:
   whitelist:
     Prevent enabling lock screen camera :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Personalization\NoLockScreenCamera':
-              tag: 18.1.1.1
+              tag: CIS-18.1.1.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Prevent enabling lock screen camera is set to Enabled'
@@ -1367,23 +1367,15 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Personalization\NoLockScreenSlideshow':
-              tag: 18.1.1.2
+              tag: CIS-18.1.1.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Prevent enabling lock screen slide show is set to Enabled'
-    LAPS AdmPwd GPO Extension / CSE is installed :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{D76B9641-3288-4f75-942D-087DE603E3EA}':
-              tag: 18.2.1
-              match_output: 'DllName'
-              value_type: 'equal'
-      description: 'Ensure LAPS AdmPwd GPO Extension / CSE is installed '
     Do not allow password expiration time longer than required by policy :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft Services\AdmPwd\PwdExpirationProtectionEnabled':
-              tag: 18.2.2
+              tag: CIS-18.2.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Do not allow password expiration time longer than required by policy is set to Enabled '
@@ -1391,7 +1383,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft Services\AdmPwd\AdmPwdEnabled':
-              tag: 18.2.3
+              tag: CIS-18.2.3
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Enable Local Admin Password Management is set to Enabled '
@@ -1399,7 +1391,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft Services\AdmPwd\PasswordComplexity':
-              tag: 18.2.4
+              tag: CIS-18.2.4
               match_output: 'Enabled: Large letters + small letters + numbers + special characters'
               value_type: 'equal'
       description: 'Ensure Password SettingS- Password Complexity is set to Enabled: Large letters + small letters + numbers + special characters '
@@ -1407,7 +1399,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft Services\AdmPwd\PasswordLength':
-              tag: 18.2.5
+              tag: CIS-18.2.5
               match_output: 'Enabled: 15 or more'
               value_type: 'equal'
       description: 'Ensure Password SettingS- Password Length is set to Enabled: 15 or more '
@@ -1415,39 +1407,32 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft Services\AdmPwd\PasswordAgeDays':
-              tag: 18.2.6
+              tag: CIS-18.2.6
               match_output: 'Enabled: 30 or fewer'
               value_type: 'equal'
       description: 'Ensure Password SettingS- Password Age is set to Enabled: 30 or fewer '
-    MSS_ Enable Automatic Logon :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\AutoAdminLogon':
-              tag: 18.3.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure MSS_ Enable Automatic Logon is set to Disabled'
+
     MSS_DisableIPSourceRouting IPv6 IP source routing protection level protects against packet spoofing :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Tcpip6\Parameters\DisableIPSourceRouting':
-              tag: 18.3.2
-              match_output: 'Enabled: Highest protection, source routing is completely disabled'
+              tag: CIS-18.3.2
+              match_output: 'Enabled' #: Highest protection, source routing is completely disabled'
               value_type: 'equal'
-      description: 'Ensure MSS_ IP source routing protection level  is set to Enabled: Highest protection, source routing is completely disabled'
+      description: 'Ensure MSS_ IP source routing protection level  is set to Enabled Highest protection source routing is completely disabled'
     MSS_ IP source routing protection level protects against packet spoofing :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Tcpip\Parameters\DisableIPSourceRouting':
-              tag: 18.3.3
-              match_output: 'Enabled: Highest protection, source routing is completely disabled'
+              tag: CIS-18.3.3
+              match_output: 'Enabled' #: Highest protection, source routing is completely disabled'
               value_type: 'equal'
-      description: 'Ensure MSS-  IP source routing protection level  is set to Enabled: Highest protection, source routing is completely disabled'
+      description: 'Ensure MSS-  IP source routing protection level  is set to Enabled Highest protection source routing is completely disabled'
     MSS_ Allow ICMP redirects to override OSPF generated routes :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Tcpip\Parameters\EnableICMPRedirect':
-              tag: 18.3.4
+              tag: CIS-18.3.4
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure MSS-  Allow ICMP redirects to override OSPF generated routes is set to Disabled'
@@ -1455,7 +1440,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\NetBT\Parameters\nonamereleaseondemand':
-              tag: 18.3.6
+              tag: CIS-18.3.6
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure MSS-  Allow the computer to ignore NetBIOS name release requests except from WINS servers is set to Enabled'
@@ -1463,7 +1448,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\SafeDllSearchMode':
-              tag: 18.3.8
+              tag: CIS-18.3.8
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure MSS-  Enable Safe DLL search mode  is set to Enabled'
@@ -1471,7 +1456,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ScreenSaverGracePeriod':
-              tag: 18.3.9
+              tag: CIS-18.3.9
               match_output: 'Enabled: 5 or fewer seconds'
               value_type: 'equal'
       description: 'Ensure MSS-  The time in seconds before the screen saver grace period expires  is set to Enabled: 5 or fewer seconds'
@@ -1479,15 +1464,23 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Eventlog\Security\WarningLevel':
-              tag: 18.3.12
+              tag: CIS-18.3.12
               match_output: 'Enabled' #Enabled: 90% or less
               value_type: 'less'
       description: 'Ensure MSS-  Percentage threshold for the security event log at which the system will generate a warning is set to Enabled: 90% or less'
+    Ensure Turn off Microsoft Peer-to-Peer Networking Services is set to Enabled :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Peernet\Disabled':
+              tag: CIS-18.4.9.2
+              match_output: 'Enabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off Microsoft Peer-to-Peer Networking Services is set to Enabled'
     Prohibit installation and configuration of Network Bridge on your DNS domain network :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Network Connections\NC_AllowNetBridge_NLA':
-              tag: 18.4.10.2
+              tag: CIS-18.4.10.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Prohibit installation and configuration of Network Bridge on your DNS domain network is set to Enabled'
@@ -1495,23 +1488,31 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Network Connections\NC_StdDomainUserSetLocation':
-              tag: 18.4.10.3
+              tag: CIS-18.4.10.3
               match_output: ' is set to '
               value_type: 'equal'
       description: 'Ensure Require domain users to elevate when setting a networks location is set to Enabled'
     Hardened UNC Paths :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths\\\*\NETLOGONHKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths\\\*\SYSVOL':
-              tag: 18.4.13.1
-              match_output: 'Enabled, with "Require Mutual Authentication" and "Require Integrity" set for all NETLOGON and SYSVOL shares'
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths\\*\NETLOGON':
+              tag: CIS-18.4.13.1
+              match_output: 'Enabled' #with "Require Mutual Authentication" and "Require Integrity" set for all NETLOGON and SYSVOL shares'
               value_type: 'equal'
-      description: 'Ensure Hardened UNC Paths is set to Enabled, with "Require Mutual Authentication" and "Require Integrity" set for all NETLOGON and SYSVOL shares'
+      description: 'Ensure Hardened UNC Paths is set to Enabled with Require Mutual Authentication and Require Integrity set for all NETLOGON and SYSVOL shares'
+    Disable IPv6 :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHHKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters\DisabledComponents':
+              tag: CIS-18.4.18.2.1
+              match_output: '255'
+              value_type: 'equal'
+      description: 'Disable IPv6 - Ensure TCPIP6 Parameter DisabledComponents is set to 0xff (255)'
     Minimize the number of simultaneous connections to the Internet or a Windows Domain :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WcmSvc\GroupPolicy\fMinimizeConnections':
-              tag: 18.4.20.1
+              tag: CIS-18.4.20.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Minimize the number of simultaneous connections to the Internet or a Windows Domain is set to Enabled'
@@ -1519,63 +1520,39 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\LocalAccountTokenFilterPolicy':
-              tag: 18.6.1
+              tag: CIS-18.6.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Apply UAC restrictions to local accounts on network logons is set to Enabled '
-    WDigest Authentication :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential':
-              tag: 18.6.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure WDigest Authentication is set to Disabled'
-    Include command line in process creation events :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\ProcessCreationIncludeCmdLine_Enabled':
-              tag: 18.8.2.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Include command line in process creation events is set to Disabled'
     Boot-Start Driver Initialization Policy :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Policies\EarlyLaunch\DriverLoadPolicy':
-              tag: 18.8.11.1
-              match_output: 'Enabled: Good, unknown and bad but critical'
+              tag: CIS-18.8.11.1
+              match_output: 'Enabled' #: Good, unknown and bad but critical'
               value_type: 'equal'
-      description: 'Ensure Boot-Start Driver Initialization Policy is set to Enabled: Good, unknown and bad but critical'
+      description: 'Ensure Boot-Start Driver Initialization Policy is set to Enabled Good unknown and bad but critical'
     Configure registry policy processing_ Do not apply during periodic background processing :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}\NoBackgroundPolicy':
-              tag: 18.8.18.2
-              match_output: 'Enabled: FALSE'
+              tag: CIS-18.8.18.2
+              match_output: 'Enabled'# : FALSE'
               value_type: 'equal'
       description: 'Ensure Configure registry policy processing: Do not apply during periodic background processing is set to Enabled: FALSE'
     Configure registry policy processing_ Process even if the Group Policy objects have not changed :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}\NoGPOListChanges':
-              tag: 18.8.18.3
-              match_output: 'Enabled: TRUE'
+              tag: CIS-18.8.18.3
+              match_output: 'Enabled' #: TRUE'
               value_type: 'equal'
       description: 'Ensure Configure registry policy processing: Process even if the Group Policy objects have not changed is set to Enabled: TRUE'
-    Turn off background refresh of Group Policy :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'Navigate to the UI Path articulated in the Remediation section and confirm it is set as prescribed. This group policy setting is in effect when the following registry location does not exist:	HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\DisableBkGndGroupPolicy':
-              tag: 18.8.18.4
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off background refresh of Group Policy is set to Disabled'
     Do not display network selection UI :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\DontDisplayNetworkSelectionUI':
-              tag: 18.8.24.1
+              tag: CIS-18.8.24.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Do not display network selection UI is set to Enabled'
@@ -1583,55 +1560,23 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\DontEnumerateConnectedUsers':
-              tag: 18.8.24.2
+              tag: CIS-18.8.24.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Do not enumerate connected users on domain-joined computers is set to Enabled'
-    Enumerate local users on domain-joined computers :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\EnumerateLocalUsers':
-              tag: 18.8.24.3
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Enumerate local users on domain-joined computers is set to Disabled'
     Turn off app notifications on the lock screen :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\DisableLockScreenAppNotifications':
-              tag: 18.8.24.4
+              tag: CIS-18.8.24.4
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Turn off app notifications on the lock screen is set to Enabled'
-    Turn on convenience PIN sign-in :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\AllowDomainPINLogon':
-              tag: 18.8.24.5
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn on convenience PIN sign-in is set to Disabled'
-    Configure Offer Remote Assistance :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\policies\Microsoft\Windows NT\Terminal Services\fAllowUnsolicited':
-              tag: 18.8.30.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Configure Offer Remote Assistance is set to Disabled'
-    Configure Solicited Remote Assistance :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\policies\Microsoft\Windows NT\Terminal Services\fAllowToGetHelp':
-              tag: 18.8.30.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Configure Solicited Remote Assistance is set to Disabled'
     Enable RPC Endpoint Mapper Client Authentication :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Rpc\EnableAuthEpResolution':
-              tag: 18.8.31.1
+              tag: CIS-18.8.31.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Enable RPC Endpoint Mapper Client Authentication is set to Enabled '
@@ -1639,7 +1584,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\MSAOptional':
-              tag: 18.9.6.1
+              tag: CIS-18.9.6.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Allow Microsoft accounts to be optional is set to Enabled'
@@ -1647,7 +1592,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Explorer\NoAutoplayfornonVolume':
-              tag: 18.9.8.1
+              tag: CIS-18.9.8.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Disallow Autoplay for non-volume devices is set to Enabled'
@@ -1655,15 +1600,15 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoAutorun':
-              tag: 18.9.8.2
-              match_output: 'Enabled: Do not execute any autorun commands'
+              tag: CIS-18.9.8.2
+              match_output: 'Enabled'# : Do not execute any autorun commands'
               value_type: 'equal'
       description: 'Ensure Set the default behavior for AutoRun is set to Enabled: Do not execute any autorun commands'
     Turn off Autoplay :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoDriveTypeAutoRun':
-              tag: 18.9.8.3
+              tag: CIS-18.9.8.3
               match_output: 'Enabled: All drives'
               value_type: 'equal'
       description: 'Ensure Turn off Autoplay is set to Enabled: All drives'
@@ -1671,23 +1616,15 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\CredUI\DisablePasswordReveal':
-              tag: 18.9.13.1
+              tag: CIS-18.9.13.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Do not display the password reveal button is set to Enabled'
-    Enumerate administrator accounts on elevation :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\CredUI\EnumerateAdministrators':
-              tag: 18.9.13.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Enumerate administrator accounts on elevation is set to Disabled'
     Default Action and Mitigation Settings :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\SysSettings\AntiDetours': #, HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\SysSettings\BannedFunctions, HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\SysSettings\DeepHooks, HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\SysSettings\ExploitAction':
-              tag: 18.9.22.2
+              tag: CIS-18.9.22.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Default Action and Mitigation Settings is set to Enabled '
@@ -1695,7 +1632,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\Defaults\IE':
-              tag: 18.9.22.3
+              tag: CIS-18.9.22.3
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Default Protections for Internet Explorer is set to Enabled'
@@ -1703,7 +1640,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\Defaults':
-              tag: 18.9.22.4
+              tag: CIS-18.9.22.4
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Default Protections for Popular Software is set to Enabled'
@@ -1711,7 +1648,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\Defaults':
-              tag: 18.9.22.5
+              tag: CIS-18.9.22.5
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Default Protections for Recommended Software is set to Enabled'
@@ -1719,127 +1656,71 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\SysSettings\ASLR':
-              tag: 18.9.22.6
-              match_output: 'Enabled: Application Opt-In'
+              tag: CIS-18.9.22.6
+              match_output: 'Enabled'#: Application Opt-In'
               value_type: 'equal'
       description: 'Ensure System ASLR is set to Enabled: Application Opt-In'
     System DEP :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\SysSettings\DEP':
-              tag: 18.9.22.7
-              match_output: 'Enabled: Application Opt-Out'
+              tag: CIS-18.9.22.7
+              match_output: 'Enabled'#: Application Opt-Out'
               value_type: 'equal'
       description: 'Ensure System DEP is set to Enabled: Application Opt-Out'
     System SEHOP :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\EMET\SysSettings\SEHOP':
-              tag: 18.9.22.8
-              match_output: 'Enabled: Application Opt-Out'
+              tag: CIS-18.9.22.8
+              match_output: 'Enabled'#: Application Opt-Out'
               value_type: 'equal'
       description: 'Ensure System SEHOP is set to Enabled: Application Opt-Out'
-    Application_ Control Event Log behavior when the log file reaches its maximum size :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Application\Retention':
-              tag: 18.9.24.1.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Application: Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
     Application_ Specify the maximum log file size  :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Application\MaxSize':
-              tag: 18.9.24.1.2
-              match_output: 'Enabled_ 32768 or greater'
+              tag: CIS-18.9.24.1.2
+              match_output: 'Enabled'#_ 32768 or greater'
               value_type: 'equal'
       description: 'Ensure Application_ Specify the maximum log file size  is set to Enabled 32768 or greater'
-    Security_ Control Event Log behavior when the log file reaches its maximum size :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Security\Retention':
-              tag: 18.9.24.2.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Security_ Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
     Security_ Specify the maximum log file size  :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Security\MaxSize':
-              tag: 18.9.24.2.2
-              match_output: 'Enabled_ 196608 or greater'
+              tag: CIS-18.9.24.2.2
+              match_output: 'Enabled'#_ 196608 or greater'
               value_type: 'equal'
       description: 'Ensure Security_ Specify the maximum log file size  is set to Enabled_ 196608 or greater'
-    Setup_ Control Event Log behavior when the log file reaches its maximum size :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Setup\Retention':
-              tag: 18.9.24.3.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Setup: Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
     Setup_ Specify the maximum log file size  :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Setup\MaxSize':
-              tag: 18.9.24.3.2
-              match_output: 'Enabled: 32,768 or greater'
+              tag: CIS-18.9.24.3.2
+              match_output: 'Enabled' # 32,768 or greater'
               value_type: 'equal'
-      description: 'Ensure Setup: Specify the maximum log file size  is set to Enabled: 32,768 or greater'
-    System_ Control Event Log behavior when the log file reaches its maximum size :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\System\Retention':
-              tag: 18.9.24.4.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure System: Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
+      description: 'Ensure Setup Specify the maximum log file size  is set to Enabled 32768 or greater'
     System_ Specify the maximum log file size  :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\System\MaxSize':
-              tag: 18.9.24.4.2
-              match_output: 'Enabled_ 32768 or greater'
+              tag: CIS-18.9.24.4.2
+              match_output: 'Enabled'#_ 32768 or greater'
               value_type: 'equal'
       description: 'Ensure System_ Specify the maximum log file size  is set to Enabled_ 32768 or greater'
     Configure Windows SmartScreen :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\EnableSmartScreen':
-              tag: 18.9.28.2
+              tag: CIS-18.9.28.2
               match_output: 'Enabled: Require approval from an administrator before running downloaded unknown software'
               value_type: 'equal'
       description: 'Ensure Configure Windows SmartScreen is set to Enabled: Require approval from an administrator before running downloaded unknown software'
-    Turn off Data Execution Prevention for Explorer :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Explorer\NoDataExecutionPrevention':
-              tag: 18.9.28.3
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off Data Execution Prevention for Explorer is set to Disabled'
-    Turn off heap termination on corruption :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Explorer\NoHeapTerminationOnCorruption':
-              tag: 18.9.28.4
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off heap termination on corruption is set to Disabled'
-    Turn off shell protocol protected mode :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\PreXPSP2ShellProtocolBehavior':
-              tag: 18.9.28.5
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off shell protocol protected mode is set to Disabled'
     Do not allow passwords to be saved :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\DisablePasswordSaving':
-              tag: 18.9.48.2.2
+              tag: CIS-18.9.48.2.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Do not allow passwords to be saved is set to Enabled'
@@ -1847,7 +1728,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\fDisableCdm':
-              tag: 18.9.48.3.3.2
+              tag: CIS-18.9.48.3.3.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Do not allow drive redirection is set to Enabled'
@@ -1855,7 +1736,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\fPromptForPassword':
-              tag: 18.9.48.3.9.1
+              tag: CIS-18.9.48.3.9.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Always prompt for password upon connection is set to Enabled'
@@ -1863,7 +1744,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Terminal Services\fEncryptRPCTraffic':
-              tag: 18.9.48.3.9.2
+              tag: CIS-18.9.48.3.9.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Require secure RPC communication is set to Enabled'
@@ -1871,167 +1752,55 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\MinEncryptionLevel':
-              tag: 18.9.48.3.9.3
-              match_output: 'Enabled: High Level'
+              tag: CIS-18.9.48.3.9.3
+              match_output: 'Enabled'#: High Level'
               value_type: 'equal'
       description: 'Ensure Set client connection encryption level is set to Enabled: High Level'
-    Do not delete temp folders upon exit :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\DeleteTempDirsOnExit':
-              tag: 18.9.48.3.11.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Do not delete temp folders upon exit is set to Disabled'
-    Do not use temporary folders per session :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Terminal Services\PerSessionTempDir':
-              tag: 18.9.48.3.11.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Do not use temporary folders per session is set to Disabled'
     Prevent downloading of enclosures :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds\DisableEnclosureDownload':
-              tag: 18.9.49.1
+              tag: CIS-18.9.49.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Prevent downloading of enclosures is set to Enabled'
-    Allow indexing of encrypted files :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Search\AllowIndexingEncryptedStoresOrItems':
-              tag: 18.9.50.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Allow indexing of encrypted files is set to Disabled'
     Prevent the usage of SkyDrive for file storage :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Skydrive\DisableFileSync':
-              tag: 18.9.54.1
+              tag: CIS-18.9.54.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Prevent the usage of SkyDrive for file storage is set to Enabled'
-    Turn off Automatic Download and Install of updates :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsStore\AutoDownload':
-              tag: 18.9.58.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off Automatic Download and Install of updates is set to Disabled'
     Turn off the offer to update to the latest version of Windows :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsStore\DisableOSUpgrade':
-              tag: 18.9.58.2
+              tag: CIS-18.9.58.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Turn off the offer to update to the latest version of Windows is set to Enabled'
-    Automatically send memory dumps for OS-generated error reports :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\Windows Error Reporting\AutoApproveOSDumps':
-              tag: 18.9.67.3
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Automatically send memory dumps for OS-generated error reports is set to Disabled'
     Configure Default consent :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent\DefaultConsent':
-              tag: 18.9.67.2.1
-              match_output: 'Enabled: Always ask before sending data'
+              tag: CIS-18.9.67.2.1
+              match_output: 'Enabled'#: Always ask before sending data'
               value_type: 'equal'
       description: 'Ensure Configure Default consent is set to Enabled: Always ask before sending data'
-    Allow user control over installs :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Installer\EnableUserControl':
-              tag: 18.9.69.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Allow user control over installs is set to Disabled'
-    Always install with elevated privileges :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated':
-              tag: 18.9.69.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Always install with elevated privileges is set to Disabled'
-    Sign-in last interactive user automatically after a system-initiated restart :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\DisableAutomaticRestartSignOn':
-              tag: 18.9.70.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Sign-in last interactive user automatically after a system-initiated restart is set to Disabled'
-    Turn on PowerShell Script Block Logging :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging\EnableScriptBlockLogging':
-              tag: 18.9.79.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn on PowerShell Script Block Logging is set to Disabled'
-    Turn on PowerShell Transcription :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription\EnableTranscripting':
-              tag: 18.9.79.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn on PowerShell Transcription is set to Disabled'
-    Allow Basic authentication :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Client\AllowBasic':
-              tag: 18.9.81.1.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Allow Basic authentication is set to Disabled'
-    Allow unencrypted traffic :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Client\AllowUnencryptedTraffic':
-              tag: 18.9.81.1.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Allow unencrypted traffic is set to Disabled'
     Disallow Digest authentication :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Client\AllowDigest':
-              tag: 18.9.81.1.3
+              tag: CIS-18.9.81.1.3
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Disallow Digest authentication is set to Enabled'
-    Allow Basic authentication :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Service\AllowBasic':
-              tag: 18.9.81.2.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Allow Basic authentication is set to Disabled'
-    Allow unencrypted traffic :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Service\AllowUnencryptedTraffic':
-              tag: 18.9.81.2.2
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Allow unencrypted traffic is set to Disabled'
     Disallow WinRM from storing RunAs credentials :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Service\DisableRunAs':
-              tag: 18.9.81.2.3
+              tag: CIS-18.9.81.2.3
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Disallow WinRM from storing RunAs credentials is set to Enabled'
@@ -2039,7 +1808,7 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\NoAutoUpdate':
-              tag: 18.9.85.1
+              tag: CIS-18.9.85.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Configure Automatic Updates is set to Enabled'
@@ -2047,23 +1816,15 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\ScheduledInstallDay':
-              tag: 18.9.85.2
-              match_output: '0 - Every day'
+              tag: CIS-18.9.85.2
+              match_output: '0'# - Every day'
               value_type: 'equal'
       description: 'Ensure Configure Automatic UpdateS- Scheduled install day is set to 0 - Every day'
-    No auto-restart with logged on users for scheduled automatic updates installations :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\NoAutoRebootWithLoggedOnUsers':
-              tag: 18.9.85.3
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure No auto-restart with logged on users for scheduled automatic updates installations is set to Disabled'
     Enable screen saver :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Control Panel\Desktop\ScreenSaveActive':
-              tag: 19.1.3.1
+              tag: CIS-19.1.3.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Enable screen saver is set to Enabled'
@@ -2071,15 +1832,15 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Control Panel\Desktop\SCRNSAVE.EXE':
-              tag: 19.1.3.2
-              match_output: 'Enabled: scrnsave.scr'
+              tag: CIS-19.1.3.2
+              match_output: 'Enabled'#: scrnsave.scr'
               value_type: 'equal'
       description: 'Ensure Force specific screen saver: Screen saver executable name is set to Enabled: scrnsave.scr'
     Password protect the screen saver :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Control Panel\Desktop\ScreenSaverIsSecure':
-              tag: 19.1.3.3
+              tag: CIS-19.1.3.3
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Password protect the screen saver is set to Enabled'
@@ -2087,31 +1848,23 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Control Panel\Desktop\ScreenSaveTimeOut':
-              tag: 19.1.3.4
-              match_output: 'Enabled: 900 seconds or fewer, but not 0'
+              tag: CIS-19.1.3.4
+              match_output: 'Enabled'#: 900 seconds or fewer, but not 0'
               value_type: 'equal'
       description: 'Ensure Screen saver timeout is set to Enabled_ 900 seconds or fewer but not 0'
     Turn off toast notifications on the lock screen :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\NoToastApplicationNotificationOnLockScreen':
-              tag: 19.5.1.1
+              tag: CIS-19.5.1.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Turn off toast notifications on the lock screen is set to Enabled'
-    Do not preserve zone information in file attachments :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_USERS\<SID>\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments\SaveZoneInformation':
-              tag: 19.7.4.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Do not preserve zone information in file attachments is set to Disabled'
     Notify antivirus programs when opening attachments :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments\ScanWithAntiVirus':
-              tag: 19.7.4.2
+              tag: CIS-19.7.4.2
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Notify antivirus programs when opening attachments is set to Enabled'
@@ -2119,27 +1872,310 @@ win_regedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\[USER SID]\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInplaceSharing':
-              tag: 19.7.25.1
+              tag: CIS-19.7.25.1
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Prevent users from sharing files within their profile. is set to Enabled'
+
+  blacklist:
+    MSS_ Enable Automatic Logon :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\AutoAdminLogon':
+              tag: CIS-18.3.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure MSS_ Enable Automatic Logon is set to Disabled'
+    Ensure Turn on Mapper I/O driver is set to Disabled :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\LLTD\AllowLLTDIOOnDomain':
+              tag: CIS-18.4.8.1
+              match_output: 'Enabled'
+              value_type: 'equal'
+      description: 'Ensure Turn on Mapper I/O (LLTDIO) driver is set to Disabled'
+    Ensure Turn on Responder (RSPNDR) driver is set to Disabled :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\LLTD\AllowRspndrOnDomain':
+              tag: CIS-18.4.8.2
+              match_output: 'Enabled'
+              value_type: 'equal'
+      description: 'Ensure Turn on Responder (RSPNDR) driver is set to Disabled'
+    WDigest Authentication :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest\UseLogonCredential':
+              tag: CIS-18.6.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure WDigest Authentication is set to Disabled'
+    Include command line in process creation events :
+    Ensure Include command line in process creation events :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\ProcessCreationIncludeCmdLine_Enabled':
+              tag: CIS-18.8.2.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Include command line in process creation events is set to Disabled'
+    Turn off background refresh of Group Policy :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\DisableBkGndGroupPolicy':
+              tag: CIS-18.8.18.4
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off background refresh of Group Policy is set to Disabled'
+    Enumerate local users on domain-joined computers :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\EnumerateLocalUsers':
+              tag: CIS-18.8.24.3
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Enumerate local users on domain-joined computers is set to Disabled'
+    Turn on convenience PIN sign-in :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\AllowDomainPINLogon':
+              tag: CIS-18.8.24.5
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn on convenience PIN sign-in is set to Disabled'
+    Configure Offer Remote Assistance :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\policies\Microsoft\Windows NT\Terminal Services\fAllowUnsolicited':
+              tag: CIS-18.8.30.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Configure Offer Remote Assistance is set to Disabled'
+    Configure Solicited Remote Assistance :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\policies\Microsoft\Windows NT\Terminal Services\fAllowToGetHelp':
+              tag: CIS-18.8.30.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Configure Solicited Remote Assistance is set to Disabled'
+    Enumerate administrator accounts on elevation :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\CredUI\EnumerateAdministrators':
+              tag: CIS-18.9.13.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Enumerate administrator accounts on elevation is set to Disabled'
+    Application_ Control Event Log behavior when the log file reaches its maximum size :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Application\Retention':
+              tag: CIS-18.9.24.1.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Application: Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
+    Security_ Control Event Log behavior when the log file reaches its maximum size :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Security\Retention':
+              tag: CIS-18.9.24.2.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Security_ Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
+    Setup_ Control Event Log behavior when the log file reaches its maximum size :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Setup\Retention':
+              tag: CIS-18.9.24.3.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Setup: Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
+    System_ Control Event Log behavior when the log file reaches its maximum size :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\System\Retention':
+              tag: CIS-18.9.24.4.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure System: Control Event Log behavior when the log file reaches its maximum size is set to Disabled'
+    Turn off Data Execution Prevention for Explorer :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Explorer\NoDataExecutionPrevention':
+              tag: CIS-18.9.28.3
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off Data Execution Prevention for Explorer is set to Disabled'
+    Turn off heap termination on corruption :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Explorer\NoHeapTerminationOnCorruption':
+              tag: CIS-18.9.28.4
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off heap termination on corruption is set to Disabled'
+    Turn off shell protocol protected mode :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\PreXPSP2ShellProtocolBehavior':
+              tag: CIS-18.9.28.5
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off shell protocol protected mode is set to Disabled'
+    Do not delete temp folders upon exit :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\DeleteTempDirsOnExit':
+              tag: CIS-18.9.48.3.11.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Do not delete temp folders upon exit is set to Disabled'
+    Do not use temporary folders per session :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Terminal Services\PerSessionTempDir':
+              tag: CIS-18.9.48.3.11.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Do not use temporary folders per session is set to Disabled'
+    Allow indexing of encrypted files :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Search\AllowIndexingEncryptedStoresOrItems':
+              tag: CIS-18.9.50.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Allow indexing of encrypted files is set to Disabled'
+    Turn off Automatic Download and Install of updates :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsStore\AutoDownload':
+              tag: CIS-18.9.58.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off Automatic Download and Install of updates is set to Disabled'
+    Automatically send memory dumps for OS-generated error reports :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\Windows Error Reporting\AutoApproveOSDumps':
+              tag: CIS-18.9.67.3
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Automatically send memory dumps for OS-generated error reports is set to Disabled'
+    Allow user control over installs :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Installer\EnableUserControl':
+              tag: CIS-18.9.69.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Allow user control over installs is set to Disabled'
+    Always install with elevated privileges :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated':
+              tag: CIS-18.9.69.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Always install with elevated privileges is set to Disabled'
+    Sign-in last interactive user automatically after a system-initiated restart :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\DisableAutomaticRestartSignOn':
+              tag: CIS-18.9.70.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Sign-in last interactive user automatically after a system-initiated restart is set to Disabled'
+    Turn on PowerShell Script Block Logging :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging\EnableScriptBlockLogging':
+              tag: CIS-18.9.79.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn on PowerShell Script Block Logging is set to Disabled'
+    Turn on PowerShell Transcription :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription\EnableTranscripting':
+              tag: CIS-18.9.79.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn on PowerShell Transcription is set to Disabled'
+    Allow Basic authentication :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Client\AllowBasic':
+              tag: CIS-18.9.81.1.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Allow Basic authentication is set to Disabled'
+    Allow unencrypted traffic :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Client\AllowUnencryptedTraffic':
+              tag: CIS-18.9.81.1.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Allow unencrypted traffic is set to Disabled'
+    Allow Basic authentication :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Service\AllowBasic':
+              tag: CIS-18.9.81.2.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Allow Basic authentication is set to Disabled'
+    Allow unencrypted traffic :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WinRM\Service\AllowUnencryptedTraffic':
+              tag: CIS-18.9.81.2.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Allow unencrypted traffic is set to Disabled'
+    No auto-restart with logged on users for scheduled automatic updates installations :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\NoAutoRebootWithLoggedOnUsers':
+              tag: CIS-18.9.85.3
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure No auto-restart with logged on users for scheduled automatic updates installations is set to Disabled'
+    Do not preserve zone information in file attachments :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_USERS\<SID>\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments\SaveZoneInformation':
+              tag: CIS-19.7.4.1
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Do not preserve zone information in file attachments is set to Disabled'
     Always install with elevated privileges :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated':
-              tag: 19.7.37.1
+              tag: CIS-19.7.37.1
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Always install with elevated privileges is set to Disabled'
-
-win_wmiquery:
+	  
+	  
+win_pkg:
   whitelist:
     EMET 5.5 :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'Navigate to Control Panel\Program\Programs and Features and confirm "EMET 5.5" or higher is listed in the Name column.':
-              tag: 18.9.22.1
+              tag: CIS-18.9.22.1
               match_output: 'EMET'
               value_type: 'equal'
       description: 'Ensure EMET 5.5 or higher is installed'
-
+LAPS AdmPwd GPO Extension / CSE is installed :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{D76B9641-3288-4f75-942D-087DE603E3EA}':
+              tag: CIS-18.2.1
+              match_output: 'Local Administrator Password Solution'
+              value_type: 'equal'
+      description: 'Ensure LAPS AdmPwd GPO Extension / CSE is installed '
