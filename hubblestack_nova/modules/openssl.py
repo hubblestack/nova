@@ -65,7 +65,6 @@ this happens, the check will be failed.
 
 '''
 
-
 from __future__ import absolute_import
 import logging
 
@@ -79,6 +78,7 @@ import ssl
 
 try:
     import OpenSSL
+
     _HAS_OPENSSL = True
 except ImportError:
     _HAS_OPENSSL = False
@@ -87,6 +87,7 @@ log = logging.getLogger(__name__)
 
 __tags__ = None
 __data__ = None
+
 
 def __virtual__():
     if salt.utils.is_windows():
@@ -134,7 +135,8 @@ def audit(data_list, tags, verbose=False):
                     ret['Failure'].append(tag_data)
                     continue
 
-                x509 = _load_x509(endpoint, port) if endpoint else _load_x509(pem_file, from_file=True)
+                cert = _get_cert(endpoint, port) if endpoint else _get_cert(pem_file, from_file=True)
+                x509 = _load_x509(cert)
                 (passed, failing_reason) = _check_x509(x509=x509,
                                                        not_before=not_before,
                                                        not_after=not_after,
@@ -227,24 +229,43 @@ def _check_x509(x509=None, not_before=0, not_after=0, fail_if_not_before=False):
     stats = _get_x509_days_left(x509)
 
     if not_after >= stats['not_after']:
-        return (False, 'The certificate will expire in less then {0} days'.format(not_after))
+        log.info('The certificate will expire in less then {0} days'.format(not_after))
+        return (False,
+                'The certificate will expire in less then {0} days'.format(not_after)
+                )
     if not_before <= stats['not_before']:
         if not_before == 0 and fail_if_not_before:
-            return (False, 'The certificate is not yet valid ({0} days left until it will be valid)'.format(stats['not_before']))
+            log.info(
+                'The certificate is not yet valid ({0} days left until it will be valid)'.format(stats['not_before']))
+            return (False,
+                    'The certificate is not yet valid ({0} days left until it will be valid)'.format(
+                        stats['not_before'])
+                    )
+        log.info('The certificate will be valid in more then {0} days'.format(not_before))
         return (False, 'The certificate will be valid in more then {0} days'.format(not_before))
 
     return (True, '')
 
 
-def _load_x509(source, port=443, from_file=False):
-    if not from_file:
-        x509 = _load_x509_from_endpoint(source, port)
-    else:
-        x509 = _load_x509_from_file(source)
+def _load_x509(cert):
+    if not cert:
+        log.error('No certificate to be loaded into x509 object')
+        return None
+    try:
+        x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
+    except OpenSSL.crypto.Error:
+        log.error('Unable to load certificate into x509 object')
+        x509 = None
+
     return x509
 
 
-def _load_x509_from_endpoint(server, port=443):
+def _get_cert(source, port=443, from_file=False):
+    cert = _get_cert_from_file(source) if from_file else _get_cert_from_endpoint(source, port)
+    return cert
+
+
+def _get_cert_from_endpoint(server, port=443):
     try:
         cert = ssl.get_server_certificate((server, port))
     except Exception:
@@ -253,27 +274,18 @@ def _load_x509_from_endpoint(server, port=443):
     if not cert:
         return None
 
-    try:
-        x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
-    except OpenSSL.crypto.Error:
-        log.error('Unable to load certificate from {0} into x509 object'.format(server))
-        x509 = None
-    return x509
+    return cert
 
 
-def _load_x509_from_file(cert_file_path):
+def _get_cert_from_file(cert_file_path):
     try:
-        cert_file = open(cert_file_path)
+        with open(cert_file_path) as cert_file:
+            cert = cert_file.read()
     except IOError:
         log.error('File not found: {0}'.format(cert_file_path))
         return None
 
-    try:
-        x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert_file.read())
-    except OpenSSL.crypto.Error:
-        log.error('Unable to load certificate from {0} into x509 object'.format(cert_file_path))
-        x509 = None
-    return x509
+    return cert
 
 
 def _get_x509_days_left(x509):
@@ -286,4 +298,3 @@ def _get_x509_days_left(x509):
            'not_before': (datetime.datetime(*not_before[:6]) - current_datetime).days}
 
     return ret
-
