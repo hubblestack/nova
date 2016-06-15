@@ -120,8 +120,6 @@ def audit(data_list, tags, verbose=False):
     
     affected_pkgs = _get_cve_vulnerabilities(master_json)
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
-
-    failed_pkgs = []
     
     for local_pkg in local_pkgs:
         vulnerable = False
@@ -139,8 +137,7 @@ def audit(data_list, tags, verbose=False):
                 if local_pkg not in ret['Success']:
                     ret['Success'].append(local_pkg)
             else:
-                ret['Failure'].append(vulnerable.report())
-                failed_pkgs.append(vulnerable.)    
+                ret['Failure'].append(vulnerable.report()) 
         else:
             if local_pkg not in ret['Success']:
                 ret['Success'].append(local_pkg)
