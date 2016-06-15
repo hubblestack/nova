@@ -82,6 +82,7 @@ def audit(data_list, tags, verbose=False):
 
         is_next_page = True
         page_num = 0
+        query_size = 5000
         
         # Hit the api, incrementing the page offset until 
         #   we get all the results together in one dictionary.
@@ -90,14 +91,14 @@ def audit(data_list, tags, verbose=False):
             
             offset = page_num * 20
             page_num += 1 
-            url_final = '%s?query=type:%s&order:last year&skip=%s' % (url, os_name, offset)
+            url_final = '%s?query=type:%s&order:last year&skip=%s&size=%s' % (url, os_name, offset, query_size)
             cve_query = requests.get(url_final)
             cve_json = json.loads(cve_query.text)
             
             # Default number of searches per page is 20 so 
             #    if we have less than that we know this is 
             #    our last page.
-            if len(cve_json['data']['search']) < 20:
+            if len(cve_json['data']['search']) < query_size:
                 is_next_page = False
 
             # First page is beginning of master_json that we build on
