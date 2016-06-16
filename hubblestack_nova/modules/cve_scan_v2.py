@@ -87,27 +87,31 @@ def audit(data_list, tags, verbose=False):
         # Hit the api, incrementing the page offset until 
         #   we get all the results together in one dictionary.
 
-        while is_next_page:
-            
-            offset = page_num * query_size
-            page_num += 1 
-            url_final = '%s?query=type:%s&order:last year&skip=%s&size=%s' % (url, os_name, offset, query_size)
-            cve_query = requests.get(url_final)
-            cve_json = json.loads(cve_query.text)
-            
-            # Default number of searches per page is 20 so 
-            #    if we have less than that we know this is 
-            #    our last page.
-            if len(cve_json['data']['search']) < query_size:
-                is_next_page = False
+        if 'vulners' in url:
+            while is_next_page:
+                
+                offset = page_num * query_size
+                page_num += 1 
+                url_final = '%s?query=type:%s&order:last year&skip=%s&size=%s' % (url, os_name, offset, query_size)
+                cve_query = requests.get(url_final)
+                cve_json = json.loads(cve_query.text)
+                
+                # Default number of searches per page is 20 so 
+                #    if we have less than that we know this is 
+                #    our last page.
+                if len(cve_json['data']['search']) < query_size:
+                    is_next_page = False
 
-            # First page is beginning of master_json that we build on
-            if page_num == 1:
-                master_json = cve_json
-                continue
-            
-            master_json = _build_json(master_json, cve_json)
-    
+                # First page is beginning of master_json that we build on
+                if page_num == 1:
+                    master_json = cve_json
+                    continue
+                
+                master_json = _build_json(master_json, cve_json)
+        else:
+            cve_query = requests.get(url)
+            master_json = json.loads(cve_query.text)
+
 
         #Cache results.
         try:
