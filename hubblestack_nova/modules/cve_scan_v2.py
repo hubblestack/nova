@@ -89,7 +89,7 @@ def audit(data_list, tags, verbose=False):
 
         while is_next_page:
             
-            offset = page_num * 20
+            offset = page_num * query_size
             page_num += 1 
             url_final = '%s?query=type:%s&order:last year&skip=%s&size=%s' % (url, os_name, offset, query_size)
             cve_query = requests.get(url_final)
