@@ -94,7 +94,7 @@ def audit(data_list, tags, verbose=False):
                 page_num += 1 
                 url_final = '%s?query=type:%s&skip=%s&size=%s' % (url, os_name, offset, query_size)
                 cve_query = urllib2.urlopen(url_final)
-                cve_json = json.load(cve_query)
+                cve_json = json.loads(cve_query.read())
                 
                 # Default number of searches per page is 20 so 
                 #    if we have less than that we know this is 
@@ -110,7 +110,7 @@ def audit(data_list, tags, verbose=False):
                 master_json = _build_json(master_json, cve_json)
         else:
             cve_query = urllib2.urlopen(url)
-            master_json = json.loads(cve_query)
+            master_json = json.loads(cve_query.read())
 
 
         #Cache results.
