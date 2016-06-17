@@ -203,8 +203,9 @@ def _is_vulnerable(local_version, affected_version, operator):
     local_version_split = local_version.split('-')
     affected_version_split = affected_version.split('-')
 
-    for (order_index, local_version_obj) in enumerate(local_version_split):
+    for (order_index, local_version_str) in enumerate(local_version_split):
 
+        local_version_obj = LooseVersion(local_version_str)
         affected_version_obj = LooseVersion(affected_version_split[order_index])
 
         #Check lower order bits if higher order are equal.
