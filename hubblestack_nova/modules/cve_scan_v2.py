@@ -82,7 +82,7 @@ def audit(data_list, tags, verbose=False):
 
         is_next_page = True
         page_num = 0
-        query_size = 5000
+        query_size = 500
         
         # Hit the api, incrementing the page offset until 
         #   we get all the results together in one dictionary.
