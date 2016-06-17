@@ -82,7 +82,7 @@ def audit(data_list, tags, verbose=False):
 
         is_next_page = True
         page_num = 0
-        query_size = 5000
+        query_size = 500
         
         # Hit the api, incrementing the page offset until 
         #   we get all the results together in one dictionary.
@@ -91,7 +91,7 @@ def audit(data_list, tags, verbose=False):
             
             offset = page_num * query_size
             page_num += 1 
-            url_final = '%s?query=type:%s&order:last year&skip=%s&size=%s' % (url, os_name, offset, query_size)
+            url_final = '%s?query=type:%s&skip=%s&size=%s' % (url, os_name, offset, query_size)
             cve_query = requests.get(url_final)
             cve_json = json.loads(cve_query.text)
             
