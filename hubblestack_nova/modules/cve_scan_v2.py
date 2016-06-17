@@ -27,7 +27,7 @@ import logging
 
 import salt
 import salt.utils
-import requests
+import urllib2
 import copy
 import re
 
@@ -92,8 +92,8 @@ def audit(data_list, tags, verbose=False):
             offset = page_num * query_size
             page_num += 1 
             url_final = '%s?query=type:%s&skip=%s&size=%s' % (url, os_name, offset, query_size)
-            cve_query = requests.get(url_final)
-            cve_json = json.loads(cve_query.text)
+            cve_query = urllib2.urlopen(url_final)
+            cve_json = json.load(cve_query)
             
             # Default number of searches per page is 20 so 
             #    if we have less than that we know this is 
