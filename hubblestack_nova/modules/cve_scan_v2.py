@@ -27,7 +27,7 @@ import logging
 
 import salt
 import salt.utils
-import urllib2
+import requests
 import copy
 import re
 
@@ -82,18 +82,19 @@ def audit(data_list, tags, verbose=False):
 
         is_next_page = True
         page_num = 0
-        query_size = 500
+        query_size = 5000
         
         # Hit the api, incrementing the page offset until 
         #   we get all the results together in one dictionary.
+
         if 'vulners' in url:
             while is_next_page:
                 
                 offset = page_num * query_size
                 page_num += 1 
-                url_final = '%s?query=type:%s&skip=%s&size=%s' % (url, os_name, offset, query_size)
-                cve_query = urllib2.urlopen(url_final)
-                cve_json = json.load(cve_query)
+                url_final = '%s?query=type:%s&order:last year&skip=%s&size=%s' % (url, os_name, offset, query_size)
+                cve_query = requests.get(url_final)
+                cve_json = json.loads(cve_query.text)
                 
                 # Default number of searches per page is 20 so 
                 #    if we have less than that we know this is 
@@ -108,8 +109,9 @@ def audit(data_list, tags, verbose=False):
                 
                 master_json = _build_json(master_json, cve_json)
         else:
-            cve_query = urllib2.urlopen(url)
-            master_json = json.load(cve_query)
+            cve_query = requests.get(url)
+            master_json = json.loads(cve_query.text)
+
 
         #Cache results.
         try:
