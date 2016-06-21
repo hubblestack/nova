@@ -135,15 +135,8 @@ def audit(data_list, tags, verbose=False):
                         else:
                             if _is_vulnerable(vulnerable.pkg_version, affected_obj.pkg_version, 'lt'):
                                 vulnerable = affected_obj
-            if not vulnerable:
-                if local_pkg not in ret['Success']:
-                    ret['Success'].append(local_pkg)
-            else:
+            if vulnerable:
                 ret['Failure'].append(vulnerable.report())
-        else:
-            if local_pkg not in ret['Success']:
-                ret['Success'].append(local_pkg)
-    ret['Success'].sort()
     return ret
 
 
