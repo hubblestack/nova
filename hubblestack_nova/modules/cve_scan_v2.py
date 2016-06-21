@@ -29,9 +29,11 @@ import json
 import os
 from distutils.version import LooseVersion
 from time import time as current_time
+from zipfile import ZipFile
 import copy
 import re
 import urllib2
+import requests
 
 import salt
 import salt.utils
@@ -46,12 +48,13 @@ def __virtual__():
 def audit(data_list, tags, verbose=False):
 
     os_name = __grains__['os'].lower()
-    cache_path = '/var/cache/salt/minion/cve_scan_cache/%s.json' % (os_name)
+    cached_zip = '/var/cache/salt/minion/cve_scan_cache/%s.zip' % (os_name)
+    cached_json = '/var/cache/salt/minion/cve_scan_cache/%s.json' % (os_name)
     cache = {}
     #Make cache directory and all parent directories
     # if it doesn't exist.
-    if not os.path.exists(os.path.dirname(cache_path)):
-        os.makedirs(os.path.dirname(cache_path))
+    if not os.path.exists(os.path.dirname(cached_json)):
+        os.makedirs(os.path.dirname(cached_json))
 
     ttl = None
     url = None
@@ -68,11 +71,9 @@ def audit(data_list, tags, verbose=False):
             # Requests only handles http:// requests
             if url.startswith('https'):
                 url.replace('https', 'http', 1)
-            cache = _get_cache(ttl, url, cache_path)
-            if cache.get('result', None) == 'OK':
-                master_json = cache
-                break
-
+            cache = _get_cache(ttl, url, cached_json)
+	    if cache:
+		master_json = cache
     # If we don't find our module in the yaml
     if url is None:
         return {}
@@ -88,37 +89,34 @@ def audit(data_list, tags, verbose=False):
         #   we get all the results together in one dictionary.
 
         if 'vulners' in url:
-            while is_next_page:
+            if not url.endswith('/'):
+                url += '/'
 
-                offset = page_num * query_size
-                page_num += 1
-                url_final = '%s?query=type:%s&skip=%s&size=%s' % (url, os_name, offset, query_size)
-                cve_query = urllib2.urlopen(url_final)
-                cve_json = json.loads(cve_query.read())
-
-                # Default number of searches per page is 20 so
-                #    if we have less than that we know this is
-                #    our last page.
-                if len(cve_json['data']['search']) < query_size:
-                    is_next_page = False
-
-                # First page is beginning of master_json that we build on
-                if page_num == 1:
-                    master_json = cve_json
-                    continue
-
-                master_json = _build_json(master_json, cve_json)
+            url_final = '%s?type=%s' % (url, os_name)
+            cve_query = requests.get(url_final)
+            if cve_query.status_code != 200:
+                log.trace('Vulners request was not successful.')
+            try:
+                with open(cached_zip, 'w') as zip_attachment:
+                    zip_attachment.write(cve_query.content)
+                zip_file = ZipFile(cached_zip)
+                zip_file.extractall(os.path.dirname(cached_zip))          
+                os.remove(cached_zip)
+		with open(cached_json, 'r') as json_file:
+                    master_json = json.load(json_file)
+            except IOError as ioe:
+                log.error('The json was not able to be extracted from vulners.')
+                raise ioe
         else:
             cve_query = urllib2.urlopen(url)
             master_json = json.loads(cve_query.read())
 
-
-        #Cache results.
-        try:
-            with open(cache_path, 'w') as cache_file:
-                json.dump(master_json, cache_file)
-        except IOError:
-            log.error('The results weren\'t able to be cached')
+            #Cache results.
+            try:
+                with open(cached_json, 'w') as cache_file:
+                    json.dump(master_json, cache_file)
+            except IOError:
+                log.error('The cve results weren\'t able to be cached')
 
     ret = {'Success':[], 'Failure':[]}
 
@@ -155,15 +153,11 @@ def _get_cve_vulnerabilities(query_results):
 
     vulnerable_pkgs = {}
 
-    # Make sure query was successful
-    if query_results['result'].lower() != 'ok':
-        return
-
     # Get os version to only add vulnerabilites that apply to local system
     osmajorrelease = __grains__.get('osmajorrelease', None)
     osrelease = __grains__.get('osrelease', None)
 
-    for report in query_results['data']['search']:
+    for report in query_results:
 
         #data:search
         reporter = report['_source']['reporter']
@@ -229,7 +223,7 @@ def _is_vulnerable(local_version, affected_version, operator):
 def _get_cache(ttl, url, cache_path):
     '''
     If url contains valid cache, returns it,
-        Else returns empty dictionary.
+        Else returns empty list.
     '''
 
     if url.startswith('http://') or url.startswith('https://'):
@@ -237,26 +231,16 @@ def _get_cache(ttl, url, cache_path):
         try:
             cached_time = os.path.getmtime(cache_path)
         except OSError:
-            return {}
+            return []
         if current_time() - cached_time < ttl:
             try:
                 with open(cache_path) as json_file:
                     loaded_json = json.load(json_file)
                     return loaded_json
             except IOError:
-                return {}
+                return []
         else:
-            return {}
-
-
-def _build_json(master_json, current_page):
-    '''
-    Adds all the search elements from current page
-        to our master json file and returns
-    '''
-    current_page_search = current_page['data']['search']
-    master_json['data']['search'].extend(current_page_search)
-    return master_json
+            return []
 
 
 class vulnerablePkg:
