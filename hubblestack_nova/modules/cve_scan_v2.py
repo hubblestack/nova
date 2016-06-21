@@ -32,7 +32,6 @@ from time import time as current_time
 from zipfile import ZipFile
 import copy
 import re
-import urllib2
 import requests
 
 import salt
@@ -108,8 +107,10 @@ def audit(data_list, tags, verbose=False):
                 log.error('The json was not able to be extracted from vulners.')
                 raise ioe
         else:
-            cve_query = urllib2.urlopen(url)
-            master_json = json.loads(cve_query.read())
+            cve_query = requests.get(url)
+            if cve_query.status_code != 200:
+                log.trace('Vulners request was not successful.')
+            master_json = json.loads(cve_query.text)
 
             #Cache results.
             try:
