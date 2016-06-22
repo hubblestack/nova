@@ -20,7 +20,7 @@ Sample YAML data
 
 cve_scan_v2:
     ttl: 86400
-    url: http://vulners.com/api/v3/search/lucene/
+    url: http://vulners.com/api/v3/archive/collection/
 '''
 from __future__ import absolute_import
 import logging
@@ -129,6 +129,7 @@ def audit(data_list, tags, verbose=False):
                     if _is_vulnerable(local_version, affected_version, affected_obj.operator):
                         # If the local pkg hasn't been found as vulnerable yet, vulnerable is None
                         if not vulnerable:
+                            affected_obj.oudated_version = local_version
                             vulnerable = affected_obj
                         # If local_pkg has already been marked affected, vulnerable is set. We
                         #   want to report the most recent cve, so check if the new affected_pkg
@@ -136,6 +137,7 @@ def audit(data_list, tags, verbose=False):
                         else:
                             if _is_vulnerable(vulnerable.pkg_version, affected_version, 'lt'):
                                 # If affected_obj version is > vulnerable, reassign vulnerable
+                                affected_obj.oudated_version = local_version
                                 vulnerable = affected_obj
             if vulnerable:
                 ret['Failure'].append(vulnerable.report())
@@ -254,6 +256,7 @@ class vulnerablePkg:
         self.href = href
         self.cve_list = cve_list
         self.reporter = reporter
+        self.oudated_version = None
 
 
     def report(self):
@@ -266,5 +269,7 @@ class vulnerablePkg:
             'reporter': self.reporter,
             'score': self.score,
             'cve_list': self.cve_list,
-            'affected_pkg': self.pkg
+            'affected_pkg': self.pkg,
+            'local_version': self.oudated_version
         }
+
