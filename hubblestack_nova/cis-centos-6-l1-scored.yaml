@@ -718,16 +718,9 @@ grep:
         'CentOS-6':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.13'
-              pattern: "^AllowUsers"
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.13'
-              pattern: "^AllowGroups"
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.13'
-              pattern: "^DenyUsers"
-          - '/etc/ssh/sshd_config':
-              tag: 'CIS-6.2.13'
-              pattern: "^DenyGroups"
+              pattern: '(^AllowUsers)|(^AllowGroups)|(^DenyUsers)|(^DenyGroups)'
+              grep_args:
+                - '-E'
       description: 'Limit Access via SSH (Scored)'
 
     sshd_banner:
