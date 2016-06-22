@@ -30,7 +30,6 @@ import os
 from distutils.version import LooseVersion
 from time import time as current_time
 from zipfile import ZipFile
-import copy
 import re
 import requests
 
@@ -71,45 +70,38 @@ def audit(data_list, tags, verbose=False):
             if url.startswith('https'):
                 url.replace('https', 'http', 1)
             cache = _get_cache(ttl, url, cached_json)
-	    if cache:
-		master_json = cache
     # If we don't find our module in the yaml
     if url is None:
         return {}
 
-    # Query the api.
-    if not cache:
-
-        is_next_page = True
-        page_num = 0
-        query_size = 500
-
-        # Hit the api, incrementing the page offset until
-        #   we get all the results together in one dictionary.
-
+    if cache: # Valid cached file
+        master_json = cache
+    else: # Query the url for cve's
         if 'vulners' in url:
+            # Format the url for the request based on operating system.
             if not url.endswith('/'):
                 url += '/'
-
             url_final = '%s?type=%s' % (url, os_name)
             cve_query = requests.get(url_final)
+            # Confirm that the request was valid.
             if cve_query.status_code != 200:
-                log.trace('Vulners request was not successful.')
+                log.error('Vulners request was not successful.')
+            # Save vulners zip attachment in cache location and extract json
             try:
                 with open(cached_zip, 'w') as zip_attachment:
                     zip_attachment.write(cve_query.content)
                 zip_file = ZipFile(cached_zip)
-                zip_file.extractall(os.path.dirname(cached_zip))          
+                zip_file.extractall(os.path.dirname(cached_zip))
                 os.remove(cached_zip)
-		with open(cached_json, 'r') as json_file:
+                with open(cached_json, 'r') as json_file:
                     master_json = json.load(json_file)
             except IOError as ioe:
-                log.error('The json was not able to be extracted from vulners.')
+                log.error('The json zip attachment was not able to be extracted from vulners.')
                 raise ioe
-        else:
+        else: # Not a vulners request, external source for cve's
             cve_query = requests.get(url)
             if cve_query.status_code != 200:
-                log.trace('Vulners request was not successful.')
+                log.error('URL request was not successful.')
             master_json = json.loads(cve_query.text)
 
             #Cache results.
@@ -122,18 +114,28 @@ def audit(data_list, tags, verbose=False):
     ret = {'Success':[], 'Failure':[]}
 
     affected_pkgs = _get_cve_vulnerabilities(master_json)
+    # Dictionary of {pkg_name: list(pkg_versions)}
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
 
+    # Check all local packages against cve vulnerablities in affected_pkgs
     for local_pkg in local_pkgs:
-        vulnerable = False
+        vulnerable = None
         if local_pkg in affected_pkgs:
+            # There can be multiple versions for a single local package, check all
             for local_version in local_pkgs[local_pkg]:
+                # There can be multiple cve announcements for a single package, check against all
                 for affected_obj in affected_pkgs[local_pkg]:
-                    if _is_vulnerable(local_version, affected_obj.pkg_version, affected_obj.operator):
+                    affected_version = affected_obj.pkg_version
+                    if _is_vulnerable(local_version, affected_version, affected_obj.operator):
+                        # If the local pkg hasn't been found as vulnerable yet, vulnerable is None
                         if not vulnerable:
                             vulnerable = affected_obj
+                        # If local_pkg has already been marked affected, vulnerable is set. We
+                        #   want to report the most recent cve, so check if the new affected_pkg
+                        #   version # is greater than the previously found vulnerability.
                         else:
-                            if _is_vulnerable(vulnerable.pkg_version, affected_obj.pkg_version, 'lt'):
+                            if _is_vulnerable(vulnerable.pkg_version, affected_version, 'lt'):
+                                # If affected_obj version is > vulnerable, reassign vulnerable
                                 vulnerable = affected_obj
             if vulnerable:
                 ret['Failure'].append(vulnerable.report())
@@ -182,9 +184,9 @@ def _is_vulnerable(local_version, affected_version, operator):
         _, _, local_version = local_version.partition(':')
 
     # In order to do compare LooseVersions, eliminate trailing 'el<#>'
-    if re.search('.el\d$', affected_version):
+    if re.search(r'.el\d$', affected_version):
         affected_version = affected_version[:-4]
-    if re.search('.el\d$', local_version):
+    if re.search(r'.el\d$', local_version):
         local_version = local_version[:-4]
 
     #Compare from higher order to lower order based on '-' split.
@@ -254,17 +256,15 @@ class vulnerablePkg:
         self.reporter = reporter
 
 
-    def get_cve_list(self):
-        def_copy = copy.copy(self.cve_list)
-        return def_copy
-
-
     def report(self):
+        '''
+        Return the dictionary of what should be reported in failures.
+        '''
         return {
             'href': self.href,
             'affected_version': self.pkg_version,
             'reporter': self.reporter,
             'score': self.score,
-            'cve_list': self.get_cve_list(),
+            'cve_list': self.cve_list,
             'affected_pkg': self.pkg
         }
