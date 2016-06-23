@@ -51,7 +51,7 @@ def audit(data_list, tags, verbose=False):
     os_name = __grains__['os'].lower()
 
     # The filenames will omit the period in version, if it exists.
-    saved_filename = '%s_%s.json' % (os_name, os_version.replace('.', ''))
+    saved_filename = '%s_%s' % (os_name, os_version.replace('.', ''))
     cached_zip = '/var/cache/salt/minion/cve_scan_cache/%s.zip' % saved_filename
     cached_json = '/var/cache/salt/minion/cve_scan_cache/%s.json' % saved_filename
     cache = {}
