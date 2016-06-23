@@ -20,7 +20,7 @@ Sample YAML data
 
 cve_scan_v2:
     ttl: 86400
-    url: http://vulners.com/api/v3/search/lucene/
+    url: http://vulners.com/api/v3/archive/collection/
 '''
 from __future__ import absolute_import
 import logging
@@ -66,10 +66,10 @@ def audit(data_list, tags, verbose=False):
 
             ttl = data['cve_scan_v2']['ttl']
             url = data['cve_scan_v2']['url']
-            # Requests only handles http:// requests
+            cache = _get_cache(ttl, cached_json)
+            # Vulners api can only handles http:// requests from request.get
             if url.startswith('https'):
                 url.replace('https', 'http', 1)
-            cache = _get_cache(ttl, url, cached_json)
     # If we don't find our module in the yaml
     if url is None:
         return {}
@@ -77,39 +77,47 @@ def audit(data_list, tags, verbose=False):
     if cache: # Valid cached file
         master_json = cache
     else: # Query the url for cve's
-        if 'vulners' in url:
-            # Format the url for the request based on operating system.
-            if not url.endswith('/'):
-                url += '/'
-            url_final = '%s?type=%s' % (url, os_name)
-            cve_query = requests.get(url_final)
-            # Confirm that the request was valid.
-            if cve_query.status_code != 200:
-                log.error('Vulners request was not successful.')
-            # Save vulners zip attachment in cache location and extract json
-            try:
-                with open(cached_zip, 'w') as zip_attachment:
-                    zip_attachment.write(cve_query.content)
-                zip_file = ZipFile(cached_zip)
-                zip_file.extractall(os.path.dirname(cached_zip))
-                os.remove(cached_zip)
-                with open(cached_json, 'r') as json_file:
-                    master_json = json.load(json_file)
-            except IOError as ioe:
-                log.error('The json zip attachment was not able to be extracted from vulners.')
-                raise ioe
-        else: # Not a vulners request, external source for cve's
-            cve_query = requests.get(url)
-            if cve_query.status_code != 200:
-                log.error('URL request was not successful.')
-            master_json = json.loads(cve_query.text)
-
+        if url.startswith('http://'):
+            if 'vulners' in url:
+                # Format the url for the request based on operating system.
+                if not url.endswith('/'):
+                    url += '/'
+                url_final = '%s?type=%s' % (url, os_name)
+                cve_query = requests.get(url_final)
+                # Confirm that the request was valid.
+                if cve_query.status_code != 200:
+                    log.error('Vulners request was not successful.')
+                # Save vulners zip attachment in cache location and extract json
+                try:
+                    with open(cached_zip, 'w') as zip_attachment:
+                        zip_attachment.write(cve_query.content)
+                    zip_file = ZipFile(cached_zip)
+                    zip_file.extractall(os.path.dirname(cached_zip))
+                    os.remove(cached_zip)
+                    with open(cached_json, 'r') as json_file:
+                        master_json = json.load(json_file)
+                except IOError as ioe:
+                    log.error('The json zip attachment was not able to be extracted from vulners.')
+                    raise ioe
+            else: # Not a vulners request, external source for cve's
+                cve_query = requests.get(url)
+                if cve_query.status_code != 200:
+                    log.error('URL request was not successful.')
+                master_json = json.loads(cve_query.text)
             #Cache results.
             try:
                 with open(cached_json, 'w') as cache_file:
                     json.dump(master_json, cache_file)
             except IOError:
                 log.error('The cve results weren\'t able to be cached')
+        elif url.startswith('salt://'):
+            # Cache the file
+            cache_file = __salt__['cp.get_file'](url, cached_json)
+            if cache_file:
+                master_json = json.load(open(cache_file))
+            else:
+                raise IOError('The salt url did not get cached properly.')
+
 
     ret = {'Success':[], 'Failure':[]}
 
@@ -129,6 +137,7 @@ def audit(data_list, tags, verbose=False):
                     if _is_vulnerable(local_version, affected_version, affected_obj.operator):
                         # If the local pkg hasn't been found as vulnerable yet, vulnerable is None
                         if not vulnerable:
+                            affected_obj.oudated_version = local_version
                             vulnerable = affected_obj
                         # If local_pkg has already been marked affected, vulnerable is set. We
                         #   want to report the most recent cve, so check if the new affected_pkg
@@ -136,6 +145,7 @@ def audit(data_list, tags, verbose=False):
                         else:
                             if _is_vulnerable(vulnerable.pkg_version, affected_version, 'lt'):
                                 # If affected_obj version is > vulnerable, reassign vulnerable
+                                affected_obj.oudated_version = local_version
                                 vulnerable = affected_obj
             if vulnerable:
                 ret['Failure'].append(vulnerable.report())
@@ -159,7 +169,7 @@ def _get_cve_vulnerabilities(query_results):
         reporter = report['_source']['reporter']
         cve_list = report['_source']['cvelist']
         href = report['_source']['href']
-        score = report['_source']['cvss']['score']
+        score = report['_source']['cvss'].get('score', 0)
 
         for pkg in report['_source']['affectedPackage']:
             #data:search:_source:affectedPackages
@@ -216,28 +226,25 @@ def _is_vulnerable(local_version, affected_version, operator):
         return False
 
 
-def _get_cache(ttl, url, cache_path):
+def _get_cache(ttl, cache_path):
     '''
     If url contains valid cache, returns it,
         Else returns empty list.
     '''
-
-    if url.startswith('http://') or url.startswith('https://'):
         # Check if we have a valid cached version.
+    try:
+        cached_time = os.path.getmtime(cache_path)
+    except OSError:
+        return []
+    if current_time() - cached_time < ttl:
         try:
-            cached_time = os.path.getmtime(cache_path)
-        except OSError:
+            with open(cache_path) as json_file:
+                loaded_json = json.load(json_file)
+                return loaded_json
+        except IOError:
             return []
-        if current_time() - cached_time < ttl:
-            try:
-                with open(cache_path) as json_file:
-                    loaded_json = json.load(json_file)
-                    return loaded_json
-            except IOError:
-                return []
-        else:
-            return []
-
+    else:
+        return []
 
 class vulnerablePkg:
     '''
@@ -254,6 +261,7 @@ class vulnerablePkg:
         self.href = href
         self.cve_list = cve_list
         self.reporter = reporter
+        self.oudated_version = None
 
 
     def report(self):
@@ -266,5 +274,7 @@ class vulnerablePkg:
             'reporter': self.reporter,
             'score': self.score,
             'cve_list': self.cve_list,
-            'affected_pkg': self.pkg
+            'affected_pkg': self.pkg,
+            'local_version': self.oudated_version
         }
+
