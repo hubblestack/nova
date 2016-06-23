@@ -49,11 +49,13 @@ def audit(data_list, tags, verbose=False):
     if os_version is None:
         os_version = __grains__.get('osrelease', None)
     os_name = __grains__['os'].lower()
-    cached_zip = '/var/cache/salt/minion/cve_scan_cache/%s_%s.zip' % (os_name, os_version)
-    cached_json = '/var/cache/salt/minion/cve_scan_cache/%s_%s.json' % (os_name, os_version)
+
+    # The filenames will omit the period in version, if it exists.
+    saved_filename = '%s_%s.json' % (os_name, os_version.replace('.', ''))
+    cached_zip = '/var/cache/salt/minion/cve_scan_cache/%s.zip' % saved_filename
+    cached_json = '/var/cache/salt/minion/cve_scan_cache/%s.json' % saved_filename
     cache = {}
-    #Make cache directory and all parent directories
-    # if it doesn't exist.
+    # Make cache directory and all parent directories if it doesn't exist.
     if not os.path.exists(os.path.dirname(cached_json)):
         os.makedirs(os.path.dirname(cached_json))
 
