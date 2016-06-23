@@ -86,7 +86,7 @@ def audit(data_list, tags, verbose=False):
                 # Format the url for the request based on operating system.
                 if url.endswith('/'):
                     url = url[:-1]
-                url_final = '%s/api/v3/archive/distributive/?os=%sversion=%s' % (url, os_name, os_version)
+                url_final = '%s/api/v3/archive/distributive/?os=%s&version=%s' % (url, os_name, os_version)
                 cve_query = requests.get(url_final)
                 # Confirm that the request was valid.
                 if cve_query.status_code != 200:
@@ -269,7 +269,8 @@ class vulnerablePkg:
         '''
         Return the dictionary of what should be reported in failures.
         '''
-        return {
+        uid = self.pkg + '-' + self.pkg_version
+        report = {
             'href': self.href,
             'affected_version': self.pkg_version,
             'reporter': self.reporter,
@@ -278,4 +279,5 @@ class vulnerablePkg:
             'affected_pkg': self.pkg,
             'local_version': self.oudated_version
         }
+        return {uid: report}
 
