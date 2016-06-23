@@ -107,7 +107,7 @@ def audit(data_list, tags, verbose=False):
                 cve_query = requests.get(url)
                 if cve_query.status_code != 200:
                     log.error('URL request was not successful.')
-                    raise('The url given is invalid.')
+                    raise Exception('The url given is invalid.')
                 master_json = json.loads(cve_query.text)
             #Cache results.
             try:

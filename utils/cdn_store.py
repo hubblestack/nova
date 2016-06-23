@@ -7,40 +7,53 @@ import requests
 import json
 from zipfile import ZipFile
 import os
+import sys
 
 def main():
     '''
-    Calls helpers and saves results.
+    Tries to save cve scans for inputs. Valid inputs are dis
     '''
-    distro_list = ['centos', 'ubuntu', 'debian', 'redhat']
-    for distro in distro_list:
-        _save_json(distro)
-        
+    if len(sys.argv) == 1:
+        print "No distributions were given to store."
+    for distro in sys.argv[1:]:
+        try:
+            _save_json(distro)
+        except Exception, e:
+            print 'Error saving: %s' % distro
+            print e
 
 
-def _save_json(os_name):
+def _save_json(distro):
     '''
-    Returns json from vulner.com api for specified os_name
+    Returns json from vulner.com api for specified distro.
+    Throws exceptions when erros occured to be caught by main.
     '''
-    url_final = 'http://www.vulners.com/api/v3/archive/collection/?type=%s' % os_name
+    for i, char in enumerate(distro):
+        try:
+            int(char)
+            version = distro[i:].lower()
+            distro_name = distro[:i].lower()
+            print 'Getting cve\'s for %s version %s' % (distro_name, version)
+            break
+        except ValueError:
+            continue
+    else:
+        raise Exception('No version number given in distro.')
+    url_final = 'http://www.vulners.com/api/v3/archive/distributive/?os=%s&version=%s' % (distro_name, version)
     cve_query = requests.get(url_final)
-    _zip = '%s.zip' % os_name
-    _json = '%s.json' % os_name
+    _zip = '%s_%s.zip' % (distro_name, version)
+    _json = '%s_%s.json' % (distro_name, version)
     # Confirm that the request was valid.
-    if cve_query.status_code != 200:
-        log.error('Vulners request was not successful.')
+    cve_query.raise_for_status()
     # Save vulners zip attachment in cache location and extract json
-    try:
-        with open(_zip, 'w') as zip_attachment:
-            zip_attachment.write(cve_query.content)
-        zip_file = ZipFile(_zip)
-        zip_file.extractall(os.path.dirname(_zip))
-        os.remove(_zip)
-        with open(_json, 'r') as json_file:
-            master_json = json.load(json_file)
-        print 'Saved: %s.json\n' % os_name
-    except Exception, e:
-        print 'Error saving: %s' % os_name
-        print e
+    with open(_zip, 'w') as zip_attachment:
+        zip_attachment.write(cve_query.content)
+    zip_file = ZipFile(_zip)
+    zip_file.extractall(os.path.dirname(_zip))
+    os.remove(_zip)
+    with open(_json, 'r') as json_file:
+        master_json = json.load(json_file)
+    print 'Saved: %s' % _zip
+
 
 main()
