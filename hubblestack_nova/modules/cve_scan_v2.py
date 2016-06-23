@@ -45,9 +45,12 @@ def __virtual__():
 
 def audit(data_list, tags, verbose=False):
 
+    os_version = __grains__.get('osmajorrelease', None)
+    if os_version is None:
+        os_version = __grains__.get('osrelease', None)
     os_name = __grains__['os'].lower()
-    cached_zip = '/var/cache/salt/minion/cve_scan_cache/%s.zip' % (os_name)
-    cached_json = '/var/cache/salt/minion/cve_scan_cache/%s.json' % (os_name)
+    cached_zip = '/var/cache/salt/minion/cve_scan_cache/%s_%s.zip' % (os_name, os_version)
+    cached_json = '/var/cache/salt/minion/cve_scan_cache/%s_%s.json' % (os_name, os_version)
     cache = {}
     #Make cache directory and all parent directories
     # if it doesn't exist.
@@ -67,9 +70,7 @@ def audit(data_list, tags, verbose=False):
             ttl = data['cve_scan_v2']['ttl']
             url = data['cve_scan_v2']['url']
             cache = _get_cache(ttl, cached_json)
-            # Vulners api can only handles http:// requests from request.get
-            if url.startswith('https'):
-                url.replace('https', 'http', 1)
+
     # If we don't find our module in the yaml
     if url is None:
         return {}
@@ -77,12 +78,15 @@ def audit(data_list, tags, verbose=False):
     if cache: # Valid cached file
         master_json = cache
     else: # Query the url for cve's
-        if url.startswith('http://'):
-            if 'vulners' in url:
+        if url.startswith('http://') or url.startswith('https://'):
+            if 'vulners.com' in url:
+                # Vulners api can only handles http:// requests from request.get
+                if url.startswith('https'):
+                    url.replace('https', 'http', 1)
                 # Format the url for the request based on operating system.
-                if not url.endswith('/'):
-                    url += '/'
-                url_final = '%s?type=%s' % (url, os_name)
+                if url.endswith('/'):
+                    url = url[:-1]
+                url_final = '%s/api/v3/archive/distributive/?os=%sversion=%s' % (url, os_name, os_version)
                 cve_query = requests.get(url_final)
                 # Confirm that the request was valid.
                 if cve_query.status_code != 200:
@@ -103,6 +107,7 @@ def audit(data_list, tags, verbose=False):
                 cve_query = requests.get(url)
                 if cve_query.status_code != 200:
                     log.error('URL request was not successful.')
+                    raise('The url given is invalid.')
                 master_json = json.loads(cve_query.text)
             #Cache results.
             try:
@@ -116,12 +121,12 @@ def audit(data_list, tags, verbose=False):
             if cache_file:
                 master_json = json.load(open(cache_file))
             else:
-                raise IOError('The salt url did not get cached properly.')
+                raise IOError('The file was not able to be retrieved from the salt file server.')
 
 
     ret = {'Success':[], 'Failure':[]}
 
-    affected_pkgs = _get_cve_vulnerabilities(master_json)
+    affected_pkgs = _get_cve_vulnerabilities(master_json, os_version)
     # Dictionary of {pkg_name: list(pkg_versions)}
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
 
@@ -152,16 +157,12 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _get_cve_vulnerabilities(query_results):
+def _get_cve_vulnerabilities(query_results, os_version):
     '''
     Returns list of vulnerable package objects.
     '''
 
     vulnerable_pkgs = {}
-
-    # Get os version to only add vulnerabilites that apply to local system
-    osmajorrelease = __grains__.get('osmajorrelease', None)
-    osrelease = __grains__.get('osrelease', None)
 
     for report in query_results:
 
@@ -173,7 +174,7 @@ def _get_cve_vulnerabilities(query_results):
 
         for pkg in report['_source']['affectedPackage']:
             #data:search:_source:affectedPackages
-            if pkg['OSVersion'] in ['any', osmajorrelease, osrelease]: #Only use matching os
+            if pkg['OSVersion'] in ['any', os_version]: #Only use matching os
                 pkg_obj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, \
                                             pkg['operator'], reporter, href, cve_list)
                 if pkg_obj.pkg not in vulnerable_pkgs:
