@@ -2,8 +2,8 @@
 Hubble Nova plugin for auditing services.
 
 This module checks all of a system's local packages and reports if the package is vulnerable to
-a known cve. The cve vunlerablities are gathered via the url in the yaml profile, and is cached
-at the path /var/cache/salt/minion/cve_scan_cache/. 
+a known cve. The cve vunlerablities are gathered via the url in the yaml profile, and that data
+cached at the path /var/cache/salt/minion/cve_scan_cache/<os_name>_<version>.json
 
 :maintainer: HubbleStack
 :maturity: 20160214
@@ -33,25 +33,27 @@ The cve data json must be formatted as follows:
 
 [
 
-{u'_source': {u'affectedPackage': [{u'OS': u'CentOS',
-                                    u'OSVersion': u'7',
-                                    u'operator': u'lt',
-                                    u'packageFilename': u'krb5-server-1.13.2-12.el7_2.x86_64.rpm',
-                                    u'packageName': u'krb5-server',
-                                    u'packageVersion': u'1.13.2-12.el7_2'},
-                                   {u'OS': u'CentOS',
-                                    u'OSVersion': u'7',
-                                    u'operator': u'lt',
-                                    u'packageFilename': u'krb5-libs-1.13.2-12.el7_2.i686.rpm',
-                                    u'packageName': u'krb5-libs',
-                                    u'packageVersion': u'1.13.2-12.el7_2'}
+{'_source': {'affectedPackage': [{'OS': 'CentOS',
+                                    'OSVersion': '7',
+                                    'operator': 'lt',
+                                    'packageFilename': 'krb5-server-1.13.2-12.el7_2.x86_64.rpm',
+                                    'packageName': 'krb5-server',
+                                    'packageVersion': '1.13.2-12.el7_2'},
+                                   {'OS': 'CentOS',
+                                    'OSVersion': '7',
+                                    'operator': 'lt',
+                                    'packageFilename': 'krb5-libs-1.13.2-12.el7_2.i686.rpm',
+                                    'packageName': 'krb5-libs',
+                                    'packageVersion': '1.13.2-12.el7_2'}
                                     ]
-              u'cvelist': [u'CVE-2015-8631',
-                           u'CVE-2015-8630',
-                           u'CVE-2015-8629'],
-              u'cvss': {u'score': 6.8
-              u'href': u'http://lists.centos.org/pipermail/centos-announce/2016-March/021788.html',
-              u'reporter': u'CentOS Project',
+              'cvelist': ['CVE-2015-8631',
+                           'CVE-2015-8630',
+                           'CVE-2015-8629'],
+              'cvss': {'score': 6.8}
+              'href': 'http://lists.centos.org/pipermail/centos-announce/2016-March/021788.html',
+              'reporter': 'CentOS Project',
+              'title': 'Moderate krb5 Security Update',
+              'id': 'CESA-2016:1293'
             }
     },
 ...
@@ -109,6 +111,7 @@ def audit(data_list, tags, verbose=False):
             ttl = data['cve_scan_v2']['ttl']
             url = data['cve_scan_v2']['url']
             cache = _get_cache(ttl, cached_json)
+            break
 
     # If we don't find our module in the yaml
     if url is None:
@@ -129,7 +132,7 @@ def audit(data_list, tags, verbose=False):
                 cve_query = requests.get(url_final)
                 # Confirm that the request was valid.
                 if cve_query.status_code != 200:
-                    log.error('Vulners request was not successful.')
+                    raise Exception('Vulners requests was not successful. Check the url.')
                 # Save vulners zip attachment in cache location and extract json
                 try:
                     with open(cached_zip, 'w') as zip_attachment:
@@ -161,7 +164,8 @@ def audit(data_list, tags, verbose=False):
                 master_json = json.load(open(cache_file))
             else:
                 raise IOError('The file was not able to be retrieved from the salt file server.')
-
+        else:
+            raise Exception('The url is invalid. It does not begin with http(s):// or salt://')
 
     ret = {'Success':[], 'Failure':[]}
     
@@ -209,12 +213,14 @@ def _get_cve_vulnerabilities(query_results, os_version):
             cve_list = report['_source'].get('cvelist', [])
             href = report['_source'].get('href', '')
             score = report['_source']['cvss'].get('score', 0)
+            title = report['_source'].get('title', 'No Title Given')
+            pkg_id = report['_source'].get('id', 'No id Given')
 
             for pkg in report['_source']['affectedPackage']:
                 #_source:affectedPackages
                 if pkg['OSVersion'] in ['any', os_version]: #Only use matching os
-                    pkg_obj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, \
-                                                pkg['operator'], reporter, href, cve_list)
+                    pkg_obj = vulnerablePkg(pkg_id, title, pkg['packageName'], pkg['packageVersion'], \
+                                                score, pkg['operator'], reporter, href, cve_list)
                     if pkg_obj.pkg not in vulnerable_pkgs:
                         vulnerable_pkgs[pkg_obj.pkg] = [pkg_obj]
                     else:
@@ -273,10 +279,9 @@ def _is_vulnerable(local_version, affected_version, operator):
 
 def _get_cache(ttl, cache_path):
     '''
-    If url contains valid cache, returns it,
-        Else returns empty list.
+    If url contains valid cache, returns it, else returns empty list.
     '''
-        # Check if we have a valid cached version.
+    # Check if we have a valid cached version.
     try:
         cached_time = os.path.getmtime(cache_path)
     except OSError:
@@ -295,7 +300,9 @@ class vulnerablePkg:
     '''
     Object representing a vulnverable pkg for the current operating system.
     '''
-    def __init__(self, pkg, pkg_version, score, operator, reporter, href, cve_list):
+    def __init__(self, _id, title, pkg, pkg_version, score, operator, reporter, href, cve_list):
+        self._id = _id
+        self.title = title
         self.pkg = pkg
         self.pkg_version = pkg_version
         self.score = score
@@ -311,17 +318,20 @@ class vulnerablePkg:
 
     def get_report(self, verbose):
         '''
-        Return the dictionary of what should be reported in failures.
+        Return the dictionary of what should be reported in failures, based on verbose.
         '''
-        uid = self.pkg + '-' + self.pkg_version
-        report = {
-            'href': self.href,
-            'affected_version': self.pkg_version,
-            'reporter': self.reporter,
-            'score': self.score,
-            'cve_list': self.cve_list,
-            'affected_pkg': self.pkg,
-            'local_version': self.oudated_version
-        }
-        return {uid: report}
+        if verbose:
+            report = {
+                'href': self.href,
+                'affected_version': self.pkg_version,
+                'reporter': self.reporter,
+                'score': self.score,
+                'cve_list': self.cve_list,
+                'affected_pkg': self.pkg,
+                'local_version': self.oudated_version,
+                'description': self.title
+            }
+        else:
+            report = self.title
+        return {self._id: report}
 

@@ -1,7 +1,9 @@
 '''
-This module saves all cve scans for each distribution in a json file
-    in the local directory.
-    Pulls cve data from www.vulners.com/api/v3
+A script that will query vulners.com/api for cve data related to given operating systems.
+The data is returned in a valid json format for use in the cve_scan_v2 module. The json file
+is stored at the local directory under <os_name>_<version>.json.
+
+usage:
 '''
 
 import requests
