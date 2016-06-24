@@ -62,7 +62,7 @@ def audit(data_list, tags, verbose=False):
         else:
             failure_data = {address: {'program': address_data['program']}}
             if verbose:
-                failure.data.update(address_data)
+                failure_data.update(address_data)
             ret['Failure'].append(failure_data)
 
     return ret
