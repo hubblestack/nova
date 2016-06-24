@@ -66,6 +66,7 @@ import logging
 
 import json
 import os
+import fnmatch
 from distutils.version import LooseVersion
 from time import time as current_time
 from zipfile import ZipFile
@@ -198,6 +199,14 @@ def audit(data_list, tags, verbose=False):
                                 vulnerable = affected_obj
             if vulnerable:
                 ret['Failure'].append(vulnerable.get_report(verbose))
+    if tags:
+        remove = []
+        for i, failure in enumerate(ret['Failure']):
+            if not fnmatch.fnmatch(failure, tags):
+                remove.append(i)
+        for i in remove.reverse():
+            ret['Failure'].pop(i)
+    
     return ret
 
 
