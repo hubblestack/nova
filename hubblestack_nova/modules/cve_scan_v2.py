@@ -52,8 +52,7 @@ The cve data json must be formatted as follows:
               'cvss': {'score': 6.8}
               'href': 'http://lists.centos.org/pipermail/centos-announce/2016-March/021788.html',
               'reporter': 'CentOS Project',
-              'title': 'Moderate krb5 Security Update',
-              'id': 'CESA-2016:1293'
+              'title': 'Moderate krb5 Security Update'
             }
     },
 ...
@@ -199,12 +198,13 @@ def audit(data_list, tags, verbose=False):
                                 vulnerable = affected_obj
             if vulnerable:
                 ret['Failure'].append(vulnerable.get_report(verbose))
-    if tags:
+    if tags != '*':
         remove = []
         for i, failure in enumerate(ret['Failure']):
-            if not fnmatch.fnmatch(failure, tags):
+            if not fnmatch.fnmatch(failure.keys()[0], tags):
                 remove.append(i)
-        for i in remove.reverse():
+        remove.reverse()
+        for i in remove:
             ret['Failure'].pop(i)
     
     return ret
@@ -224,14 +224,12 @@ def _get_cve_vulnerabilities(query_results, os_version):
             href = report['_source'].get('href', '')
             score = report['_source']['cvss'].get('score', 0)
             title = report['_source'].get('title', 'No Title Given')
-            pkg_id = report['_source'].get('id', 'No id Given')
 
             for pkg in report['_source']['affectedPackage']:
                 #_source:affectedPackages
                 if pkg['OSVersion'] in ['any', os_version]: #Only use matching os
-                    pkg_obj = vulnerablePkg(pkg_id, title, pkg['packageName'], \
-                                pkg['packageVersion'], score, pkg['operator'], \
-                                reporter, href, cve_list)
+                    pkg_obj = vulnerablePkg(title, pkg['packageName'], pkg['packageVersion'], \
+                                 score, pkg['operator'], reporter, href, cve_list)
                     if pkg_obj.pkg not in vulnerable_pkgs:
                         vulnerable_pkgs[pkg_obj.pkg] = [pkg_obj]
                     else:
@@ -311,8 +309,7 @@ class vulnerablePkg:
     '''
     Object representing a vulnverable pkg for the current operating system.
     '''
-    def __init__(self, _id, title, pkg, pkg_version, score, operator, reporter, href, cve_list):
-        self._id = _id
+    def __init__(self, title, pkg, pkg_version, score, operator, reporter, href, cve_list):
         self.title = title
         self.pkg = pkg
         self.pkg_version = pkg_version
@@ -331,6 +328,7 @@ class vulnerablePkg:
         '''
         Return the dictionary of what should be reported in failures, based on verbose.
         '''
+        uid = self.pkg + '-' + self.pkg_version
         if verbose:
             report = {
                 'href': self.href,
@@ -344,5 +342,5 @@ class vulnerablePkg:
             }
         else:
             report = self.title
-        return {self._id: report}
+        return {uid: report}
 
