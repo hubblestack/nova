@@ -1,26 +1,63 @@
 '''
+Hubble Nova plugin for auditing services.
+
+This module checks all of a system's local packages and reports if the package is vulnerable to
+a known cve. The cve vunlerablities are gathered via the url in the yaml profile, and is cached
+at the path /var/cache/salt/minion/cve_scan_cache/. 
 
 :maintainer: HubbleStack
 :maturity: 20160214
 :platform: Linux
 :requires: SaltStack
 
-Using the vulners.com api, this cve scan module checks your machine
-for packages with known and reported vulnerabilities.
+This audit module requires yaml data to execute. It will search the local
+directory for any .yaml files, and if it finds a top-level 'cve_scan_v2' key, it will
+use that data.
 
-Future addition:
-    Using salt:// url as the source of the vulnerabilites
-    Using a more efficient caching method so we just add on new
-        vulnerabilities and not re-query an entire year back
-    Restructure loop to go through local pkgs and check if in known
-        vulnerabilties, not vice versa like it is now
-
-
-Sample YAML data
+Sample YAML data with inline comments:
 
 cve_scan_v2:
+    # Seconds until the local cache expires
     ttl: 86400
-    url: http://vulners.com/api/v3/archive/collection/
+    # Source of cve data
+    url: http://vulners.com/ 
+
+
+The source of the cve data can be http://vulners.com/, salt://path/to/json, and any other url 
+that returns cve data in json format. If the url contains vulners.com, then this module will use 
+the local system's os and os version to dynamically query vulner.com/api/v3 for cve data 
+specifically related to your system. If the url doesn't contain vulners.com, it will query the
+exact url, so that endpoint must return cve data specific to the system you are scanning.
+
+The cve data json must be formatted as follows:
+
+[
+
+{u'_source': {u'affectedPackage': [{u'OS': u'CentOS',
+                                    u'OSVersion': u'7',
+                                    u'operator': u'lt',
+                                    u'packageFilename': u'krb5-server-1.13.2-12.el7_2.x86_64.rpm',
+                                    u'packageName': u'krb5-server',
+                                    u'packageVersion': u'1.13.2-12.el7_2'},
+                                   {u'OS': u'CentOS',
+                                    u'OSVersion': u'7',
+                                    u'operator': u'lt',
+                                    u'packageFilename': u'krb5-libs-1.13.2-12.el7_2.i686.rpm',
+                                    u'packageName': u'krb5-libs',
+                                    u'packageVersion': u'1.13.2-12.el7_2'}
+                                    ]
+              u'cvelist': [u'CVE-2015-8631',
+                           u'CVE-2015-8630',
+                           u'CVE-2015-8629'],
+              u'cvss': {u'score': 6.8
+              u'href': u'http://lists.centos.org/pipermail/centos-announce/2016-March/021788.html',
+              u'reporter': u'CentOS Project',
+            }
+    },
+...
+
+ ]
+
 '''
 from __future__ import absolute_import
 import logging
@@ -127,7 +164,7 @@ def audit(data_list, tags, verbose=False):
 
 
     ret = {'Success':[], 'Failure':[]}
-
+    
     affected_pkgs = _get_cve_vulnerabilities(master_json, os_version)
     # Dictionary of {pkg_name: list(pkg_versions)}
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
@@ -148,42 +185,47 @@ def audit(data_list, tags, verbose=False):
                             vulnerable = affected_obj
                         # If local_pkg has already been marked affected, vulnerable is set. We
                         #   want to report the most recent cve, so check if the new affected_pkg
-                        #   version # is greater than the previously found vulnerability.
+                        #   version number is greater than the previously found vulnerability.
                         else:
                             if _is_vulnerable(vulnerable.pkg_version, affected_version, 'lt'):
                                 # If affected_obj version is > vulnerable, reassign vulnerable
                                 affected_obj.oudated_version = local_version
                                 vulnerable = affected_obj
             if vulnerable:
-                ret['Failure'].append(vulnerable.report())
+                ret['Failure'].append(vulnerable.get_report(verbose))
     return ret
 
 
 def _get_cve_vulnerabilities(query_results, os_version):
     '''
-    Returns list of vulnerable package objects.
+    Returns dictionary of vulnerablities, mapped as pkg_name:pkgObj.
     '''
 
     vulnerable_pkgs = {}
 
     for report in query_results:
+        try:
+            reporter = report['_source'].get('reporter', '')
+            cve_list = report['_source'].get('cvelist', [])
+            href = report['_source'].get('href', '')
+            score = report['_source']['cvss'].get('score', 0)
 
-        #data:search
-        reporter = report['_source']['reporter']
-        cve_list = report['_source']['cvelist']
-        href = report['_source']['href']
-        score = report['_source']['cvss'].get('score', 0)
-
-        for pkg in report['_source']['affectedPackage']:
-            #data:search:_source:affectedPackages
-            if pkg['OSVersion'] in ['any', os_version]: #Only use matching os
-                pkg_obj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, \
-                                            pkg['operator'], reporter, href, cve_list)
-                if pkg_obj.pkg not in vulnerable_pkgs:
-                    vulnerable_pkgs[pkg_obj.pkg] = [pkg_obj]
-                else:
-                    vulnerable_pkgs[pkg_obj.pkg].append(pkg_obj)
-
+            for pkg in report['_source']['affectedPackage']:
+                #_source:affectedPackages
+                if pkg['OSVersion'] in ['any', os_version]: #Only use matching os
+                    pkg_obj = vulnerablePkg(pkg['packageName'], pkg['packageVersion'], score, \
+                                                pkg['operator'], reporter, href, cve_list)
+                    if pkg_obj.pkg not in vulnerable_pkgs:
+                        vulnerable_pkgs[pkg_obj.pkg] = [pkg_obj]
+                    else:
+                        vulnerable_pkgs[pkg_obj.pkg].append(pkg_obj)
+        except KeyError, key_err:
+            if key_err != '_source':
+                log.error('Format error at: %s' % report)
+                raise KeyError('The cve data was not formatted correctly at: %s' % pkg)
+            else:
+                log.error('Format error at: %s' % report)
+                raise KeyError('The cve data was not formatted correctly')
     return vulnerable_pkgs
 
 
@@ -267,7 +309,7 @@ class vulnerablePkg:
         self.oudated_version = None
 
 
-    def report(self):
+    def get_report(self, verbose):
         '''
         Return the dictionary of what should be reported in failures.
         '''
