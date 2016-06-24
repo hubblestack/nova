@@ -20,12 +20,12 @@ cve_scan_v2:
     # Seconds until the local cache expires
     ttl: 86400
     # Source of cve data
-    url: http://vulners.com/ 
+    url: http://vulners.com/
 
 
-The source of the cve data can be http://vulners.com/, salt://path/to/json, and any other url 
-that returns cve data in json format. If the url contains vulners.com, then this module will use 
-the local system's os and os version to dynamically query vulner.com/api/v3 for cve data 
+The source of the cve data can be http://vulners.com/, salt://path/to/json, and any other url
+that returns cve data in json format. If the url contains vulners.com, then this module will use
+the local system's os and os version to dynamically query vulner.com/api/v3 for cve data
 specifically related to your system. If the url doesn't contain vulners.com, it will query the
 exact url, so that endpoint must return cve data specific to the system you are scanning.
 
@@ -128,7 +128,8 @@ def audit(data_list, tags, verbose=False):
                 # Format the url for the request based on operating system.
                 if url.endswith('/'):
                     url = url[:-1]
-                url_final = '%s/api/v3/archive/distributive/?os=%s&version=%s' % (url, os_name, os_version)
+                url_final = '%s/api/v3/archive/distributive/?os=%s&version=%s' \
+                                                            % (url, os_name, os_version)
                 cve_query = requests.get(url_final)
                 # Confirm that the request was valid.
                 if cve_query.status_code != 200:
@@ -168,7 +169,7 @@ def audit(data_list, tags, verbose=False):
             raise Exception('The url is invalid. It does not begin with http(s):// or salt://')
 
     ret = {'Success':[], 'Failure':[]}
-    
+
     affected_pkgs = _get_cve_vulnerabilities(master_json, os_version)
     # Dictionary of {pkg_name: list(pkg_versions)}
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
@@ -219,18 +220,19 @@ def _get_cve_vulnerabilities(query_results, os_version):
             for pkg in report['_source']['affectedPackage']:
                 #_source:affectedPackages
                 if pkg['OSVersion'] in ['any', os_version]: #Only use matching os
-                    pkg_obj = vulnerablePkg(pkg_id, title, pkg['packageName'], pkg['packageVersion'], \
-                                                score, pkg['operator'], reporter, href, cve_list)
+                    pkg_obj = vulnerablePkg(pkg_id, title, pkg['packageName'], \
+                                pkg['packageVersion'], score, pkg['operator'], \
+                                reporter, href, cve_list)
                     if pkg_obj.pkg not in vulnerable_pkgs:
                         vulnerable_pkgs[pkg_obj.pkg] = [pkg_obj]
                     else:
                         vulnerable_pkgs[pkg_obj.pkg].append(pkg_obj)
         except KeyError, key_err:
             if key_err != '_source':
-                log.error('Format error at: %s' % report)
+                log.error('Format error at: %s', report)
                 raise KeyError('The cve data was not formatted correctly at: %s' % pkg)
             else:
-                log.error('Format error at: %s' % report)
+                log.error('Format error at: %s', report)
                 raise KeyError('The cve data was not formatted correctly')
     return vulnerable_pkgs
 
