@@ -427,5 +427,7 @@ def _reg_value_translator(input_string):
         return '4,2'
     elif input_string == 'automatically deny elevation requests':
         return '4,0'
+    elif input_string == 'Defined (blank)':
+        return '7,'
     else:
         return input_string

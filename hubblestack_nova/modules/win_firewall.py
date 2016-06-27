@@ -207,7 +207,7 @@ def _import_firewall():
     for line in export:
         vals = line.split('\n')
         for val in vals:
-            if val != '':
+            if val:
                 v = val.split(':')
                 temp_vals[v[0].strip()] = v[1].strip()
         dict_return[temp_vals['Name']] = temp_vals

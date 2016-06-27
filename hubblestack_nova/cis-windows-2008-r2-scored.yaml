@@ -332,19 +332,11 @@ win_secedit:
               match_output: '0'
               value_type: 'equal'
       description: 'Accounts Administrator account status'
-    accounts_block_microsoft_accounts :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\NoConnectedUser':
-              tag: CIS-2.3.1.2
-              match_output: 'users cant add or log on with microsoft accounts'
-              value_type: 'equal'
-      description: 'Accounts Block Microsoft accounts'
     accounts_guest_account_status :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'EnableGuestAccount':
-              tag: CIS-2.3.1.3
+              tag: CIS-2.3.1.2
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Accounts Guest account status'
@@ -352,7 +344,7 @@ win_secedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'MACHINE\System\CurrentControlSet\Control\Lsa\LimitBlankPasswordUse':
-              tag: CIS-2.3.1.4
+              tag: CIS-2.3.1.3
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Accounts Limit local account use of blank passwords to console logon only'
@@ -452,19 +444,11 @@ win_secedit:
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Interactive logon Do not require CTRL+ALT+DEL'
-    interactive_logon_machine_inactivity_limit :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\InactivityTimeoutSecs':
-              tag: CIS-2.3.7.3
-              match_output: '901'
-              value_type: 'less'
-      description: 'Interactive logon Machine inactivity limit'
     interactive_logon_message_text_for_users_attempting_to_log_on : #NOTE: Configure this
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\LegalNoticeText':
-              tag: CIS-2.3.7.4
+              tag: CIS-2.3.7.3
               match_output: ''
               value_type: 'configured'
       description: 'Interactive logon Message text for users attempting to log on'
@@ -472,23 +456,15 @@ win_secedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\LegalNoticeCaption':
-              tag: CIS-2.3.7.5
+              tag: CIS-2.3.7.4
               match_output: ''
               value_type: 'configured'
       description: 'Interactive logon Message title for users attempting to log on'
-    interactive_logon_number_of_previous_logons_to_cache:
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\CachedLogonsCount':
-              tag: CIS-2.3.7.6
-              match_output: '5'
-              value_type: 'less'
-      description: 'Interactive logon Number of previous logos to cache'
     interactive_logon_prompt_user_to_change_password_before_expiration :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\PasswordExpiryWarning':
-              tag: CIS-2.3.7.7
+              tag: CIS-2.3.7.6
               match_output: '15' # between 5 and 14
               value_type: 'less'
       description: 'Interactive logon Prompt user to change password before expiration'
@@ -496,7 +472,7 @@ win_secedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ForceUnlockLogon':
-              tag: CIS-2.3.7.8
+              tag: CIS-2.3.7.7
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Interactive logon Require Domain Controller Authentication to unlock workstation'
@@ -504,7 +480,7 @@ win_secedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\ScRemoveOption':
-              tag: CIS-2.3.7.9
+              tag: CIS-2.3.7.8
               match_output: 'Lock Workstation' # can be anything but No Action
               value_type: 'equal'
       description: 'Interactive logon Smart card removal behavior'
@@ -748,6 +724,14 @@ win_secedit:
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'System objects Strengthen default permissions of internal system objects (e.g. Symbolic Links'
+    system_settings_optional_subsystems :
+      data:
+        'Microsoft Windows Server 2008 R2 Standard':
+          - 'MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems\optional'
+              tag: CIS-2.3.16.1
+              match_output: 'Defined (blank)'
+              value_type: 'equal
+      description: 'System settings- Optional subsystems is set to Defined (blank)'
     user_account_control_admin_approval_mode_for_the_built-in_administrator_account :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -826,7 +810,7 @@ win_secedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'NewAdministratorName':
-              tag: CIS-2.3.1.5
+              tag: CIS-2.3.1.4
               match_output: 'Administrator'
               value_type: 'equal'
       description: 'Accounts Rename administrator account'
@@ -834,7 +818,7 @@ win_secedit:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'AccountsRenameguestaccount':
-              tag: CIS-2.3.1.6
+              tag: CIS-2.3.1.5
               match_output: 'Guest'
               value_type: 'equal'
       description: 'Accounts Rename guest account'
@@ -1172,7 +1156,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Credential Validation is set to Success and Failure'
-
     Audit Application Group Management :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1181,7 +1164,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Application Group Management is set to Success and Failure'
-
     Audit Computer Account Management :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1190,7 +1172,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Computer Account Management is set to Success and Failure'
-
     Audit Other Account Management Events :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1199,7 +1180,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Other Account Management Events is set to Success and Failure'
-
     Audit Security Group Management :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1208,7 +1188,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Security Group Management is set to Success and Failure'
-
     Audit User Account Management :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1217,7 +1196,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit User Account Management is set to Success and Failure'
-
     Audit Process Creation :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1226,7 +1204,6 @@ win_auditpol:
               match_output: 'Success'
               value_type: 'equal'
       description: 'Ensure Audit Process Creation is set to Success'
-
     Audit Account Lockout :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1235,7 +1212,6 @@ win_auditpol:
               match_output: 'Success'
               value_type: 'equal'
       description: 'Ensure Audit Account Lockout is set to Success'
-
     Audit Logoff :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1244,7 +1220,6 @@ win_auditpol:
               match_output: 'Success'
               value_type: 'equal'
       description: 'Ensure Audit Logoff is set to Success'
-
     Audit Logon :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1253,7 +1228,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Logon is set to Success and Failure'
-
     Audit Other Logon/Logoff Events :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1262,7 +1236,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Other Logon/Logoff Events is set to Success and Failure'
-
     Audit Special Logon :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1271,16 +1244,6 @@ win_auditpol:
               match_output: 'Success'
               value_type: 'equal'
       description: 'Ensure Audit Special Logon is set to Success'
-
-    Audit Removable Storage :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'Removable Storage':
-              tag: CIS-17.6.1
-              match_output: 'Success and Failure'
-              value_type: 'equal'
-      description: 'Ensure Audit Removable Storage is set to Success and Failure'
-
     Audit Audit Policy Change :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1289,7 +1252,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Audit Policy Change is set to Success and Failure'
-
     Audit Authentication Policy Change :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1298,7 +1260,6 @@ win_auditpol:
               match_output: 'Success'
               value_type: 'equal'
       description: 'Ensure Audit Authentication Policy Change is set to Success'
-
     Audit Sensitive Privilege Use :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1307,7 +1268,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Sensitive Privilege Use is set to Success and Failure'
-
     Audit IPsec Driver :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1316,7 +1276,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit IPsec Driver is set to Success and Failure'
-
     Audit Other System Events :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1325,7 +1284,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Other System Events is set to Success and Failure'
-
     Audit Security State Change :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1334,7 +1292,6 @@ win_auditpol:
               match_output: 'Success'
               value_type: 'equal'
       description: 'Ensure Audit Security State Change is set to Success'
-
     Audit Security System Extension :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1343,7 +1300,6 @@ win_auditpol:
               match_output: 'Success and Failure'
               value_type: 'equal'
       description: 'Ensure Audit Security System Extension is set to Success and Failure'
-
     Audit System Integrity :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1355,22 +1311,6 @@ win_auditpol:
 
 win_reg:
   whitelist:
-    Prevent enabling lock screen camera :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Personalization\NoLockScreenCamera':
-              tag: CIS-18.1.1.1
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Prevent enabling lock screen camera is set to Enabled'
-    Prevent enabling lock screen slide show :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Personalization\NoLockScreenSlideshow':
-              tag: CIS-18.1.1.2
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Prevent enabling lock screen slide show is set to Enabled'
     Do not allow password expiration time longer than required by policy :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1508,14 +1448,6 @@ win_reg:
               match_output: '255'
               value_type: 'equal'
       description: 'Disable IPv6 - Ensure TCPIP6 Parameter DisabledComponents is set to 0xff (255)'
-    Minimize the number of simultaneous connections to the Internet or a Windows Domain :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WcmSvc\GroupPolicy\fMinimizeConnections':
-              tag: CIS-18.4.20.1
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Minimize the number of simultaneous connections to the Internet or a Windows Domain is set to Enabled'
     Apply UAC restrictions to local accounts on network logons :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1524,14 +1456,6 @@ win_reg:
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Apply UAC restrictions to local accounts on network logons is set to Enabled '
-    Boot-Start Driver Initialization Policy :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Policies\EarlyLaunch\DriverLoadPolicy':
-              tag: CIS-18.8.11.1
-              match_output: 'Enabled' #: Good, unknown and bad but critical'
-              value_type: 'equal'
-      description: 'Ensure Boot-Start Driver Initialization Policy is set to Enabled Good unknown and bad but critical'
     Configure registry policy processing_ Do not apply during periodic background processing :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1551,27 +1475,11 @@ win_reg:
     Do not display network selection UI :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\DontDisplayNetworkSelectionUI':
+          - '	HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\LogonType':
               tag: CIS-18.8.24.1
               match_output: 'Enabled'
               value_type: 'equal'
-      description: 'Ensure Do not display network selection UI is set to Enabled'
-    Do not enumerate connected users on domain-joined computers :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\DontEnumerateConnectedUsers':
-              tag: CIS-18.8.24.2
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Do not enumerate connected users on domain-joined computers is set to Enabled'
-    Turn off app notifications on the lock screen :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\DisableLockScreenAppNotifications':
-              tag: CIS-18.8.24.4
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off app notifications on the lock screen is set to Enabled'
+      description: 'Ensure Always use classic logon is set to enabled'
     Enable RPC Endpoint Mapper Client Authentication :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1580,14 +1488,6 @@ win_reg:
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Enable RPC Endpoint Mapper Client Authentication is set to Enabled '
-    Allow Microsoft accounts to be optional :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\MSAOptional':
-              tag: CIS-18.9.6.1
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Allow Microsoft accounts to be optional is set to Enabled'
     Disallow Autoplay for non-volume devices :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1620,6 +1520,22 @@ win_reg:
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Do not display the password reveal button is set to Enabled'
+    Turn off desktop gadgets :
+      data:
+        'Microsoft Windows Server 2008 R2 Standard':
+          - '	HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Windows\Sidebar\TurnOffSideb':
+              tag: CIS-18.9.16.1
+              match_output: 'Enabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off desktop gadgets is set to Enabled'
+    Turn off user-installed desktop gadgets :
+      data:
+        'Microsoft Windows Server 2008 R2 Standard':
+          - '	HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Windows\Sidebar\TurnOffUserInstalledGadget':
+              tag: CIS-18.9.16.2
+              match_output: 'Enabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off user-installed desktop gadgest is set to Enabled'
     Default Action and Mitigation Settings :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1708,14 +1624,6 @@ win_reg:
               match_output: 'Enabled'#_ 32768 or greater'
               value_type: 'equal'
       description: 'Ensure System_ Specify the maximum log file size  is set to Enabled_ 32768 or greater'
-    Configure Windows SmartScreen :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System\EnableSmartScreen':
-              tag: CIS-18.9.28.2
-              match_output: 'Enabled: Require approval from an administrator before running downloaded unknown software'
-              value_type: 'equal'
-      description: 'Ensure Configure Windows SmartScreen is set to Enabled: Require approval from an administrator before running downloaded unknown software'
     Do not allow passwords to be saved :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1764,22 +1672,6 @@ win_reg:
               match_output: 'Enabled'
               value_type: 'equal'
       description: 'Ensure Prevent downloading of enclosures is set to Enabled'
-    Prevent the usage of SkyDrive for file storage :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Skydrive\DisableFileSync':
-              tag: CIS-18.9.54.1
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Prevent the usage of SkyDrive for file storage is set to Enabled'
-    Turn off the offer to update to the latest version of Windows :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsStore\DisableOSUpgrade':
-              tag: CIS-18.9.58.2
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off the offer to update to the latest version of Windows is set to Enabled'
     Configure Default consent :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1819,8 +1711,40 @@ win_reg:
               tag: CIS-18.9.85.2
               match_output: '0'# - Every day'
               value_type: 'equal'
-      description: 'Ensure Configure Automatic UpdateS- Scheduled install day is set to 0 - Every day'
-    Enable screen saver :
+      description: 'Ensure Configure Automatic Updates- Scheduled install day is set to 0 - Every day'
+    Do Not Adjust Default Option To Install Updates and Shutdown Windows Dialog Box :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\NoAUAsDefaultShutdownOption':
+              tag: CIS-18.9.85.3
+              match_output: ''
+              value_type: 'equal'
+      description: 'Ensure Do not adjust default option to Install Updates and Shut Down Windows dialog box is Disabled'
+    Do Not Display Install Updates and Shut Down Dialog Box :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\NoAUShutdownOption':
+              tag: CIS-18.9.85.4
+              match_output: '0'# - Every day'
+              value_type: 'equal'
+      description: 'Ensure Do not display Install Updates and Shut Down dialog box is set to Disabled'
+    No Auto-Restart With Logged on Users for Scheduled Updates Installations :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\U\NoAutoRebootWithLoggedOnUsers':
+              tag: CIS-18.9.85.5
+              match_output: '0'# - Every day'
+              value_type: 'equal'
+      description: 'Ensure No auto-restart with logged on users for scheduled updates installations is Disabled'
+    Reschedule Automatic Updates Scheduled Installations :
+      data:
+        'Microsoft Windows Server 2012 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\U:RescheduleWaitTimeEnabled':
+              tag: CIS-18.9.85.6
+              match_output: '0'# - Every day'
+              value_type: 'equal'
+      description: 'Ensure Reschedule Automatic Updates scheduled installations is set to Enabled- 1 minute'
+    Enable Screen Saver :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Control Panel\Desktop\ScreenSaveActive':
@@ -1852,14 +1776,6 @@ win_reg:
               match_output: 'Enabled'#: 900 seconds or fewer, but not 0'
               value_type: 'equal'
       description: 'Ensure Screen saver timeout is set to Enabled_ 900 seconds or fewer but not 0'
-    Turn off toast notifications on the lock screen :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_USERS\<SID>\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\NoToastApplicationNotificationOnLockScreen':
-              tag: CIS-19.5.1.1
-              match_output: 'Enabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off toast notifications on the lock screen is set to Enabled'
     Notify antivirus programs when opening attachments :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1919,6 +1835,14 @@ win_reg:
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Include command line in process creation events is set to Disabled'
+   Allow remote access to the Plug and Play interface :
+     data:
+       'Microsoft Windows Server 2008 R2 Standard':
+          - '	HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Settings\AllowRemoteRPC':
+              tag: CIS-18.8.5.2
+              match_output: 'Disabled'
+              value_type: 'equal'
+      description: 'Ensure Turn off background refresh of Group Policy is set to Disabled'
     Turn off background refresh of Group Policy :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -2003,7 +1927,7 @@ win_reg:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Explorer\NoDataExecutionPrevention':
-              tag: CIS-18.9.28.3
+              tag: CIS-18.9.28.2
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Turn off Data Execution Prevention for Explorer is set to Disabled'
@@ -2011,7 +1935,7 @@ win_reg:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Explorer\NoHeapTerminationOnCorruption':
-              tag: CIS-18.9.28.4
+              tag: CIS-18.9.28.3
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Turn off heap termination on corruption is set to Disabled'
@@ -2019,7 +1943,7 @@ win_reg:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\PreXPSP2ShellProtocolBehavior':
-              tag: CIS-18.9.28.5
+              tag: CIS-18.9.28.4
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Turn off shell protocol protected mode is set to Disabled'
@@ -2047,22 +1971,6 @@ win_reg:
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Allow indexing of encrypted files is set to Disabled'
-    Turn off Automatic Download and Install of updates :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsStore\AutoDownload':
-              tag: CIS-18.9.58.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Turn off Automatic Download and Install of updates is set to Disabled'
-    Automatically send memory dumps for OS-generated error reports :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\Windows Error Reporting\AutoApproveOSDumps':
-              tag: CIS-18.9.67.3
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Automatically send memory dumps for OS-generated error reports is set to Disabled'
     Allow user control over installs :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -2079,14 +1987,6 @@ win_reg:
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Always install with elevated privileges is set to Disabled'
-    Sign-in last interactive user automatically after a system-initiated restart :
-      data:
-        'Microsoft Windows Server 2012 R2 Standard':
-          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\DisableAutomaticRestartSignOn':
-              tag: CIS-18.9.70.1
-              match_output: 'Disabled'
-              value_type: 'equal'
-      description: 'Ensure Sign-in last interactive user automatically after a system-initiated restart is set to Disabled'
     Turn on PowerShell Script Block Logging :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
