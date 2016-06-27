@@ -727,7 +727,7 @@ win_secedit:
     system_settings_optional_subsystems :
       data:
         'Microsoft Windows Server 2008 R2 Standard':
-          - 'MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems\optional'
+          - 'MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems\optional' :
               tag: CIS-2.3.16.1
               match_output: 'Defined (blank)'
               value_type: 'equal
