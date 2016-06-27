@@ -326,7 +326,7 @@ class vulnerablePkg:
     def __init__(self, title, pkg, pkg_version, score, operator, reporter, href, cve_list):
         self.title = title
         self.pkg = pkg
-        self.pkg_versi
+        self.pkg_version = pkg_version
         self.score = float(score)
         if operator not in ['lt', 'le']:
             log.error('pkg:%s contains an operator that\'s not supported and waschange to < ')
