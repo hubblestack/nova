@@ -21,7 +21,7 @@ cve_scan_v2:
     ttl: 86400
     # Source of cve data
     url: http://vulners.com/
-    # Optional
+    # Optional control tag
     control:
         # minimum score, vulnerabilities with a smaller
         #   score added to 'Controlled' output
@@ -217,10 +217,10 @@ def audit(data_list, tags, verbose=False):
         remove.reverse()
         for i in remove:
             ret['Failure'].pop(i)
-    
+
     if not ret['Controlled']:
         ret.pop('Controlled')
-    
+
     return ret
 
 
@@ -326,7 +326,7 @@ class vulnerablePkg:
     def __init__(self, title, pkg, pkg_version, score, operator, reporter, href, cve_list):
         self.title = title
         self.pkg = pkg
-        self.pkg_version = pkg_version
+        self.pkg_versi
         self.score = float(score)
         if operator not in ['lt', 'le']:
             log.error('pkg:%s contains an operator that\'s not supported and waschange to < ')
