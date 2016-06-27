@@ -21,6 +21,11 @@ cve_scan_v2:
     ttl: 86400
     # Source of cve data
     url: http://vulners.com/
+    # Optional control tag
+    control:
+        # minimum score, vulnerabilities with a smaller
+        #   score added to 'Controlled' output
+        score: 3
 
 
 The source of the cve data can be http://vulners.com/, salt://path/to/json, and any other url
@@ -110,6 +115,9 @@ def audit(data_list, tags, verbose=False):
 
             ttl = data['cve_scan_v2']['ttl']
             url = data['cve_scan_v2']['url']
+            control = data['cve_scan_v2'].get('control', {})
+            # Ability to add more controls easily, in control dict
+            min_score = float(control.get('score', 0))
             cache = _get_cache(ttl, cached_json)
             break
 
@@ -168,7 +176,7 @@ def audit(data_list, tags, verbose=False):
         else:
             raise Exception('The url is invalid. It does not begin with http(s):// or salt://')
 
-    ret = {'Success':[], 'Failure':[]}
+    ret = {'Success':[], 'Failure':[], 'Controlled':[]}
 
     affected_pkgs = _get_cve_vulnerabilities(master_json, os_version)
     # Dictionary of {pkg_name: list(pkg_versions)}
@@ -197,7 +205,10 @@ def audit(data_list, tags, verbose=False):
                                 affected_obj.oudated_version = local_version
                                 vulnerable = affected_obj
             if vulnerable:
-                ret['Failure'].append(vulnerable.get_report(verbose))
+                if vulnerable.score < min_score:
+                    ret['Controlled'].append(vulnerable.get_report(verbose))
+                else:
+                    ret['Failure'].append(vulnerable.get_report(verbose))
     if tags != '*':
         remove = []
         for i, failure in enumerate(ret['Failure']):
@@ -206,7 +217,10 @@ def audit(data_list, tags, verbose=False):
         remove.reverse()
         for i in remove:
             ret['Failure'].pop(i)
-    
+
+    if not ret['Controlled']:
+        ret.pop('Controlled')
+
     return ret
 
 
@@ -313,7 +327,7 @@ class vulnerablePkg:
         self.title = title
         self.pkg = pkg
         self.pkg_version = pkg_version
-        self.score = score
+        self.score = float(score)
         if operator not in ['lt', 'le']:
             log.error('pkg:%s contains an operator that\'s not supported and waschange to < ')
             operator = 'lt'
