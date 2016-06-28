@@ -160,7 +160,7 @@ def audit(data_list, tags, verbose=False):
                         os.remove(cached_zip)
                         extracted_json = os.path.join(__opts__['cachedir'],
                                                       'cve_scan_cache',
-                                                      '%s_%s.json' % (os_name, os_version))
+                                                      '%s_%s.json' % (os_name, os_version.replace('.', '')))
                         with open(extracted_json, 'r') as json_file:
                             master_json = json.load(json_file)
                         os.remove(extracted_json)
