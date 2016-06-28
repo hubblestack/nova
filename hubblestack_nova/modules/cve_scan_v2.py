@@ -98,6 +98,8 @@ def audit(data_list, tags, verbose=False):
         os_version = __grains__.get('osrelease', None)
     os_name = __grains__['os'].lower()
 
+    log.debug("os_version: %s, os_name: %s", os_version, os_name)
+
     endpoints = []
 
     # Go through yaml to check for cve_scan_v2,
@@ -123,6 +125,7 @@ def audit(data_list, tags, verbose=False):
             if not os.path.exists(os.path.dirname(cached_json)):
                 os.makedirs(os.path.dirname(cached_json))
             cache = _get_cache(ttl, cached_json)
+            log.debug("valid cache: %s, for url: %s", cache != [], url)
             endpoints.append((url, cache, cached_json, cached_zip, min_score))
 
     # If we don't find our module in the yaml
@@ -134,6 +137,7 @@ def audit(data_list, tags, verbose=False):
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
 
     for url, cache, cached_json, cached_zip, min_score in endpoints:
+        log.debug("url: %s, min_score: %s", url, min_score)
         if cache: # Valid cached file
             master_json = cache
         else: # Query the url for cve's
@@ -147,6 +151,7 @@ def audit(data_list, tags, verbose=False):
                         url = url[:-1]
                     url_final = '%s/api/v3/archive/distributive/?os=%s&version=%s' \
                                                                 % (url, os_name, os_version)
+                    log.debug('requesting: %s', url_final)
                     cve_query = requests.get(url_final)
                     # Confirm that the request was valid.
                     if cve_query.status_code != 200:
@@ -161,6 +166,7 @@ def audit(data_list, tags, verbose=False):
                         extracted_json = os.path.join(__opts__['cachedir'],
                                                       'cve_scan_cache',
                                                       '%s_%s.json' % (os_name, os_version.replace('.', '')))
+                        log.debug('attempting to open %s', extracted_json)
                         with open(extracted_json, 'r') as json_file:
                             master_json = json.load(json_file)
                         os.remove(extracted_json)
@@ -168,6 +174,7 @@ def audit(data_list, tags, verbose=False):
                         log.error('The json zip attachment was not able to be extracted from vulners.')
                         raise ioe
                 else: # Not a vulners request, external source for cve's
+                    log.debug('requesting: %s', url)
                     cve_query = requests.get(url)
                     if cve_query.status_code != 200:
                         log.error('URL request was not successful.')
@@ -181,6 +188,7 @@ def audit(data_list, tags, verbose=False):
                     log.error('The cve results weren\'t able to be cached')
             elif url.startswith('salt://'):
                 # Cache the file
+                log.debug('getting file from %s', url)
                 cache_file = __salt__['cp.get_file'](url, cached_json)
                 if cache_file:
                     master_json = json.load(open(cache_file))
@@ -220,6 +228,7 @@ def audit(data_list, tags, verbose=False):
                         ret['Failure'].append(vulnerable.get_report(verbose))
 
     if tags != '*':
+        log.debug("tags: %s", tags)
         remove = []
         for i, failure in enumerate(ret['Failure']):
             if not fnmatch.fnmatch(failure.keys()[0], tags):
@@ -328,13 +337,18 @@ def _get_cache(ttl, cache_path):
     except OSError:
         return []
     if current_time() - cached_time < ttl:
+        log.debug('%s is less than ttl', cache_path)
         try:
             with open(cache_path) as json_file:
                 loaded_json = json.load(json_file)
                 return loaded_json
         except IOError:
             return []
+        except ValueError:
+            log.error('%s was not json formatted', cache_path)
+            return []
     else:
+        log.debug('%s was older than ttl', cache_path)
         return []
 
 
@@ -348,7 +362,7 @@ class VulnerablePkg:
         self.pkg_version = pkg_version
         self.score = float(score)
         if operator not in ['lt', 'le']:
-            log.error('pkg:%s contains an operator that\'s not supported and waschange to < ')
+            log.error('pkg:%s contains an operator that\'s not supported and was changed to <')
             operator = 'lt'
         self.operator = operator
         self.href = href
