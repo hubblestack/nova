@@ -1,49 +1,48 @@
-#secedit.py
+# secedit.py
 # -*- encoding: utf-8 -*-
 '''
 Loader and primary interface for nova modules
 
 :maintainer: HubbleStack
-:maturity: 20160426
+:maturity: 20160526
 :platform: Windows
 :requires: SaltStack
-:TODO: Add support for Privilege Rights and Registry Values
+:TODO:
 '''
-from __future__ import absolute_import
-import logging
 
-import fnmatch
-import yaml
-import os
+from __future__ import absolute_import
 import copy
+import fnmatch
+import logging
 import salt.utils
 
 try:
-    import uuid
     import codecs
+    import uuid
     HAS_WINDOWS_MODULES = True
 except ImportError:
     HAS_WINDOWS_MODULES = False
 
 log = logging.getLogger(__name__)
-__virtualname__ = 'secedit'
+__virtualname__ = 'win_secedit'
 
 def __virtual__():
     if not salt.utils.is_windows() or not HAS_WINDOWS_MODULES:
-        return False, 'This audit module only runs on Windows'
+        return False, 'This audit module only runs on windows'
     return True
 
 
 def audit(data_list, tags, verbose=False):
-    '''
-    Run the secedit audits contained in the YAML files processed by __virtual__
-    '''
+    '''Runs secedit on the local machine and audits the return data
+    with the CIS yaml processed by __virtual__'''
     __data__ = {}
+    __secdata__ = _secedit_export()
+    __sidaccounts__ = _get_account_sid()
     for data in data_list:
         _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
     log.trace('secedit audit __data__:')
-    log.trace('__data__')
+    log.trace(__data__)
     log.trace('secedit audit __tags__:')
     log.trace(__tags__)
 
@@ -55,55 +54,40 @@ def audit(data_list, tags, verbose=False):
                     ret['Controlled'].append(tag_data)
                     continue
                 name = tag_data['name']
-                audittype = tag_data['type']
+                audit_type = tag_data['type']
+                output = tag_data['match_output'].lower()
 
                 # Blacklisted audit (do not include)
-                if audittype == 'blacklist':
-                    secedit_ret = _find_option_value_in_seceditfile(tag_data['name'])
-                    if 'binary' in tag_data['value_type']:
-                        secedit_ret = _binary_convert(secedit_ret)
-                    elif 'multi' in tag_data['value_type']:
-                        secedit_ret = _multi_convert(secedit_ret)
-                    elif 'less' or 'more' or 'equal' in tag_data['value_type']:
-                        secedit_ret = _get_operation(secedit_ret,
-                                                     tag_data['value_type'],
-                                                     tag_data['match_output'])
-
-                    found = False
-                    if secedit_ret:
-                        found = True
-                    if 'match_output' in tag_data and tag_data['match_output'] not in secedit_ret:
-                        found = False
-
-                    if found:
-                        ret['Failure'].append(tag_data)
+                if audit_type == 'blacklist':
+                    if 'no one' in output:
+                        if name not in __secdata__:
+                            ret['Success'].append(tag_data)
+                        else:
+                            ret['Failure'].append(tag_data)
                     else:
-                        ret['Success'].append(tag_data)
+                        if name in __secdata__:
+                            secret = _translate_value_type(sec_value, tag_data['value_type'], match_output)
+                            if secret:
+                                ret['Failure'].append(tag_data)
+                            else:
+                                ret['Success'].append(tag_data)
 
-                # Whitelisted packages (must be installed)
-                elif audittype == 'whitelist':
-                    secedit_ret = _find_option_value_in_seceditfile(tag_data['name'])
-                    if 'binary' in tag_data['value_type']:
-                        secedit_ret = _binary_convert(secedit_ret)
-                    if 'multi' in tag_data['value_type']:
-                        secedit_ret = _multi_convert(secedit_ret)
-                    if tag_data['value_type'] in ['less', 'more', 'equal']:
-                        secedit_ret = _get_operation(secedit_ret,
-                                                     tag_data['value_type'],
-                                                     tag_data['match_output'])
-                    if 'priv' in tag_data['value_type']:
-                        if 'no one' in tag_data['match_output']:
-                            if secedit_ret is None or 'Not Defined' in secedit_ret:
-                                secedit_ret = 'no one'
-
-                    found = False
-                    if secedit_ret:
-                        found = True
-                    if 'match_output' in tag_data and tag_data['match_output'] not in secedit_ret:
-                        found = False
-
-                    if found:
-                        ret['Success'].append(tag_data)
+                # Whitelisted audit (must include)
+                if audit_type == 'whitelist':
+                    if name in __secdata__:
+                        sec_value = __secdata__[name]
+                        if 'machine\\' in output:
+                            match_output = _reg_value_translator(tag_data['match_output'])
+                        else:
+                            match_output = tag_data['match_output']
+                        if 'account' in tag_data['value_type']:
+                            secret = _translate_value_type(sec_value, tag_data['value_type'], match_output, __sidaccounts__)
+                        else:
+                            secret = _translate_value_type(sec_value, tag_data['value_type'], match_output)
+                        if secret:
+                            ret['Success'].append(tag_data)
+                        else:
+                            ret['Failure'].append(tag_data)
                     else:
                         ret['Failure'].append(tag_data)
 
@@ -136,10 +120,10 @@ def audit(data_list, tags, verbose=False):
             tag = tag_data['tag']
             control_reason = tag_data.get('control', '')
             description = tag_data.get('description')
-            if (tag, description, control_reason) not in control_reasons:
+            if (tag, description, control_reason) not in tags_descriptions:
                 tag_dict = {'description': description,
                             'control': control_reason}
-                controlled.append({tag: tag_dict})
+                controlled.append({tag: description})
                 control_reasons.add((tag, description, control_reason))
 
         ret['Controlled'] = controlled
@@ -152,43 +136,19 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _find_option_value_in_seceditfile(option):
-    '''
-    helper function to dump/parse a `secedit /export` file for a particular
-    option
-    '''
-    try:
-        _d = uuid.uuid4().hex
-        _tfile = '{0}\\{1}'.format(__salt__['config.get']('cachedir'), 'salt-secedit-dump-{0}.txt'.format(_d))
-        _ret = __salt__['cmd.run']('secedit /export /cfg {0}'.format(_tfile))
-        if _ret:
-            _reader = codecs.open(_tfile, 'r', encoding='utf-16')
-            _secdata = _reader.readlines()
-            _reader.close()
-            _ret = __salt__['file.remove'](_tfile)
-            for _line in _secdata:
-                if _line.startswith(option):
-                    return _line.split('=')[1].strip()
-        else:
-            return 'Not Defined'
-    except:
-        log.debug('error occurred while trying to get secedit data')
-        return False, None
-
-
 def _merge_yaml(ret, data):
     '''
     Merge two yaml dicts together at the secedit:blacklist and
     secedit:whitelist level
     '''
-    if 'secedit' not in ret:
-        ret['secedit'] = {}
+    if __virtualname__ not in ret:
+        ret[__virtualname__] = {}
     for topkey in ('blacklist', 'whitelist'):
-        if topkey in data.get('secedit', {}):
-            if topkey not in ret['secedit']:
-                ret['secedit'][topkey] = []
-            for key, val in data['secedit'][topkey].iteritems():
-                ret['secedit'][topkey].append({key: val})
+        if topkey in data.get(__virtualname__, {}):
+            if topkey not in ret[__virtualname__]:
+                ret[__virtualname__][topkey] = []
+            for key, val in data[__virtualname__][topkey].iteritems():
+                ret[__virtualname__][topkey].append({key: val})
     return ret
 
 
@@ -198,7 +158,7 @@ def _get_tags(data):
     '''
     ret = {}
     distro = __grains__.get('osfullname')
-    for toplist, toplevel in data.get('secedit', {}).iteritems():
+    for toplist, toplevel in data.get(__virtualname__, {}).iteritems():
         # secedit:whitelist
         for audit_dict in toplevel:
             for audit_id, audit_data in audit_dict.iteritems():
@@ -219,7 +179,7 @@ def _get_tags(data):
                 # If we didn't find a match, check for a '*'
                 if tags is None:
                     tags = tags_dict.get('*', [])
-                # secedit:whitelist:PasswordComplexity:data:Debian-8
+                # secedit:whitelist:PasswordComplexity:data:Server 2012
                 if isinstance(tags, dict):
                     # malformed yaml, convert to list of dicts
                     tmp = []
@@ -237,7 +197,7 @@ def _get_tags(data):
                             ret[tag] = []
                         formatted_data = {'name': name,
                                           'tag': tag,
-                                          'module': 'secedit',
+                                          'module': 'win_secedit',
                                           'type': toplist}
                         formatted_data.update(tag_data)
                         formatted_data.update(audit_data)
@@ -246,48 +206,228 @@ def _get_tags(data):
     return ret
 
 
-def _binary_convert(val, **kwargs):
-    '''
-    converts a reg dword 1/0 value to the strings enable/disable
-    '''
-    if val is not None:
-        if len(val) <= 2:
-            if val == 1 or val == "1":
-                return 'Enabled'
-            if val == 0 or val == "0":
-                return 'Disabled'
-    else:
-        return 'Not Defined'
+def _secedit_export():
+    '''Helper function that will create(dump) a secedit inf file.  You can
+    specify the location of the file and the file will persist, or let the
+    function create it and the file will be deleted on completion.  Should
+    only be called once.'''
+    dump = "C:\ProgramData\{}.inf".format(uuid.uuid4())
+    try:
+        ret = __salt__['cmd.run']('secedit /export /cfg {0}'.format(dump))
+        if ret:
+            secedit_ret = _secedit_import(dump)
+            ret = __salt__['file.remove'](dump)
+            return secedit_ret
+    except StandardError:
+        log.debug('Error occurred while trying to get / export secedit data')
+        return False, None
 
 
-def _multi_convert(val, **kwargs):
-    '''
-    converts an audit setting # (0, 1, 2, 3) to the string text
-    '''
+def _secedit_import(inf_file):
+    '''This function takes the inf file that SecEdit dumps
+    and returns a dictionary'''
+    sec_return = {}
+    with codecs.open(inf_file, 'r', encoding='utf-16') as f:
+        for line in f:
+            line = str(line).replace('\r\n', '')
+            if not line.startswith('[') and not line.startswith('Unicode'):
+                if line.find(' = ') != -1:
+                    k, v = line.split(' = ')
+                    sec_return[k] = v
+                else:
+                    k, v = line.split('=')
+                    sec_return[k] = v
+    return sec_return
 
-    if val is not None:
-        if val == 0 or val == "0":
-            return 'No auditing'
-        elif val == 1 or val == "1":
-            return 'Success'
-        elif val == 2 or val == "2":
-            return 'Failure'
-        elif val == 3 or val == "3":
-            return 'Success, Failure'
+
+def _get_account_sid():
+    '''This helper function will get all the users and groups on the computer
+    and return a dictionary'''
+    win32 = __salt__['cmd.run']('Get-WmiObject win32_useraccount | Format-List -Property '
+                                'Name, SID', shell='powershell', python_shell=True)
+    win32 += '\n'
+    win32 += __salt__['cmd.run']('Get-WmiObject win32_group | Format-List -Property Name, '
+                                 'SID', shell='powershell', python_shell=True)
+    if win32:
+
+        dict_return = {}
+        lines = win32.split('\n')
+        lines = filter(None, lines)
+        if 'local:' in lines:
+            lines.remove('local:')
+        for line in lines:
+            line = line.strip()
+            if line != '':
+                k, v = line.split(' : ')
+                if k.lower() == 'name':
+                    key = v
+                else:
+                    dict_return[key] = v
+        if dict_return:
+            if 'LOCAL SERVICE' not in dict_return:
+                dict_return['LOCAL SERVICE'] = 'S-1-5-19'
+            if 'NETWORK SERVICE' not in dict_return:
+                dict_return['NETWORK SERVICE'] = 'S-1-5-20'
+            if 'SERVICE' not in dict_return:
+                dict_return['SERVICE'] = 'S-1-5-6'
+            return dict_return
         else:
-            return 'Invalid Auditing Value'
+            log.debug('Error parsing the data returned from powershell')
+            return False
     else:
-        return 'Not Defined'
+        log.debug('error occurred while trying to run powershell '
+                  'get-wmiobject command')
+        return False
 
 
-def _get_operation(current, operator, evaluator):
-    if 'less' in operator:
-        if current <= evaluator:
-            return evaluator
-    elif 'more' in operator:
-        if current >= evaluator:
-            return evaluator
-    elif 'equal' in operator:
-        if current == operator:
-            return evaluator
-    return False
+def _translate_value_type(current, value, evaluator, __sidaccounts__=False):
+    '''This will take a value type and convert it to what it needs to do.
+    Under the covers you have conversion for more, less, and equal'''
+    value = value.lower()
+    if 'more' in value:
+        if ',' in evaluator:
+            evaluator = evaluator.split(',')[1]
+        if ',' in current:
+            current = current.split(',')[1]
+        if '"' in current:
+            current = current.replace('"', '')
+        if '"' in evaluator:
+            evaluator = evaluator.replace('"', '')
+        if int(current) > int(evaluator):
+            return True
+        else:
+            return False
+    elif 'less' in value:
+        if ',' in evaluator:
+            evaluator = evaluator.split(',')[1]
+        if ',' in current:
+            current = current.split(',')[1]
+        if '"' in current:
+            current = current.replace('"', '')
+        if '"' in evaluator:
+            evaluator = evaluator.replace('"', '')
+        if int(current) < int(evaluator):
+            if current != '0':
+                return True
+            else:
+                return False
+        else:
+            return False
+    elif 'equal' in value:
+        if ',' not in evaluator:
+            evaluator = _evaluator_translator(evaluator)
+
+        if current.lower() == evaluator:
+            return True
+        else:
+            return False
+    elif 'account' in value:
+        evaluator = _account_audit(evaluator, __sidaccounts__)
+        evaluator_list = evaluator.split(',')
+        current_list = current.split(',')
+        list_match = False
+        for list_item in evaluator_list:
+            if list_item in current_list:
+                list_match = True
+            else:
+                list_match = False
+                break
+        if list_match:
+            for list_item in current_list:
+                if list_item in evaluator_list:
+                    list_match = True
+                else:
+                    list_match = False
+                    break
+        else:
+            return False
+        if list_match:
+            return True
+        else:
+            return False
+    elif 'configured' in value:
+        if current == '':
+            return False
+        elif current == value:
+            return True
+        else:
+            return False
+    else:
+        return 'Undefined'
+
+
+def _evaluator_translator(input_string):
+    '''This helper function takes words from the CIS yaml and replaces
+    them with what you actually find in the secedit dump'''
+    input_string = input_string.replace(' ','').lower()
+    if 'enabled' in input_string:
+        return '1'
+    elif 'disabled' in input_string:
+        return '0'
+    elif 'success' in input_string:
+        return '1'
+    elif 'failure' in input_string:
+        return '2'
+    elif input_string == 'success,failure' or input_string == 'failure,success':
+        return '3'
+    else:
+        log.debug('error translating evaluator from enabled/disabled or success/failure.'
+                  '  Could have received incorrect string')
+        return 'undefined'
+
+
+def _account_audit(current, __sidaccounts__):
+    '''This helper function takes the account names from the cis yaml and
+    replaces them with the account SID that you find in the secedit dump'''
+    user_list = current.split(', ')
+    ret_string = ''
+    if __sidaccounts__:
+        for usr in user_list:
+            if usr == 'Guest':
+                if not ret_string:
+                    ret_string = usr
+                else:
+                    ret_string += ',' + usr
+            if usr in __sidaccounts__:
+                if not ret_string:
+                    ret_string = '*' + __sidaccounts__[usr]
+                else:
+                    ret_string += ',*' + __sidaccounts__[usr]
+        return ret_string
+    else:
+        log.debug('getting the SIDs for each account failed')
+        return False
+
+
+def _reg_value_translator(input_string):
+    input_string.lower()
+    if input_string == 'enabled':
+        return '4,1'
+    elif input_string == 'disabled':
+        return '4,0'
+    elif input_string == 'users cant add or log on with microsoft accounts':
+        return '4,3'
+    elif input_string == 'administrators':
+        return '1,"0"'
+    elif input_string == 'lock workstation':
+        return '1,"1"'
+    elif input_string == 'accept if provided by client':
+        return '4,1'
+    elif input_string == 'classic - local users authenticate as themselves':
+        return '4,1'
+    elif input_string == 'rc4_hmac_md5, aes128_hmac_SHA1, aes256_hmac_sha1, future encryption types':
+        return '4,2147483644'
+    elif input_string == 'send ntlmv2 response only. Refuse lm & ntlm':
+        return '4,5'
+    elif input_string == 'negotiate signing':
+        return '4,1'
+    elif input_string == 'Require ntlmv2 session security, require 128-bit encryption':
+        return '4,537395200'
+    elif input_string == 'prompt for consent on the secure desktop':
+        return '4,2'
+    elif input_string == 'automatically deny elevation requests':
+        return '4,0'
+    elif input_string == 'Defined (blank)':
+        return '7,'
+    else:
+        return input_string
