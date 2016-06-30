@@ -61,6 +61,7 @@ def audit(data_list, tags, verbose=False):
 
     for address_data in __salt__['network.netstat']():
         address = address_data['local-address']
+        success = False
         for whitelisted_address in __tags__:
             if fnmatch.fnmatch(address, whitelisted_address):
                 success_data = {address: __tags__[whitelisted_address]['id']}
@@ -69,12 +70,14 @@ def audit(data_list, tags, verbose=False):
                     success_data[address].update(address_data)
                     success_data[address]['description'] = __tags__[whitelisted_address]['id']
                 ret['Success'].append(success_data)
-            else:
-                failure_data = {address: address_data['program']}
-                if verbose:
-                    failure_data = {address: {'program': address_data['program']}}
-                    failure_data[address].update(address_data)
-                    failure_data[address]['description'] = address_data['program']
-                ret['Failure'].append(failure_data)
+                success = True
+                break
+        if success is False:
+            failure_data = {address: address_data['program']}
+            if verbose:
+                failure_data = {address: {'program': address_data['program']}}
+                failure_data[address].update(address_data)
+                failure_data[address]['description'] = address_data['program']
+            ret['Failure'].append(failure_data)
 
     return ret
