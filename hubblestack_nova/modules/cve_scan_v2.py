@@ -293,38 +293,45 @@ def _is_vulnerable(local_version, affected_version, operator):
     # Get rid of prefix if version number has one, ex '1:3.4.52'
     if ':' in local_version:
         _, _, local_version = local_version.partition(':')
+    if ':' in affected_version:
+        _, _, affected_version = affected_version.partition(':')
 
-    # In order to do compare LooseVersions, eliminate trailing 'el<#>'
-    if re.search(r'.el\d$', affected_version):
-        affected_version = affected_version[:-4]
-    if re.search(r'.el\d$', local_version):
-        local_version = local_version[:-4]
+    compare = None
+    # Try to use salt's built in comparison module, if it exists for distro
+    if 'pkg.version_cmp' in __salt__:
+        compare = __salt__['pkg.version_cmp'](local_version, affected_version)
 
-    #Compare from higher order to lower order based on '-' split.
-    local_version_split = local_version.split('-')
-    affected_version_split = affected_version.split('-')
+    # When salt can't compare, use LooseVersion
+    if compare is None:
+        #Compare from higher order to lower order based on '-' split.
+        local_version_split = local_version.split('-')
+        affected_version_split = affected_version.split('-')
 
-    for (order_index, local_version_str) in enumerate(local_version_split):
+        for (order_index, local_version_str) in enumerate(local_version_split):
 
-        local_version_obj = LooseVersion(local_version_str)
-        affected_version_obj = LooseVersion(affected_version_split[order_index])
+            local_version_obj = LooseVersion(local_version_str)
+            affected_version_obj = LooseVersion(affected_version_split[order_index])
 
-        #Check lower order bits if higher order are equal.
-        if local_version == affected_version:
-            continue
+            #Check lower order bits if higher order are equal.
+            if local_version == affected_version:
+                continue
 
-        #Return when highest order version is not equal.
-        elif local_version_obj > affected_version_obj:
-            return False
-        elif local_version_obj < affected_version_obj:
-            return True
+            #Return when highest order version is not equal.
+            elif local_version_obj > affected_version_obj:
+                compare = 1
+                break
+            elif local_version_obj < affected_version_obj:
+                compare = -1
+                break
+        # If for loop exits without break, the versions are equal.
+        else:
+            compare = 0
 
-    # The packages are equal if the code has gotten to here.
-    #     Now return based on the operator.
+    # Return whether local_version is vulnerable to affected_verison
     if operator == 'le':
-        return True
+        return compare <= 0
     elif operator == 'lt':
-        return False
+        return compare < 0
 
 
 def _get_cache(ttl, cache_path):
