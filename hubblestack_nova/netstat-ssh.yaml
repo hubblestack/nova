@@ -1,5 +1,4 @@
 netstat:
-    ssh4:
-        address: 0.0.0.0:22
-    ssh6:
-        address: :::22
+    ssh:
+        address:
+            - '*:22'
