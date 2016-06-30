@@ -200,7 +200,7 @@ def audit(data_list, tags, verbose=False):
         affected_pkgs = _get_cve_vulnerabilities(master_json, os_version)
 
         # Check all local packages against cve vulnerablities in affected_pkgs
-        for local_pkg in local_pkgs:
+        for local_pkg in local_pkgs.keys():
             vulnerable = None
             if local_pkg in affected_pkgs:
                 # There can be multiple versions for a single local package, check all
@@ -226,7 +226,8 @@ def audit(data_list, tags, verbose=False):
                         ret['Controlled'].append(vulnerable.get_report(verbose))
                     else:
                         ret['Failure'].append(vulnerable.get_report(verbose))
-
+                    # Prevent duplicate reports on same local_pkg
+                    del local_pkgs[vulnerable.pkg]
     if tags != '*':
         log.debug("tags: %s", tags)
         remove = []
