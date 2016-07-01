@@ -61,7 +61,6 @@ def audit(data_list, tags, verbose=False):
                 if 'whitelist' in audit_type:
                     if name in __gpdata__:
                         audit_value = True
-                        audit_value = 'ChangeMe'.lower()
                         secret = _translate_value_type(audit_value, tag_data['value_type'], match_output)
                         if secret:
                             ret['Success'].append(tag_data)
@@ -188,14 +187,13 @@ def _get_tags(data):
 
 def _get_gp_templates():
     domain_check = ['system.get_domain_workgroup']()
-        if 'workgroup' in domain_check:
-            return False
-        else:
-            domain_check = domain_check['domain']
+    if 'workgroup' in domain_check:
+        return False
+    else:
+        domain_check = domain_check['domain']
     list = ['cmd.run']('Get-ChildItem //domain_check/SYSVOL/domain_check | Format-List -Property '
                                 'Name, SID', shell='powershell', python_shell=True)
-    log.error('***********')
-    log.error(list)
+    return list
 
 def _translate_value_type(current, value, evaluator):
     if 'equal' in value:
