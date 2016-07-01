@@ -723,15 +723,15 @@ win_secedit:
               tag: CIS-2.3.15.2
               match_output: 'Enabled'
               value_type: 'equal'
-      description: 'System objects Strengthen default permissions of internal system objects (e.g. Symbolic Links'
+      description: 'System objects Strengthen default permissions of internal system objects'
     system_settings_optional_subsystems :
       data:
         'Microsoft Windows Server 2008 R2 Standard':
           - 'MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems\optional' :
               tag: CIS-2.3.16.1
-              match_output: 'Defined (blank)'
-              value_type: 'equal
-      description: 'System settings- Optional subsystems is set to Defined (blank)'
+              match_output: 'Defined' # blank
+              value_type: 'equal'
+      description: 'System settings- Optional subsystems is set to Defined but blank'
     user_account_control_admin_approval_mode_for_the_built-in_administrator_account :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
