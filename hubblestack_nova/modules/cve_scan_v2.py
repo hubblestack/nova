@@ -214,11 +214,9 @@ def audit(data_list, tags, verbose=False):
                                 affected_obj.oudated_version = local_version
                                 vulnerable = affected_obj
                             # If local_pkg has already been marked affected, vulnerable is set. We
-                            #   want to report the most recent cve, so check if the new affected_pkg
-                            #   version number is greater than the previously found vulnerability.
+                            #   want to report the cve with highest severity
                             else:
-                                if _is_vulnerable(vulnerable.pkg_version, affected_version, 'lt'):
-                                    # If affected_obj version is > vulnerable, reassign vulnerable
+                                if affected_obj.score > vulnerable.score:
                                     affected_obj.oudated_version = local_version
                                     vulnerable = affected_obj
                 if vulnerable:
