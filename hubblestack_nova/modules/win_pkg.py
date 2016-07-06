@@ -1,4 +1,4 @@
-# win_auditpol.py
+# win_pkg.py
 '''
 Loader and primary interface for nova modules
 
@@ -8,17 +8,16 @@ Loader and primary interface for nova modules
 :requires: SaltStack
 :TODO:
 '''
-
 from __future__ import absolute_import
+
 import copy
-import csv
 import fnmatch
 import logging
 import salt.utils
 
 
 log = logging.getLogger(__name__)
-__virtualname__ = 'win_auditpol'
+__virtualname__ = 'win_pkg'
 
 def __virtual__():
     if not salt.utils.is_windows():
@@ -30,13 +29,13 @@ def audit(data_list, tags, verbose=False):
     '''Runs auditpol on the local machine and audits the return data
     with the CIS yaml processed by __virtual__'''
     __data__ = {}
-    __auditdata__ = _auditpol_import()
+    __pkgdata__ = __salt__['pkg.list_pkgs']()
     for data in data_list:
         _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
-    log.trace('auditpol audit __data__:')
+    log.trace('package audit __data__:')
     log.trace(__data__)
-    log.trace('auditpol audit __tags__:')
+    log.trace('package audit __tags__:')
     log.trace(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
@@ -52,23 +51,22 @@ def audit(data_list, tags, verbose=False):
 
                 # Blacklisted audit (do not include)
                 if 'blacklist' in audit_type:
-                    if name not in __auditdata__:
+                    if name not in __pkgdata__:
                         ret['Success'].append(tag_data)
                     else:
                         ret['Failure'].append(tag_data)
 
                 # Whitelisted audit (must include)
                 if 'whitelist' in audit_type:
-                    if name in __auditdata__:
-                        audit_value = __auditdata__[name].lower()
+                    if name in __pkgdata__:
+                        audit_value = __pkgdata__['name']
                         secret = _translate_value_type(audit_value, tag_data['value_type'], match_output)
                         if secret:
                             ret['Success'].append(tag_data)
                         else:
                             ret['Failure'].append(tag_data)
                     else:
-                        log.debug('When trying to audit the advanced auditpol section,'
-                                  ' the yaml contained incorrect data for the key')
+                        ret['Failure'].append(tag_data)
 
     if not verbose:
         failure = []
@@ -185,31 +183,8 @@ def _get_tags(data):
     return ret
 
 
-def _auditpol_export():
-    try:
-        dump = __salt__['cmd.run']('auditpol /get /category:* /r')
-        if dump:
-            dump = dump.split('\n')
-            return dump
-        else:
-            log.error('Nothing was returned from the auditpol command.')
-    except StandardError:
-        log.error('An error occurred running the auditpol command.')
-
-
-def _auditpol_import():
-    dict_return = {}
-    export = _auditpol_export()
-    auditpol_csv = csv.DictReader(export)
-    for row in auditpol_csv:
-        if row:
-            dict_return[row['Subcategory']] = row['Inclusion Setting']
-    return dict_return
-
-
 def _translate_value_type(current, value, evaluator):
-    if 'equal' in value:
-        if current == evaluator:
-            return True
-        else:
-            return False
+    if int(current) >= int(evaluator):
+        return True
+    else:
+        return False
