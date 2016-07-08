@@ -77,7 +77,7 @@ There are four primary functions in the hubble.py module:
 1. ``hubble.sync`` will sync the ``hubblestack_nova/`` directory to the minion(s).
 2. ``hubble.load`` will load the synced audit modules and their yaml configuration files. 
 3. ``hubble.audit`` will audit the minion(s) using the YAML profile(s) you provide as comma-separated arguments
-4. ``top.nova`` will audit the minion(s) using the ``top.nova`` configuration.
+4. ``hubble.top`` will audit the minion(s) using the ``top.nova`` configuration.
 
 ``hubble.audit`` takes two optional arguments. The first is a comma-separated
 list of paths.  These paths can be files or directories within the
