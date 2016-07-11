@@ -226,7 +226,7 @@ stat:
             uid: 0
             group: 'root'
             gid: 0
-        - '/etc/at/allow':
+        - '/etc/at.allow':
             tag: 'CIS-6.1.11'
             mode: 600
             user: 'root'
