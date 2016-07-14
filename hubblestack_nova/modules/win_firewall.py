@@ -2,7 +2,7 @@
 '''
 HubbleStack Nova Windows Firewall module
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / madchills
 :maturity: 2016.7.0
 :platform: Windows
 :requires: SaltStack

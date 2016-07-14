@@ -2,7 +2,7 @@
 '''
 HubbleStack Nova module for auditing SSL certificates.
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / avb76
 :maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack, python-OpenSSL

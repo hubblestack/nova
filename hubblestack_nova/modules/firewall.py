@@ -2,7 +2,7 @@
 '''
 Hubble Nova plugin for using iptables to verify firewall rules
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / avb76
 :maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack

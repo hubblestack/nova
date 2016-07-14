@@ -2,10 +2,11 @@
 '''
 HubbleStack Nova plugin for openscap scanning.
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / cedwards
 :maturity: 2016.7.0
-:platform: Unix
-:requires: SaltStack + oscap module
+:platform: Red Hat
+:requires: SaltStack + oscap execution module
+
 '''
 from __future__ import absolute_import
 import salt.utils

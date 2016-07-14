@@ -7,7 +7,7 @@ is vulnerable to a known cve. The cve vunlerablities are gathered via the url in
 the yaml profile, and that data cached at the path
 /var/cache/salt/minion/cve_scan_cache/<os_name>_<version>.json
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / jaredhansen11
 :maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack

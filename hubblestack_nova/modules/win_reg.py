@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 '''
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / madchills
 :maturity: 2016.7.0
 :platform: Windows
 :requires: SaltStack

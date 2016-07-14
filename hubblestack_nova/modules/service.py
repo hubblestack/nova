@@ -5,7 +5,7 @@ HubbleStack Nova module for auditing running services.
 Supports both blacklisting and whitelisting services. Blacklisted services
 must not be running. Whitelisted services must be running.
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / basepi
 :maturity: 2016.7.0
 :platform: All
 :requires: SaltStack

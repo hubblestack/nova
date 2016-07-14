@@ -2,7 +2,7 @@
 '''
 HubbleStack Nova module for using sysctl to verify sysctl parameter.
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / avb76
 :maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack

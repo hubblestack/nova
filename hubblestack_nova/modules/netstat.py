@@ -2,7 +2,7 @@
 '''
 HubbleStack Nova module for auditing open ports.
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / basepi
 :maturity: 2016.7.0
 :platform: Unix
 :requires: SaltStack

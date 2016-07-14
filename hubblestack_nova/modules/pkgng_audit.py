@@ -2,7 +2,7 @@
 '''
 Hubble Nova plugin for FreeBSD pkgng audit
 
-:maintainer: HubbleStack
+:maintainer: HubbleStack / cedwards
 :maturity: 2016.7.0
 :platform: FreeBSD
 :requires: SaltStack
