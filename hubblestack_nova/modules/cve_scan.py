@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for FreeBSD pkgng audit
+HubbleStack Nova plugin for openscap scanning.
 
 :maintainer: HubbleStack
-:maturity: 20160428
+:maturity: 2016.7.0
 :platform: Unix
 :requires: SaltStack + oscap module
 '''

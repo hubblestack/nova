@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for using grep to verify settings in files
+HubbleStack Nova plugin for using grep to verify settings in files.
 
 Supports both blacklisting and whitelisting patterns. Blacklisted patterns must
 not be found in the specified file. Whitelisted patterns must be found in the
 specified file.
 
 :maintainer: HubbleStack
-:maturity: 20160405
+:maturity: 2016.7.0
 :platform: All
 :requires: SaltStack
 

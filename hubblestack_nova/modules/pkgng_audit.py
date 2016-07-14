@@ -3,9 +3,10 @@
 Hubble Nova plugin for FreeBSD pkgng audit
 
 :maintainer: HubbleStack
-:maturity: 20160421
+:maturity: 2016.7.0
 :platform: FreeBSD
 :requires: SaltStack
+
 '''
 from __future__ import absolute_import
 import logging

@@ -1,18 +1,17 @@
 # -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for auditing packages.
+HubbleStack Nova module for auditing installed packages.
 
-Supports both blacklisting and "whitelisting" pacakges. Blacklisted packages
+Supports both blacklisting and whitelisting pacakges. Blacklisted packages
 must not be installed. Whitelisted packages must be installed, with options for
 requiring a specific version or a minimum or maximum version.
 
 :maintainer: HubbleStack
-:maturity: 20160325
+:maturity: 2016.7.0
 :platform: All
 :requires: SaltStack
 
 Sample YAML data, with inline comments:
-
 
 pkg:
   # Must not be installed
