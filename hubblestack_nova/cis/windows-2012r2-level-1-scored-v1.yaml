@@ -1411,7 +1411,6 @@ win_reg:
               match_output: 'Enabled: 30 or fewer'
               value_type: 'equal'
       description: 'Ensure Password SettingS- Password Age is set to Enabled: 30 or fewer '
-
     MSS_DisableIPSourceRouting IPv6 IP source routing protection level protects against packet spoofing :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1537,7 +1536,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}\NoBackgroundPolicy':
               tag: CIS-18.8.18.2
-              match_output: 'Enabled'# : FALSE'
+              match_output: 'Enabled' # : FALSE'
               value_type: 'equal'
       description: 'Ensure Configure registry policy processing: Do not apply during periodic background processing is set to Enabled: FALSE'
     Configure registry policy processing_ Process even if the Group Policy objects have not changed :
@@ -1601,9 +1600,9 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoAutorun':
               tag: CIS-18.9.8.2
-              match_output: 'Enabled'# : Do not execute any autorun commands'
+              match_output: 'Enabled' # : Do not execute any autorun commands'
               value_type: 'equal'
-      description: 'Ensure Set the default behavior for AutoRun is set to Enabled: Do not execute any autorun commands'
+      description: 'Ensure Set the default behavior for AutoRun is set to Enabled_ Do not execute any autorun commands'
     Turn off Autoplay :
       data:
         'Microsoft Windows Server 2012 R2 Standard':
@@ -1681,7 +1680,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Application\MaxSize':
               tag: CIS-18.9.24.1.2
-              match_output: 'Enabled'#_ 32768 or greater'
+              match_output: 'Enabled' #_ 32768 or greater'
               value_type: 'equal'
       description: 'Ensure Application_ Specify the maximum log file size  is set to Enabled 32768 or greater'
     Security_ Specify the maximum log file size  :
@@ -1689,7 +1688,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\Security\MaxSize':
               tag: CIS-18.9.24.2.2
-              match_output: 'Enabled'#_ 196608 or greater'
+              match_output: 'Enabled' #_ 196608 or greater'
               value_type: 'equal'
       description: 'Ensure Security_ Specify the maximum log file size  is set to Enabled_ 196608 or greater'
     Setup_ Specify the maximum log file size  :
@@ -1705,7 +1704,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\EventLog\System\MaxSize':
               tag: CIS-18.9.24.4.2
-              match_output: 'Enabled'#_ 32768 or greater'
+              match_output: 'Enabled' #_ 32768 or greater'
               value_type: 'equal'
       description: 'Ensure System_ Specify the maximum log file size  is set to Enabled_ 32768 or greater'
     Configure Windows SmartScreen :
@@ -1753,7 +1752,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\MinEncryptionLevel':
               tag: CIS-18.9.48.3.9.3
-              match_output: 'Enabled'#: High Level'
+              match_output: 'Enabled' #: High Level'
               value_type: 'equal'
       description: 'Ensure Set client connection encryption level is set to Enabled: High Level'
     Prevent downloading of enclosures :
@@ -1785,7 +1784,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent\DefaultConsent':
               tag: CIS-18.9.67.2.1
-              match_output: 'Enabled'#: Always ask before sending data'
+              match_output: 'Enabled' #: Always ask before sending data'
               value_type: 'equal'
       description: 'Ensure Configure Default consent is set to Enabled: Always ask before sending data'
     Disallow Digest authentication :
@@ -1817,7 +1816,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\WindowsUpdate\AU\ScheduledInstallDay':
               tag: CIS-18.9.85.2
-              match_output: '0'# - Every day'
+              match_output: '0' # - Every day'
               value_type: 'equal'
       description: 'Ensure Configure Automatic UpdateS- Scheduled install day is set to 0 - Every day'
     Enable screen saver :
@@ -1833,7 +1832,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Control Panel\Desktop\SCRNSAVE.EXE':
               tag: CIS-19.1.3.2
-              match_output: 'Enabled'#: scrnsave.scr'
+              match_output: 'Enabled' #: scrnsave.scr'
               value_type: 'equal'
       description: 'Ensure Force specific screen saver: Screen saver executable name is set to Enabled: scrnsave.scr'
     Password protect the screen saver :
@@ -1849,7 +1848,7 @@ win_reg:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_USERS\<SID>\Software\Policies\Microsoft\Windows\Control Panel\Desktop\ScreenSaveTimeOut':
               tag: CIS-19.1.3.4
-              match_output: 'Enabled'#: 900 seconds or fewer, but not 0'
+              match_output: 'Enabled' #: 900 seconds or fewer, but not 0'
               value_type: 'equal'
       description: 'Ensure Screen saver timeout is set to Enabled_ 900 seconds or fewer but not 0'
     Turn off toast notifications on the lock screen :
