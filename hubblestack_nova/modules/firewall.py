@@ -2,14 +2,15 @@
 '''
 Hubble Nova plugin for using iptables to verify firewall rules
 
-:maintainer: HubbleStack
-:maturity: 20160503
+:maintainer: HubbleStack / avb76
+:maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack
 
-This audit module requires yaml data to execute. Running hubble.audit will search the local
-directory for any .yaml files and it will pass all the data to this module.
-If this module find a top-level 'firewall' key, it will use the data under that key.
+This audit module requires yaml data to execute. Running hubble.audit will
+search the local directory for any .yaml files and it will pass all the data to
+this module.  If this module find a top-level 'firewall' key, it will use the
+data under that key.
 
 Sample YAML data used by firewall.py, with inline comments:
 
@@ -43,7 +44,8 @@ The elements in the rule dictionary will be used to build the iptables rule.
 Note: table, chain and family are not required under the rule key.
 Note: iptables.build_rule does not verify the syntax of the iptables rules.
 
-Here is a list of accepted iptables rules elements, based on the iptables.build_rule source code:
+Here is a list of accepted iptables rules elements, based on the
+iptables.build_rule source code:
     - command
     - position
     - full
@@ -65,15 +67,15 @@ Here is a list of accepted iptables rules elements, based on the iptables.build_
     - if it's the case, jump arguments can be passed -- see more details bellow
 
 Jump arguments
-    (comments inside the iptables.build_rule source code)
-    # All jump arguments as extracted from man iptables-extensions, man iptables,
-    # man xtables-addons and http://www.iptables.info/en/iptables-targets-and-jumps.html
+  (comments inside the iptables.build_rule source code)
+  # All jump arguments as extracted from man iptables-extensions, man iptables,
+  # man xtables-addons and http://www.iptables.info/en/iptables-targets-and-jumps.html
 
 Check the following links for more details:
-    - iptables.build_rule SaltStack documentation
-    (https://docs.saltstack.com/en/latest/ref/modules/all/salt.modules.iptables.html#salt.modules.iptables.build_rule)
-    - iptables salt execution module source code (search for the build_rule function inside):
-    (https://github.com/saltstack/salt/blob/develop/salt/modules/iptables.py)
+  - iptables.build_rule SaltStack documentation
+  (https://docs.saltstack.com/en/latest/ref/modules/all/salt.modules.iptables.html#salt.modules.iptables.build_rule)
+  - iptables salt execution module source code (search for the build_rule function inside):
+  (https://github.com/saltstack/salt/blob/develop/salt/modules/iptables.py)
 '''
 
 from __future__ import absolute_import

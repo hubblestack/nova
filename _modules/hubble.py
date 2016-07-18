@@ -2,8 +2,8 @@
 '''
 Loader and primary interface for nova modules
 
-:maintainer: basepi
-:maturity: 20160218
+:maintainer: HubbleStack / basepi
+:maturity: 2016.7.0
 :platform: All
 :requires: SaltStack
 

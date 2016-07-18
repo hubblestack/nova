@@ -1,12 +1,12 @@
-# win_firewall.py
+# -*- encoding: utf-8 -*-
 '''
-Loader and primary interface for nova modules
+HubbleStack Nova Windows Firewall module
 
-:maintainer: HubbleStack
-:maturity: 20160526
+:maintainer: HubbleStack / madchills
+:maturity: 2016.7.0
 :platform: Windows
 :requires: SaltStack
-:TODO:
+
 '''
 
 from __future__ import absolute_import

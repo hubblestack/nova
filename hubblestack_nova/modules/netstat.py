@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for FreeBSD pkgng audit
+HubbleStack Nova module for auditing open ports.
 
-:maintainer: HubbleStack
-:maturity: 20160623
+:maintainer: HubbleStack / basepi
+:maturity: 2016.7.0
 :platform: Unix
 :requires: SaltStack
 

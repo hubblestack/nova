@@ -1,12 +1,11 @@
-# win_gp.py
+# -*- encoding: utf-8 -*-
 '''
-Loader and primary interface for nova modules
 
 :maintainer: HubbleStack
-:maturity: 20160526
+:maturity: 2016.7.0
 :platform: Windows
 :requires: SaltStack
-:TODO:
+
 '''
 
 from __future__ import absolute_import

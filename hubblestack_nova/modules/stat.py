@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for using stat to verify settings over files
+HubbleStack Nova module for using stat to verify ownership & permissions.
 
-:maintainer: HubbleStack
-:maturity: 20160417
-:platform: CentOS-6 and CentOS-7
+:maintainer: HubbleStack / avb76
+:maturity: 2016.7.0
+:platform: Linux
 :requires: SaltStack
 
 This audit module requires yaml data to execute. It will search the local

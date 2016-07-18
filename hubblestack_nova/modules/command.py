@@ -3,8 +3,8 @@
 Hubble Nova plugin for running arbitrary commands and checking the output of
 those commands
 
-:maintainer: HubbleStack
-:maturity: 20160516
+:maintainer: HubbleStack / basepi
+:maturity: 2016.7.0
 :platform: All
 :requires: SaltStack
 

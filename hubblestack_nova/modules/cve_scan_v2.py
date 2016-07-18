@@ -1,18 +1,20 @@
+# -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for auditing services.
+HubbleStack Nova plugin for auditing installed packages.
 
-This module checks all of a system's local packages and reports if the package is vulnerable to
-a known cve. The cve vunlerablities are gathered via the url in the yaml profile, and that data
-cached at the path /var/cache/salt/minion/cve_scan_cache/<os_name>_<version>.json
+This module checks all of a system's local packages and reports if the package
+is vulnerable to a known cve. The cve vunlerablities are gathered via the url in
+the yaml profile, and that data cached at the path
+/var/cache/salt/minion/cve_scan_cache/<os_name>_<version>.json
 
-:maintainer: HubbleStack
-:maturity: 20160214
+:maintainer: HubbleStack / jaredhanson11
+:maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack
 
 This audit module requires yaml data to execute. It will search the local
-directory for any .yaml files, and if it finds a top-level 'cve_scan_v2' key, it will
-use that data.
+directory for any .yaml files, and if it finds a top-level 'cve_scan_v2' key, it
+will use that data.
 
 Sample YAML data with inline comments:
 
@@ -28,11 +30,12 @@ cve_scan_v2:
         score: 3
 
 
-The source of the cve data can be http://vulners.com/, salt://path/to/json, and any other url
-that returns cve data in json format. If the url contains vulners.com, then this module will use
-the local system's os and os version to dynamically query vulner.com/api/v3 for cve data
-specifically related to your system. If the url doesn't contain vulners.com, it will query the
-exact url, so that endpoint must return cve data specific to the system you are scanning.
+The source of the cve data can be http://vulners.com/, salt://path/to/json, and
+any other url that returns cve data in json format. If the url contains
+vulners.com, then this module will use the local system's os and os version to
+dynamically query vulner.com/api/v3 for cve data specifically related to your
+system. If the url doesn't contain vulners.com, it will query the exact url, so
+that endpoint must return cve data specific to the system you are scanning.
 
 The cve data json must be formatted as follows:
 
