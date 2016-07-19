@@ -92,7 +92,7 @@ def __virtual__():
     return not salt.utils.is_windows()
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False):
     '''
     Main audit function. See module docstring for more information on usage.
     '''
@@ -108,7 +108,7 @@ def audit(data_list, tags, verbose=False):
     # Go through yaml to check for cve_scan_v2,
     #    if its present, check for a cached version
     #    of the scan.
-    for data in data_list:
+    for profile, data in data_list:
 
         if 'cve_scan_v2' in data:
 
@@ -129,7 +129,7 @@ def audit(data_list, tags, verbose=False):
                 os.makedirs(os.path.dirname(cached_json))
             cache = _get_cache(ttl, cached_json)
             log.debug("valid cache: %s, for url: %s", cache != [], url)
-            endpoints.append((url, cache, cached_json, cached_zip, min_score))
+            endpoints.append((url, cache, cached_json, cached_zip, min_score, profile))
 
     # If we don't find our module in the yaml
     if not endpoints:
@@ -139,7 +139,7 @@ def audit(data_list, tags, verbose=False):
     # Dictionary of {pkg_name: list(pkg_versions)}
     local_pkgs = __salt__['pkg.list_pkgs'](versions_as_list=True)
 
-    for url, cache, cached_json, cached_zip, min_score in endpoints:
+    for url, cache, cached_json, cached_zip, min_score, profile in endpoints:
         log.debug("url: %s, min_score: %s", url, min_score)
         if cache: # Valid cached file
             master_json = cache
@@ -224,9 +224,9 @@ def audit(data_list, tags, verbose=False):
                                     vulnerable = affected_obj
                 if vulnerable:
                     if vulnerable.score < min_score:
-                        ret['Controlled'].append(vulnerable.get_report(verbose))
+                        ret['Controlled'].append(vulnerable.get_report(verbose, show_profile, profile))
                     else:
-                        ret['Failure'].append(vulnerable.get_report(verbose))
+                        ret['Failure'].append(vulnerable.get_report(verbose, show_profile, profile))
 
     if tags != '*':
         log.debug("tags: %s", tags)
@@ -379,7 +379,7 @@ class VulnerablePkg:
         self.oudated_version = None
 
 
-    def get_report(self, verbose):
+    def get_report(self, verbose, show_profile, profile):
         '''
         Return the dictionary of what should be reported in failures, based on verbose.
         '''
@@ -395,6 +395,8 @@ class VulnerablePkg:
                 'local_version': self.oudated_version,
                 'description': self.title
             }
+            if show_profile:
+                report['nova_profile'] = profile
         else:
             report = self.title
         return {uid: report}

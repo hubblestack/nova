@@ -57,13 +57,16 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False):
     '''
     Run the stat audits contained in the YAML files processed by __virtual__
     '''
     __data__ = {}
-    for data in data_list:
-        _merge_yaml(__data__, data)
+    for profile, data in data_list:
+        if show_profile:
+            _merge_yaml(__data__, data, profile)
+        else:
+            _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
     log.trace('service audit __data__:')
@@ -161,13 +164,15 @@ def audit(data_list, tags, verbose=False):
 
 
 
-def _merge_yaml(ret, data):
+def _merge_yaml(ret, data, profile=None):
     '''
     Merge two yaml dicts together
     '''
     if 'stat' not in ret:
         ret['stat'] = []
     for key, val in data.get('stat', {}).iteritems():
+        if profile and 'data' in val:
+            val['data']['nova_profile'] = profile
         ret['stat'].append({key: val})
     return ret
 

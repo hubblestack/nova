@@ -20,14 +20,14 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False):
     '''
     Run the pkg.audit command
     '''
     ret = {'Success': [], 'Failure': []}
 
     __tags__ = []
-    for data in data_list:
+    for profile, data in data_list:
         if 'pkgng_audit' in data:
             __tags__ = ['pkgng_audit']
             break
@@ -40,9 +40,14 @@ def audit(data_list, tags, verbose=False):
         return ret
 
     salt_ret = __salt__['pkg.audit']()
+    results = {'result': salt_ret}
+    if show_profile:
+        results['nova_profile'] = profile
+    if not verbose:
+        results = salt_ret
     if '0 problem(s)' not in salt_ret:
-        ret['Failure'].append(salt_ret)
+        ret['Failure'].append(results)
     else:
-        ret['Success'].append(salt_ret)
+        ret['Success'].append(results)
 
     return ret

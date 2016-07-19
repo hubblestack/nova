@@ -99,10 +99,13 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False):
     __data__ = {}
-    for data in data_list:
-        _merge_yaml(__data__, data)
+    for profile, data in data_list:
+        if show_profile:
+            _merge_yaml(__data__, data, profile)
+        else:
+            _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
     log.trace('service audit __data__:')
@@ -195,10 +198,12 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _merge_yaml(ret, data):
+def _merge_yaml(ret, data, profile=None):
     if 'openssl' not in ret:
         ret['openssl'] = []
     for key, val in data.get('openssl', {}).iteritems():
+        if profile and 'data' in val:
+            val['data']['nova_profile'] = profile
         ret['openssl'].append({key: val})
     return ret
 

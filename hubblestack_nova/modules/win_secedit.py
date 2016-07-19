@@ -30,14 +30,17 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False):
     '''Runs secedit on the local machine and audits the return data
     with the CIS yaml processed by __virtual__'''
     __data__ = {}
     __secdata__ = _secedit_export()
     __sidaccounts__ = _get_account_sid()
-    for data in data_list:
-        _merge_yaml(__data__, data)
+    for profile, data in data_list:
+        if show_profile:
+            _merge_yaml(__data__, data, profile)
+        else:
+            _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
     log.trace('secedit audit __data__:')
     log.trace(__data__)
@@ -134,7 +137,7 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _merge_yaml(ret, data):
+def _merge_yaml(ret, data, profile=None):
     '''
     Merge two yaml dicts together at the secedit:blacklist and
     secedit:whitelist level
@@ -146,6 +149,8 @@ def _merge_yaml(ret, data):
             if topkey not in ret[__virtualname__]:
                 ret[__virtualname__][topkey] = []
             for key, val in data[__virtualname__][topkey].iteritems():
+                if profile and 'data' in val:
+                    val['data']['nova_profile'] = profile
                 ret[__virtualname__][topkey].append({key: val})
     return ret
 
