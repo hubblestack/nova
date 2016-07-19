@@ -83,6 +83,7 @@ def audit(data_list, tags, verbose=False, show_profile=False):
             _merge_yaml(__data__, data, profile)
         else:
             _merge_yaml(__data__, data)
+    __tags__ = _get_tags(__data__)
 
     log.trace('grep audit __data__:')
     log.trace(__data__)
