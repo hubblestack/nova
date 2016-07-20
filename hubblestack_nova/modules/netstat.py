@@ -80,6 +80,7 @@ def audit(data_list, tags, verbose=False, show_profile=False):
                 failure_data = {address: {'program': address_data['program']}}
                 failure_data[address].update(address_data)
                 failure_data[address]['description'] = address_data['program']
+                failure_data[address]['nova_profile'] = 'netstat'
             ret['Failure'].append(failure_data)
 
     return ret
