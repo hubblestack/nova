@@ -244,14 +244,17 @@ include full documentation
         return True
 
 
-    def audit(data_list, tag, verbose=False):
+    def audit(data_list, tag, verbose=False, show_profile=False):
         __tags__ = []
-        for data in data_list:
+        for profile, data in data_list:
             # This is where you process the dictionaries passed in by hubble.py,
             # searching for data pertaining to this audit module. Modules which
             # require no data should use yaml which is empty except for a
             # top-level key, and should only do work if the top-level key is
             # found in the data
+
+            # if show_profile is True, then we need to also inject the profile
+            # in the data for each check so that it appears in verbose output
             pass
 
         ret = {'Success': [], 'Failure': []}
@@ -267,20 +270,23 @@ All Nova plugins require a ``__virtual__()`` function to determine module
 compatibility, and an ``audit()`` function to perform the actual audit
 functionality
 
-The ``audit()`` function must take three arguments, ``data_list``, ``tag`` and
-``verbose``. The ``data_list`` argument is a list of dictionaries passed in by
+The ``audit()`` function must take four arguments, ``data_list``, ``tag``,
+``verbose``, and ``show_profile``. The ``data_list`` argument is a list of dictionaries passed in by
 ``hubble.py``. ``hubble.py`` gets this data from loading the specified yaml for
 the audit run. Your audit module should only run if it finds its own data in
 this list. The ``tag`` argument is a glob expression for which tags the audit
 function should run. It is the job of the audit module to compare the ``tag``
 glob with all tags supported by this module and only run the audits which
 match. The ``verbose`` argument defines whether additional information should
-be returned for audits, such as description and remediation instructions.
+be returned for audits, such as description and remediation instructions. The
+``show_profile`` argument tells whether the profile should be injected into
+the verbose data for each check.
 
-The return value should be a dictionary, with two keys, "Success" and
-"Failure".  The values for these keys should be a list of tags as strings, or a
-list of dictionaries containing tags and other information for the audit (in
-the case of ``verbose``).
+The return value should be a dictionary, with optional keys "Success",
+"Failure", and "Controlled". The values for these keys should be a list of
+one-key dictionaries in the form of ``{<tag>: <string_description>}``, or a
+list of one-key dictionaries in the form of ``{<tag>: <data_dict>}`` (in the
+case of ``verbose``).
 
 Contribute
 ==========
