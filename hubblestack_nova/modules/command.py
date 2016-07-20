@@ -156,11 +156,12 @@ def audit(data_list, tags, verbose=False, show_profile=False):
                     else:
                         ret['Failure'].append(tag_data)
 
-    if not verbose:
-        failure = []
-        success = []
-        controlled = []
+    failure = []
+    success = []
+    controlled = []
 
+    if not verbose:
+        # Pull out just the tag and description
         tags_descriptions = set()
 
         for tag_data in ret['Failure']:
@@ -191,9 +192,23 @@ def audit(data_list, tags, verbose=False, show_profile=False):
                 controlled.append({tag: tag_dict})
                 control_reasons.add((tag, description, control_reason))
 
-        ret['Controlled'] = controlled
-        ret['Success'] = success
-        ret['Failure'] = failure
+    else:
+        # Format verbose output as single-key dictionaries with tag as key
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            failure.append({tag: tag_data})
+
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            success.append({tag: tag_data})
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            controlled.append({tag: tag_data})
+
+    ret['Controlled'] = controlled
+    ret['Success'] = success
+    ret['Failure'] = failure
 
     if not ret['Controlled']:
         ret.pop('Controlled')
@@ -209,8 +224,8 @@ def _merge_yaml(ret, data, profile=None):
         ret['command'] = []
     if 'command' in data:
         for key, val in data['command'].iteritems():
-            if profile and 'data' in val:
-                val['data']['nova_profile'] = profile
+            if profile and isinstance(val, dict):
+                val['nova_profile'] = profile
             ret['command'].append({key: val})
     return ret
 
