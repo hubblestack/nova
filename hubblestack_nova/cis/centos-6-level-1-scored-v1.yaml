@@ -133,7 +133,7 @@ stat:
   cron_hourly:
     data:
       'CentOS-6':
-        - 'etc/cron.hourly':
+        - '/etc/cron.hourly':
             tag: 'CIS-6.1.5'
             mode: 700
             user: 'root'
