@@ -42,7 +42,8 @@ def audit(configs=None,
           show_success=None,
           show_compliance=None,
           show_profile=None,
-          called_from_top=None):
+          called_from_top=None,
+          saltenv=None):
     '''
     Primary entry point for audit calls.
 
@@ -88,6 +89,9 @@ def audit(configs=None,
         Ignore this argument. It is used for distinguishing between user-calls
         of this function and calls from hubble.top.
 
+    saltenv
+        The Salt environment that contains HubbleStack files.
+
     CLI Examples:
 
     .. code-block:: bash
@@ -102,7 +106,7 @@ def audit(configs=None,
                    show_compliance=show_compliance)
 
     if __salt__['config.get']('hubblestack.nova.autoload', True):
-        load()
+        load(saltenv)
     if not __nova__:
         return False, 'No nova modules/data have been loaded.'
 
@@ -246,7 +250,8 @@ def audit(configs=None,
 def top(topfile='top.nova',
         verbose=None,
         show_success=None,
-        show_compliance=None):
+        show_compliance=None,
+        saltenv=None):
     '''
     Compile and run all yaml data from the specified nova topfile.
 
@@ -299,6 +304,9 @@ def top(topfile='top.nova',
         by total checks). Defaults to True. Configurable via
         `hubblestack.nova.show_compliance` in minion config/pillar.
 
+    saltenv
+        The Salt environment that contains HubbleStack files.
+
     CLI Examples:
 
     .. code-block:: bash
@@ -308,7 +316,7 @@ def top(topfile='top.nova',
         salt '*' hubble.top foo/bar.nova verbose=True
     '''
     if __salt__['config.get']('hubblestack.nova.autoload', True):
-        load()
+        load(saltenv)
     if not __nova__:
         return False, 'No nova modules/data have been loaded.'
 
@@ -379,7 +387,7 @@ def top(topfile='top.nova',
     return results
 
 
-def sync(saltenv='base'):
+def sync(saltenv=None):
     '''
     Sync the nova audit modules from the saltstack fileserver.
 
@@ -394,6 +402,11 @@ def sync(saltenv='base'):
 
     NOTE: This function will also clean out existing files at the cached
     location, as cp.cache_dir doesn't clean out old files
+
+    Arguments:
+
+    saltenv
+        The Salt environment that contains HubbleStack files.
 
     CLI Examples:
 
@@ -414,13 +427,13 @@ def sync(saltenv='base'):
         path = 'salt://{0}'.format(nova_dir)
 
     # Clean previously synced files
-    __salt__['file.remove'](_hubble_dir())
+    __salt__['file.remove'](_hubble_dir(saltenv))
     # Sync the files
     cached = __salt__['cp.cache_dir'](path, saltenv=saltenv)
 
     if cached and isinstance(cached, list):
         # Success! Trim the paths
-        cachedir = _hubble_dir()
+        cachedir = _hubble_dir(saltenv)
         ret = [relative.partition(cachedir)[2] for relative in cached]
         return ret
     else:
@@ -434,13 +447,18 @@ def sync(saltenv='base'):
                                         .format(cached))
 
 
-def load(saltenv='base'):
+def load(saltenv=None):
     '''
     Load the synced audit modules.
+
+    Arguments:
+
+    saltenv
+        The Salt environment that contains HubbleStack files.
     '''
     if __salt__['config.get']('hubblestack.nova.autosync', True):
-        sync()
-    if not os.path.isdir(_hubble_dir()):
+        sync(saltenv)
+    if not os.path.isdir(_hubble_dir(saltenv)):
         return False, 'No synced nova modules found'
 
     log.debug('loading nova modules')
@@ -455,9 +473,14 @@ def load(saltenv='base'):
     return ret
 
 
-def _hubble_dir():
+def _hubble_dir(saltenv=None):
     '''
     Generate the local minion directory to which nova modules are synced
+
+    Arguments:
+
+    saltenv
+        The Salt environment that contains HubbleStack files.
     '''
     nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack_nova')
     # Support optional salt:// in config
@@ -488,11 +511,16 @@ def _calculate_compliance(results):
     return None
 
 
-def _get_top_data(topfile):
+def _get_top_data(topfile, saltenv=None):
     '''
     Helper method to retrieve and parse the nova topfile
+
+    Arguments:
+
+    saltenv
+        The Salt environment that contains HubbleStack files.
     '''
-    topfile = os.path.join(_hubble_dir(), topfile)
+    topfile = os.path.join(_hubble_dir(saltenv), topfile)
 
     try:
         with open(topfile) as handle:
