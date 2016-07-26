@@ -379,7 +379,7 @@ def top(topfile='top.nova',
     return results
 
 
-def sync():
+def sync(saltenv='base'):
     '''
     Sync the nova audit modules from the saltstack fileserver.
 
@@ -404,7 +404,7 @@ def sync():
     '''
     log.debug('syncing nova modules')
     nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'salt://hubblestack_nova')
-    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    saltenv = saltenv or __salt__['config.get']('hubblestack.nova.saltenv', 'base')
 
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
@@ -434,7 +434,7 @@ def sync():
                                         .format(cached))
 
 
-def load():
+def load(saltenv='base'):
     '''
     Load the synced audit modules.
     '''
@@ -463,7 +463,7 @@ def _hubble_dir():
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
         _, _, nova_dir = nova_dir.partition('salt://')
-    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    saltenv = saltenv or __salt__['config.get']('hubblestack.nova.saltenv', 'base')
     cachedir = os.path.join(__opts__.get('cachedir'),
                             'files',
                             saltenv,
