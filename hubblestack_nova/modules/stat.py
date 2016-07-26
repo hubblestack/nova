@@ -57,13 +57,16 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False):
     '''
     Run the stat audits contained in the YAML files processed by __virtual__
     '''
     __data__ = {}
-    for data in data_list:
-        _merge_yaml(__data__, data)
+    for profile, data in data_list:
+        if show_profile:
+            _merge_yaml(__data__, data, profile)
+        else:
+            _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
     log.trace('service audit __data__:')
@@ -114,11 +117,12 @@ def audit(data_list, tags, verbose=False):
                 else:
                     ret['Failure'].append(tag_data)
 
-    if not verbose:
-        failure = []
-        success = []
-        controlled = []
+    failure = []
+    success = []
+    controlled = []
 
+    if not verbose:
+        # Pull out just the tag and description
         tags_descriptions = set()
 
         for tag_data in ret['Failure']:
@@ -149,10 +153,23 @@ def audit(data_list, tags, verbose=False):
                 controlled.append({tag: tag_dict})
                 control_reasons.add((tag, description, control_reason))
 
+    else:
+        # Format verbose output as single-key dictionaries with tag as key
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            failure.append({tag: tag_data})
 
-        ret['Controlled'] = controlled
-        ret['Success'] = success
-        ret['Failure'] = failure
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            success.append({tag: tag_data})
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            controlled.append({tag: tag_data})
+
+    ret['Controlled'] = controlled
+    ret['Success'] = success
+    ret['Failure'] = failure
 
     if not ret['Controlled']:
         ret.pop('Controlled')
@@ -161,13 +178,15 @@ def audit(data_list, tags, verbose=False):
 
 
 
-def _merge_yaml(ret, data):
+def _merge_yaml(ret, data, profile=None):
     '''
     Merge two yaml dicts together
     '''
     if 'stat' not in ret:
         ret['stat'] = []
     for key, val in data.get('stat', {}).iteritems():
+        if profile and isinstance(val, dict):
+            val['nova_profile'] = profile
         ret['stat'].append({key: val})
     return ret
 

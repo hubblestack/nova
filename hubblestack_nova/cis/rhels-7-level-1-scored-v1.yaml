@@ -437,10 +437,8 @@ grep:
             pattern: PASS_WARN_DAYS
             tag: CIS-5.4.1.3
       description: Set Password Expiring Warning Days (Scored)
-    passwd_inactiive:
-      data:
     passwd_inactive:
-      data: 
+      data:
         Red Hat Enterprise Linux Server-7:
         - /etc/default/useradd:
             pattern: INACTIVE=30

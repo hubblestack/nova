@@ -21,7 +21,7 @@ def __virtual__():
     return False, 'This module requires Linux and the oscap binary'
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False):
     '''
     Run the network.netstat command
     '''

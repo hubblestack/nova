@@ -41,6 +41,7 @@ def audit(configs=None,
           verbose=None,
           show_success=None,
           show_compliance=None,
+          show_profile=None,
           called_from_top=None):
     '''
     Primary entry point for audit calls.
@@ -78,6 +79,11 @@ def audit(configs=None,
         by total checks). Defaults to True. Configurable via
         `hubblestack.nova.show_compliance` in minion config/pillar.
 
+    show_profile
+        Whether to add the profile path to the verbose output for audits.
+        Defaults to False. Configurable via `hubblestack.nova.show_profile`
+        in minion config/pillar.
+
     called_from_top
         Ignore this argument. It is used for distinguishing between user-calls
         of this function and calls from hubble.top.
@@ -106,6 +112,8 @@ def audit(configs=None,
         show_success = __salt__['config.get']('hubblestack.nova.show_success', True)
     if show_compliance is None:
         show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
+    if show_profile is None:
+        show_profile = __salt__['config.get']('hubblestack.nova.show_profile', False)
 
     if not isinstance(configs, list):
         # Convert string
@@ -139,7 +147,9 @@ def audit(configs=None,
             results['Errors'].append({config: {'error': 'No matching profiles found for {0}'
                                                         .format(config)}})
 
-    data_list = [__nova__.__data__[key] for key in to_run]
+    # compile list of tuples with profile name and profile data
+    data_list = [(key.split('.yaml')[0].split(os.path.sep)[-1],
+                  __nova__.__data__[key]) for key in to_run]
     log.trace('hubble.py configs:')
     log.trace(configs)
     log.trace('hubble.py data_list:')
@@ -151,7 +161,7 @@ def audit(configs=None,
     # We can revisit if this ever becomes a big bottleneck
     for key, func in __nova__._dict.iteritems():
         try:
-            ret = func(data_list, tags, verbose=verbose)
+            ret = func(data_list, tags, verbose=verbose, show_profile=show_profile)
         except Exception as exc:
             log.error('Exception occurred in nova module:')
             log.error(traceback.format_exc())
@@ -176,7 +186,7 @@ def audit(configs=None,
 
     processed_controls = {}
     # Inspect the data for compensating control data
-    for audit_data in data_list:
+    for _, audit_data in data_list:
         control_config = audit_data.get('control', [])
         for control in control_config:
             if isinstance(control, str):
