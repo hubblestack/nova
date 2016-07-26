@@ -1826,8 +1826,7 @@ win_reg:
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure WDigest Authentication is set to Disabled'
-    Include command line in process creation events :
-    Ensure Include command line in process creation events :
+    Ensure Include command line in process creation events is set to Disable:
       data:
         'Microsoft Windows Server 2012 R2 Standard':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\ProcessCreationIncludeCmdLine_Enabled':
@@ -1835,10 +1834,10 @@ win_reg:
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure Include command line in process creation events is set to Disabled'
-   Allow remote access to the Plug and Play interface :
-     data:
-       'Microsoft Windows Server 2008 R2 Standard':
-          - '	HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Settings\AllowRemoteRPC':
+    Allow remote access to the Plug and Play interface :
+      data:
+        'Microsoft Windows Server 2008 R2 Standard':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Settings\AllowRemoteRPC':
               tag: CIS-18.8.5.2
               match_output: 'Disabled'
               value_type: 'equal'
