@@ -464,7 +464,7 @@ def load(saltenv=None):
     log.debug('loading nova modules')
 
     global __nova__
-    __nova__ = NovaLazyLoader()
+    __nova__ = NovaLazyLoader(saltenv=saltenv)
 
     ret = {'loaded': __nova__._dict.keys(),
            'missing': __nova__.missing_modules,
@@ -551,8 +551,8 @@ class NovaLazyLoader(LazyLoader):
     worth it.
     '''
 
-    def __init__(self):
-        super(NovaLazyLoader, self).__init__([_hubble_dir()],
+    def __init__(self, saltenv=None):
+        super(NovaLazyLoader, self).__init__([_hubble_dir(saltenv)],
                                              opts=__opts__,
                                              tag='nova')
         self.__data__ = {}
