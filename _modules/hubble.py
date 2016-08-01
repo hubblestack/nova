@@ -10,10 +10,10 @@ Loader and primary interface for nova modules
 See README for documentation
 
 Configuration:
-    - hubblestack.nova.dir
-    - hubblestack.nova.saltenv
-    - hubblestack.nova.autoload
-    - hubblestack.nova.autosync
+    - hubblestack:nova:dir
+    - hubblestack:nova:saltenv
+    - hubblestack:nova:autoload
+    - hubblestack:nova:autosync
 '''
 from __future__ import absolute_import
 import logging
@@ -67,21 +67,21 @@ def audit(configs=None,
         Whether to show additional information about audits, including
         description, remediation instructions, etc. The data returned depends
         on the audit module. Defaults to False. Configurable via
-        `hubblestack.nova.verbose` in minion config/pillar.
+        `hubblestack:nova:verbose` in minion config/pillar.
 
     show_success
         Whether to show successful audits in addition to failed audits.
-        Defaults to True. Configurable via `hubblestack.nova.show_success` in
+        Defaults to True. Configurable via `hubblestack:nova:show_success` in
         minion config/pillar.
 
     show_compliance
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
-        `hubblestack.nova.show_compliance` in minion config/pillar.
+        `hubblestack:nova:show_compliance` in minion config/pillar.
 
     show_profile
         Whether to add the profile path to the verbose output for audits.
-        Defaults to False. Configurable via `hubblestack.nova.show_profile`
+        Defaults to False. Configurable via `hubblestack:nova:show_profile`
         in minion config/pillar.
 
     called_from_top
@@ -101,19 +101,19 @@ def audit(configs=None,
                    show_success=show_success,
                    show_compliance=show_compliance)
 
-    if __salt__['config.get']('hubblestack.nova.autoload', True):
+    if __salt__['config.get']('hubblestack:nova:autoload', True):
         load()
     if not __nova__:
         return False, 'No nova modules/data have been loaded.'
 
     if verbose is None:
-        verbose = __salt__['config.get']('hubblestack.nova.verbose', False)
+        verbose = __salt__['config.get']('hubblestack:nova:verbose', False)
     if show_success is None:
-        show_success = __salt__['config.get']('hubblestack.nova.show_success', True)
+        show_success = __salt__['config.get']('hubblestack:nova:show_success', True)
     if show_compliance is None:
-        show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
+        show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
     if show_profile is None:
-        show_profile = __salt__['config.get']('hubblestack.nova.show_profile', False)
+        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', False)
 
     if not isinstance(configs, list):
         # Convert string
@@ -287,17 +287,17 @@ def top(topfile='top.nova',
         Whether to show additional information about audits, including
         description, remediation instructions, etc. The data returned depends
         on the audit module. Defaults to False. Configurable via
-        `hubblestack.nova.verbose` in minion config/pillar.
+        `hubblestack:nova:verbose` in minion config/pillar.
 
     show_success
         Whether to show successful audits in addition to failed audits.
-        Defaults to True. Configurable via `hubblestack.nova.show_success` in
+        Defaults to True. Configurable via `hubblestack:nova:show_success` in
         minion config/pillar.
 
     show_compliance
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
-        `hubblestack.nova.show_compliance` in minion config/pillar.
+        `hubblestack:nova:show_compliance` in minion config/pillar.
 
     CLI Examples:
 
@@ -307,17 +307,17 @@ def top(topfile='top.nova',
         salt '*' hubble.top foo/bar/top.nova
         salt '*' hubble.top foo/bar.nova verbose=True
     '''
-    if __salt__['config.get']('hubblestack.nova.autoload', True):
+    if __salt__['config.get']('hubblestack:nova:autoload', True):
         load()
     if not __nova__:
         return False, 'No nova modules/data have been loaded.'
 
     if verbose is None:
-        verbose = __salt__['config.get']('hubblestack.nova.verbose', False)
+        verbose = __salt__['config.get']('hubblestack:nova:verbose', False)
     if show_success is None:
-        show_success = __salt__['config.get']('hubblestack.nova.show_success', True)
+        show_success = __salt__['config.get']('hubblestack:nova:show_success', True)
     if show_compliance is None:
-        show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
+        show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
 
     results = {}
 
@@ -386,7 +386,7 @@ def sync():
     The modules should be stored in the salt fileserver. By default nova will
     search the base environment for a top level ``hubblestack_nova`` directory,
     unless otherwise specified via pillar or minion config
-    (``hubblestack.nova.dir``)
+    (``hubblestack:nova:dir``)
 
     Modules will just be cached in the normal minion cachedir
 
@@ -403,8 +403,8 @@ def sync():
         salt '*' nova.sync saltenv=hubble
     '''
     log.debug('syncing nova modules')
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'salt://hubblestack_nova')
-    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    nova_dir = __salt__['config.get']('hubblestack:nova:dir', 'salt://hubblestack_nova')
+    saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
 
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
@@ -438,7 +438,7 @@ def load():
     '''
     Load the synced audit modules.
     '''
-    if __salt__['config.get']('hubblestack.nova.autosync', True):
+    if __salt__['config.get']('hubblestack:nova:autosync', True):
         sync()
     if not os.path.isdir(_hubble_dir()):
         return False, 'No synced nova modules found'
@@ -459,11 +459,11 @@ def _hubble_dir():
     '''
     Generate the local minion directory to which nova modules are synced
     '''
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack_nova')
+    nova_dir = __salt__['config.get']('hubblestack:nova:dir', 'hubblestack_nova')
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
         _, _, nova_dir = nova_dir.partition('salt://')
-    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
     cachedir = os.path.join(__opts__.get('cachedir'),
                             'files',
                             saltenv,

@@ -191,8 +191,10 @@ configurable via pillar. The defaults are shown below:
 
 .. code-block:: yaml
 
-    hubblestack:nova:saltenv: base
-    hubblestack:nova:dir: salt://hubblestack_nova
+    hubblestack:
+      nova:
+        saltenv: base
+        dir: salt://hubblestack_nova
 
 2. By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
 ``hubble.sync``) in order to ensure that it is auditing with the most up-to-date
@@ -202,8 +204,10 @@ shown, change to False to disable behaviors):
 
 .. code-block:: yaml
 
-    hubblestack:nova:autosync: True
-    hubblestack:nova:autoload: True
+    hubblestack:
+      nova:
+        autosync: True
+        autoload: True
 
 Development
 ===========
