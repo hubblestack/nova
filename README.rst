@@ -24,8 +24,14 @@ Ensure that this path is defined in your Salt Master's `file_roots`:
       - /srv/salt
       - /srv/spm/salt
 
-Note: Remember to restart the Salt Master after making this change to the
-configuration.
+.. note:: file_roots
+
+    This should be the default value. To verify run: salt-call config.get file_roots
+
+.. note:: restart
+
+    Remember to restart the Salt Master after making this change to the
+    configuration.
 
 Installation
 ------------
