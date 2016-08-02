@@ -5,6 +5,13 @@ Nova is designed to audit the compliance and security level of a system. It is
 composed of multiple modules, which ingest YAML configuration profiles to run a
 single or series of audits against a system.
 
+Two different methods are outlined below. The first method is more stable
+(and therefore recommended). This method uses Salt's package manager to track
+versioned, packaged updates to Hubble's components.
+
+The second method installs directly from git. It should be considered bleeding
+edge and possibly unstable.
+
 Installation (Recommended)
 ==========================
 
@@ -24,12 +31,12 @@ Ensure that this path is defined in your Salt Master's `file_roots`:
       - /srv/salt
       - /srv/spm/salt
 
-.. note:: This should be the default value. To verify run: salt-call config.get file_roots
+.. note:: This should be the default value. To verify run: `salt-call config.get file_roots`
 
 .. note:: Remember to restart the Salt Master after making this change to the configuration.
 
-Installation
-------------
+Installation (Packages)
+-----------------------
 
 Installation is as easy as downloading and installing a package. (Note: in
 future releases you'll be able to subscribe directly to our HubbleStack SPM
@@ -47,7 +54,9 @@ You should now be able to sync the new modules to your minion(s) using the
 
     salt \* saltutil.sync_modules
 
-Once these modules are synced you are ready to run a HubbleStack Nova audit.
+Once these modules are synced you are ready to run a HubbleStack Nova audit. 
+
+Skip to [Usage].
 
 Installation (Manual)
 =====================
@@ -59,6 +68,7 @@ fileserver (whether roots or gitfs) and sync it to the minion(s).
 
     git clone https://github.com/hubblestack/nova.git hubblestack-nova.git
     cd hubblestack-nova.git
+    mkdir -p /srv/salt/_modules/
     cp _modules/hubble.py /srv/salt/_modules/
     salt \* saltutil.sync_modules
 
@@ -95,11 +105,11 @@ Here are some example calls:
 
 .. code-block:: bash
 
-    # Run hubble.top with the default topfile (top.nova)
-    salt \* hubble.top
-
     # Run the cve scanner and the CIS profile:
     salt \* hubble.audit cve.scan-v2,cis.centos-7-level-1-scored-v1
+
+    # Run hubble.top with the default topfile (top.nova)
+    salt \* hubble.top
 
     # Run all yaml configs and tags under salt://hubblestack_nova/foo/ and
     # salt://hubblestack_nova/bar, but only run audits with tags starting
