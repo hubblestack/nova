@@ -12,15 +12,14 @@ versioned, packaged updates to Hubble's components.
 The second method installs directly from git. It should be considered bleeding
 edge and possibly unstable.
 
-Installation (Recommended)
-==========================
+Installation
+============
 
 Each of the four HubbleStack components have been packaged for use with Salt's
 Package Manager (SPM). Note that all SPM installation commands should be done
 on the *Salt Master*.
 
-Required Configuration
-----------------------
+**Required Configuration**
 
 Salt's Package Manager (SPM) installs files into `/srv/spm/{salt,pillar}`.
 Ensure that this path is defined in your Salt Master's `file_roots`:
@@ -59,7 +58,7 @@ Once these modules are synced you are ready to run a HubbleStack Nova audit.
 Skip to [Usage].
 
 Installation (Manual)
-=====================
+---------------------
 
 Place `hubble.py <_modules/hubble.py>`_ in your ``_modules/`` directory in your Salt
 fileserver (whether roots or gitfs) and sync it to the minion(s).
