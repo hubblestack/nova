@@ -69,14 +69,9 @@ fileserver (whether roots or gitfs) and sync it to the minion(s).
     cd hubblestack-nova.git
     mkdir -p /srv/salt/_modules/
     cp _modules/hubble.py /srv/salt/_modules/
-    salt \* saltutil.sync_modules
-
-Copy the `hubblestack_nova/` into your Salt fileserver (whether roots or gitfs)
-and sync it to the minion(s).
-
-.. code-block:: shell
-
     cp -a hubblestack_nova /srv/salt/
+
+    salt \* saltutil.sync_modules
     salt \* hubble.sync
 
 Usage
