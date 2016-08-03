@@ -188,6 +188,20 @@ still run, but if any of the controlled checks fail, they will be removed from
 ``Failure`` and added to ``Controlled``, and will be treated as a Success for
 the purposes of compliance percentage.
 
+
+Schedule
+--------
+
+In order to run the audits once daily, you can use the following schedule:
+
+.. code-block:: yaml
+
+    schedule:
+      nova_day:
+        function: hubble.top
+        seconds: 86400
+
+
 Under the Hood
 ==============
 
