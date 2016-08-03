@@ -24,9 +24,11 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False):
-    '''Runs auditpol on the local machine and audits the return data
-    with the CIS yaml processed by __virtual__'''
+def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+    '''
+    Runs auditpol on the local machine and audits the return data
+    with the CIS yaml processed by __virtual__
+    '''
     __data__ = {}
     __pkgdata__ = __salt__['pkg.list_pkgs']()
     for profile, data in data_list:
@@ -35,10 +37,11 @@ def audit(data_list, tags, verbose=False, show_profile=False):
         else:
             _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
-    log.trace('package audit __data__:')
-    log.trace(__data__)
-    log.trace('package audit __tags__:')
-    log.trace(__tags__)
+    if debug:
+        log.debug('package audit __data__:')
+        log.debug(__data__)
+        log.debug('package audit __tags__:')
+        log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
