@@ -4,7 +4,7 @@
 
 nova:
   'G@kernel:Linux':
-    - cve.scan_v2
+    - cve.scan-v2
   'G@osfinger:CentOS-6':
     - cis.centos-6-level-1-scored-v2-0-1
   'G@osfinger:CentOS*Linux-7':
