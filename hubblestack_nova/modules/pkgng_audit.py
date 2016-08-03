@@ -20,7 +20,7 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False):
+def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
     '''
     Run the pkg.audit command
     '''
@@ -32,8 +32,9 @@ def audit(data_list, tags, verbose=False, show_profile=False):
             __tags__ = ['pkgng_audit']
             break
 
-    log.trace('pkgng audit __tags__:')
-    log.trace(__tags__)
+    if debug:
+        log.debug('pkgng audit __tags__:')
+        log.debug(__tags__)
 
     if not __tags__:
         # No yaml data found, don't do any work

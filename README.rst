@@ -253,7 +253,7 @@ include full documentation
         return True
 
 
-    def audit(data_list, tag, verbose=False, show_profile=False):
+    def audit(data_list, tag, verbose=False, show_profile=False, debug=False):
         __tags__ = []
         for profile, data in data_list:
             # This is where you process the dictionaries passed in by hubble.py,
@@ -280,16 +280,18 @@ compatibility, and an ``audit()`` function to perform the actual audit
 functionality
 
 The ``audit()`` function must take four arguments, ``data_list``, ``tag``,
-``verbose``, and ``show_profile``. The ``data_list`` argument is a list of dictionaries passed in by
-``hubble.py``. ``hubble.py`` gets this data from loading the specified yaml for
-the audit run. Your audit module should only run if it finds its own data in
-this list. The ``tag`` argument is a glob expression for which tags the audit
-function should run. It is the job of the audit module to compare the ``tag``
-glob with all tags supported by this module and only run the audits which
-match. The ``verbose`` argument defines whether additional information should
-be returned for audits, such as description and remediation instructions. The
-``show_profile`` argument tells whether the profile should be injected into
-the verbose data for each check.
+``verbose``, ``show_profile``, and ``debug``. The ``data_list`` argument is a
+list of dictionaries passed in by ``hubble.py``. ``hubble.py`` gets this data
+from loading the specified yaml for the audit run. Your audit module should
+only run if it finds its own data in this list. The ``tag`` argument is a glob
+expression for which tags the audit function should run. It is the job of the
+audit module to compare the ``tag`` glob with all tags supported by this module
+and only run the audits which match. The ``verbose`` argument defines whether
+additional information should be returned for audits, such as description and
+remediation instructions. The ``show_profile`` argument tells whether the
+profile should be injected into the verbose data for each check. The ``debug``
+argument tells whether the module should log additional debugging information
+at debug log level.
 
 The return value should be a dictionary, with optional keys "Success",
 "Failure", and "Controlled". The values for these keys should be a list of

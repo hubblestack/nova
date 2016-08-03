@@ -42,7 +42,8 @@ def audit(configs=None,
           show_success=None,
           show_compliance=None,
           show_profile=None,
-          called_from_top=None):
+          called_from_top=None,
+          debug=None):
     '''
     Primary entry point for audit calls.
 
@@ -88,6 +89,11 @@ def audit(configs=None,
         Ignore this argument. It is used for distinguishing between user-calls
         of this function and calls from hubble.top.
 
+    debug
+        Whether to log additional information to help debug nova. Defaults to
+        False. Configurable via `hubblestack:nova:debug` in minion
+        config/pillar.
+
     CLI Examples:
 
     .. code-block:: bash
@@ -114,6 +120,8 @@ def audit(configs=None,
         show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
     if show_profile is None:
         show_profile = __salt__['config.get']('hubblestack:nova:show_profile', False)
+    if debug is None:
+        debug = __salt__['config.get']('hubblestack:nova:debug', False)
 
     if not isinstance(configs, list):
         # Convert string
@@ -150,10 +158,11 @@ def audit(configs=None,
     # compile list of tuples with profile name and profile data
     data_list = [(key.split('.yaml')[0].split(os.path.sep)[-1],
                   __nova__.__data__[key]) for key in to_run]
-    log.trace('hubble.py configs:')
-    log.trace(configs)
-    log.trace('hubble.py data_list:')
-    log.trace(data_list)
+    if debug:
+        log.debug('hubble.py configs:')
+        log.debug(configs)
+        log.debug('hubble.py data_list:')
+        log.debug(data_list)
     # Run the audits
     # This is currently pretty brute-force -- we just run all the modules we
     # have available with the data list, so data will be processed multiple
@@ -161,7 +170,11 @@ def audit(configs=None,
     # We can revisit if this ever becomes a big bottleneck
     for key, func in __nova__._dict.iteritems():
         try:
-            ret = func(data_list, tags, verbose=verbose, show_profile=show_profile)
+            ret = func(data_list,
+                       tags,
+                       verbose=verbose,
+                       show_profile=show_profile,
+                       debug=debug)
         except Exception as exc:
             log.error('Exception occurred in nova module:')
             log.error(traceback.format_exc())
@@ -198,8 +211,9 @@ def audit(configs=None,
                     else:  # dict
                         processed_controls[control_tag] = control_data
 
-    log.trace('hubble.py control data:')
-    log.trace(processed_controls)
+    if debug:
+        log.debug('hubble.py control data:')
+        log.debug(processed_controls)
 
     # Look through the failed results to find audits which match our control config
     failures_to_remove = []
@@ -564,11 +578,11 @@ class NovaLazyLoader(LazyLoader):
                         if ext not in ['.py', '.yaml']:
                             continue
                         if f_withext in self.disabled:
-                            log.trace(
-                                'Skipping {0}, it is disabled by configuration'.format(
-                                filename
-                                )
-                            )
+                            #log.trace(
+                            #    'Skipping {0}, it is disabled by configuration'.format(
+                            #    filename
+                            #    )
+                            #)
                             continue
 
                         # if we don't have it, we want it

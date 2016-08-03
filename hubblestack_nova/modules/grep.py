@@ -73,7 +73,7 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False):
+def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
     '''
     Run the grep audits contained in the YAML files processed by __virtual__
     '''
@@ -85,10 +85,11 @@ def audit(data_list, tags, verbose=False, show_profile=False):
             _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
-    log.trace('grep audit __data__:')
-    log.trace(__data__)
-    log.trace('grep audit __tags__:')
-    log.trace(__tags__)
+    if debug:
+        log.debug('grep audit __data__:')
+        log.debug(__data__)
+        log.debug('grep audit __tags__:')
+        log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:

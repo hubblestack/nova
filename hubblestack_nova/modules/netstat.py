@@ -36,7 +36,7 @@ def __virtual__():
     return False, 'No network.netstat function found'
 
 
-def audit(data_list, tags, verbose=False, show_profile=False):
+def audit(data_list, tags, verbose=False, show_profile=False, debug=True):
     '''
     Run the network.netstat command
     '''

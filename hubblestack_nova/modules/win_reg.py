@@ -24,9 +24,11 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False):
-    '''Runs auditpol on the local machine and audits the return data
-    with the CIS yaml processed by __virtual__'''
+def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+    '''
+    Runs auditpol on the local machine and audits the return data
+    with the CIS yaml processed by __virtual__
+    '''
     __data__ = {}
     for profile, data in data_list:
         if show_profile:
@@ -34,10 +36,11 @@ def audit(data_list, tags, verbose=False, show_profile=False):
         else:
             _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
-    log.trace('registry audit __data__:')
-    log.trace(__data__)
-    log.trace('registry audit __tags__:')
-    log.trace(__tags__)
+    if debug:
+        log.debug('registry audit __data__:')
+        log.debug(__data__)
+        log.debug('registry audit __tags__:')
+        log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
