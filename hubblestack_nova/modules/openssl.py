@@ -1,12 +1,14 @@
+# -*- encoding: utf-8 -*-
 '''
-Hubble Nova module for auditing SSL certificates
+HubbleStack Nova module for auditing SSL certificates.
 
-:maintainer: HubbleStack
-:maturity: 20160601
+:maintainer: HubbleStack / avb76
+:maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack, python-OpenSSL
 
-This audit module requires YAML data to execute. It will search the yaml data received for the topkey 'openssl'.
+This audit module requires YAML data to execute. It will search the yaml data
+received for the topkey 'openssl'.
 
 Sample YAML data, with in line comments:
 
@@ -97,16 +99,20 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False, debug=True):
     __data__ = {}
-    for data in data_list:
-        _merge_yaml(__data__, data)
+    for profile, data in data_list:
+        if show_profile:
+            _merge_yaml(__data__, data, profile)
+        else:
+            _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
-    log.trace('service audit __data__:')
-    log.trace(__data__)
-    log.trace('service audit __tags__:')
-    log.trace(__tags__)
+    if debug:
+        log.debug('service audit __data__:')
+        log.debug(__data__)
+        log.debug('service audit __tags__:')
+        log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
@@ -148,11 +154,12 @@ def audit(data_list, tags, verbose=False):
                     tag_data['reason'] = failing_reason
                     ret['Failure'].append(tag_data)
 
-    if not verbose:
-        failure = []
-        success = []
-        controlled = []
+    failure = []
+    success = []
+    controlled = []
 
+    if not verbose:
+        # Pull out just the tag and description
         tags_descriptions = set()
 
         for tag_data in ret['Failure']:
@@ -183,9 +190,23 @@ def audit(data_list, tags, verbose=False):
                 controlled.append({tag: tag_dict})
                 control_reasons.add((tag, description, control_reason))
 
-        ret['Controlled'] = controlled
-        ret['Success'] = success
-        ret['Failure'] = failure
+    else:
+        # Format verbose output as single-key dictionaries with tag as key
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            failure.append({tag: tag_data})
+
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            success.append({tag: tag_data})
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            controlled.append({tag: tag_data})
+
+    ret['Controlled'] = controlled
+    ret['Success'] = success
+    ret['Failure'] = failure
 
     if not ret['Controlled']:
         ret.pop('Controlled')
@@ -193,10 +214,12 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _merge_yaml(ret, data):
+def _merge_yaml(ret, data, profile=None):
     if 'openssl' not in ret:
         ret['openssl'] = []
     for key, val in data.get('openssl', {}).iteritems():
+        if profile and isinstance(val, dict):
+            val['nova_profile'] = profile
         ret['openssl'].append({key: val})
     return ret
 

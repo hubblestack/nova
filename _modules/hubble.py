@@ -2,18 +2,18 @@
 '''
 Loader and primary interface for nova modules
 
-:maintainer: basepi
-:maturity: 20160218
+:maintainer: HubbleStack / basepi
+:maturity: 2016.7.0
 :platform: All
 :requires: SaltStack
 
 See README for documentation
 
 Configuration:
-    - hubblestack.nova.dir
-    - hubblestack.nova.saltenv
-    - hubblestack.nova.autoload
-    - hubblestack.nova.autosync
+    - hubblestack:nova:dir
+    - hubblestack:nova:saltenv
+    - hubblestack:nova:autoload
+    - hubblestack:nova:autosync
 '''
 from __future__ import absolute_import
 import logging
@@ -41,7 +41,9 @@ def audit(configs=None,
           verbose=None,
           show_success=None,
           show_compliance=None,
-          called_from_top=None):
+          show_profile=None,
+          called_from_top=None,
+          debug=None):
     '''
     Primary entry point for audit calls.
 
@@ -66,21 +68,31 @@ def audit(configs=None,
         Whether to show additional information about audits, including
         description, remediation instructions, etc. The data returned depends
         on the audit module. Defaults to False. Configurable via
-        `hubblestack.nova.verbose` in minion config/pillar.
+        `hubblestack:nova:verbose` in minion config/pillar.
 
     show_success
         Whether to show successful audits in addition to failed audits.
-        Defaults to True. Configurable via `hubblestack.nova.show_success` in
+        Defaults to True. Configurable via `hubblestack:nova:show_success` in
         minion config/pillar.
 
     show_compliance
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
-        `hubblestack.nova.show_compliance` in minion config/pillar.
+        `hubblestack:nova:show_compliance` in minion config/pillar.
+
+    show_profile
+        Whether to add the profile path to the verbose output for audits.
+        Defaults to False. Configurable via `hubblestack:nova:show_profile`
+        in minion config/pillar.
 
     called_from_top
         Ignore this argument. It is used for distinguishing between user-calls
         of this function and calls from hubble.top.
+
+    debug
+        Whether to log additional information to help debug nova. Defaults to
+        False. Configurable via `hubblestack:nova:debug` in minion
+        config/pillar.
 
     CLI Examples:
 
@@ -95,17 +107,21 @@ def audit(configs=None,
                    show_success=show_success,
                    show_compliance=show_compliance)
 
-    if __salt__['config.get']('hubblestack.nova.autoload', True):
+    if __salt__['config.get']('hubblestack:nova:autoload', True):
         load()
     if not __nova__:
         return False, 'No nova modules/data have been loaded.'
 
     if verbose is None:
-        verbose = __salt__['config.get']('hubblestack.nova.verbose', False)
+        verbose = __salt__['config.get']('hubblestack:nova:verbose', False)
     if show_success is None:
-        show_success = __salt__['config.get']('hubblestack.nova.show_success', True)
+        show_success = __salt__['config.get']('hubblestack:nova:show_success', True)
     if show_compliance is None:
-        show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
+        show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
+    if show_profile is None:
+        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', False)
+    if debug is None:
+        debug = __salt__['config.get']('hubblestack:nova:debug', False)
 
     if not isinstance(configs, list):
         # Convert string
@@ -139,11 +155,14 @@ def audit(configs=None,
             results['Errors'].append({config: {'error': 'No matching profiles found for {0}'
                                                         .format(config)}})
 
-    data_list = [__nova__.__data__[key] for key in to_run]
-    log.trace('hubble.py configs:')
-    log.trace(configs)
-    log.trace('hubble.py data_list:')
-    log.trace(data_list)
+    # compile list of tuples with profile name and profile data
+    data_list = [(key.split('.yaml')[0].split(os.path.sep)[-1],
+                  __nova__.__data__[key]) for key in to_run]
+    if debug:
+        log.debug('hubble.py configs:')
+        log.debug(configs)
+        log.debug('hubble.py data_list:')
+        log.debug(data_list)
     # Run the audits
     # This is currently pretty brute-force -- we just run all the modules we
     # have available with the data list, so data will be processed multiple
@@ -151,7 +170,11 @@ def audit(configs=None,
     # We can revisit if this ever becomes a big bottleneck
     for key, func in __nova__._dict.iteritems():
         try:
-            ret = func(data_list, tags, verbose=verbose)
+            ret = func(data_list,
+                       tags,
+                       verbose=verbose,
+                       show_profile=show_profile,
+                       debug=debug)
         except Exception as exc:
             log.error('Exception occurred in nova module:')
             log.error(traceback.format_exc())
@@ -176,7 +199,7 @@ def audit(configs=None,
 
     processed_controls = {}
     # Inspect the data for compensating control data
-    for audit_data in data_list:
+    for _, audit_data in data_list:
         control_config = audit_data.get('control', [])
         for control in control_config:
             if isinstance(control, str):
@@ -188,8 +211,9 @@ def audit(configs=None,
                     else:  # dict
                         processed_controls[control_tag] = control_data
 
-    log.trace('hubble.py control data:')
-    log.trace(processed_controls)
+    if debug:
+        log.debug('hubble.py control data:')
+        log.debug(processed_controls)
 
     # Look through the failed results to find audits which match our control config
     failures_to_remove = []
@@ -277,17 +301,17 @@ def top(topfile='top.nova',
         Whether to show additional information about audits, including
         description, remediation instructions, etc. The data returned depends
         on the audit module. Defaults to False. Configurable via
-        `hubblestack.nova.verbose` in minion config/pillar.
+        `hubblestack:nova:verbose` in minion config/pillar.
 
     show_success
         Whether to show successful audits in addition to failed audits.
-        Defaults to True. Configurable via `hubblestack.nova.show_success` in
+        Defaults to True. Configurable via `hubblestack:nova:show_success` in
         minion config/pillar.
 
     show_compliance
         Whether to show compliance as a percentage (successful checks divided
         by total checks). Defaults to True. Configurable via
-        `hubblestack.nova.show_compliance` in minion config/pillar.
+        `hubblestack:nova:show_compliance` in minion config/pillar.
 
     CLI Examples:
 
@@ -297,17 +321,17 @@ def top(topfile='top.nova',
         salt '*' hubble.top foo/bar/top.nova
         salt '*' hubble.top foo/bar.nova verbose=True
     '''
-    if __salt__['config.get']('hubblestack.nova.autoload', True):
+    if __salt__['config.get']('hubblestack:nova:autoload', True):
         load()
     if not __nova__:
         return False, 'No nova modules/data have been loaded.'
 
     if verbose is None:
-        verbose = __salt__['config.get']('hubblestack.nova.verbose', False)
+        verbose = __salt__['config.get']('hubblestack:nova:verbose', False)
     if show_success is None:
-        show_success = __salt__['config.get']('hubblestack.nova.show_success', True)
+        show_success = __salt__['config.get']('hubblestack:nova:show_success', True)
     if show_compliance is None:
-        show_compliance = __salt__['config.get']('hubblestack.nova.show_compliance', True)
+        show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
 
     results = {}
 
@@ -376,7 +400,7 @@ def sync():
     The modules should be stored in the salt fileserver. By default nova will
     search the base environment for a top level ``hubblestack_nova`` directory,
     unless otherwise specified via pillar or minion config
-    (``hubblestack.nova.dir``)
+    (``hubblestack:nova:dir``)
 
     Modules will just be cached in the normal minion cachedir
 
@@ -393,8 +417,8 @@ def sync():
         salt '*' nova.sync saltenv=hubble
     '''
     log.debug('syncing nova modules')
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'salt://hubblestack_nova')
-    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    nova_dir = __salt__['config.get']('hubblestack:nova:dir', 'salt://hubblestack_nova')
+    saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
 
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
@@ -428,7 +452,7 @@ def load():
     '''
     Load the synced audit modules.
     '''
-    if __salt__['config.get']('hubblestack.nova.autosync', True):
+    if __salt__['config.get']('hubblestack:nova:autosync', True):
         sync()
     if not os.path.isdir(_hubble_dir()):
         return False, 'No synced nova modules found'
@@ -449,11 +473,11 @@ def _hubble_dir():
     '''
     Generate the local minion directory to which nova modules are synced
     '''
-    nova_dir = __salt__['config.get']('hubblestack.nova.dir', 'hubblestack_nova')
+    nova_dir = __salt__['config.get']('hubblestack:nova:dir', 'hubblestack_nova')
     # Support optional salt:// in config
     if 'salt://' in nova_dir:
         _, _, nova_dir = nova_dir.partition('salt://')
-    saltenv = __salt__['config.get']('hubblestack.nova.saltenv', 'base')
+    saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
     cachedir = os.path.join(__opts__.get('cachedir'),
                             'files',
                             saltenv,
@@ -554,11 +578,11 @@ class NovaLazyLoader(LazyLoader):
                         if ext not in ['.py', '.yaml']:
                             continue
                         if f_withext in self.disabled:
-                            log.trace(
-                                'Skipping {0}, it is disabled by configuration'.format(
-                                filename
-                                )
-                            )
+                            #log.trace(
+                            #    'Skipping {0}, it is disabled by configuration'.format(
+                            #    filename
+                            #    )
+                            #)
                             continue
 
                         # if we don't have it, we want it
