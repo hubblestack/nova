@@ -1,12 +1,11 @@
-# win_gp.py
+# -*- encoding: utf-8 -*-
 '''
-Loader and primary interface for nova modules
 
 :maintainer: HubbleStack
-:maturity: 20160526
+:maturity: 2016.7.0
 :platform: Windows
 :requires: SaltStack
-:TODO:
+
 '''
 
 from __future__ import absolute_import
@@ -26,18 +25,24 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
-    '''Runs auditpol on the local machine and audits the return data
-    with the CIS yaml processed by __virtual__'''
+def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+    '''
+    Runs auditpol on the local machine and audits the return data
+    with the CIS yaml processed by __virtual__
+    '''
     __data__ = {}
     __gpdata__ = _get_gp_templates()
-    for data in data_list:
-        _merge_yaml(__data__, data)
+    for profile, data in data_list:
+        if show_profile:
+            _merge_yaml(__data__, data, profile)
+        else:
+            _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
-    log.trace('firewall audit __data__:')
-    log.trace(__data__)
-    log.trace('firewall audit __tags__:')
-    log.trace(__tags__)
+    if debug:
+        log.debug('firewall audit __data__:')
+        log.debug(__data__)
+        log.debug('firewall audit __tags__:')
+        log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
@@ -70,11 +75,12 @@ def audit(data_list, tags, verbose=False):
                         log.debug('When trying to audit the firewall section,'
                                   ' the yaml contained incorrect data for the key')
 
-    if not verbose:
-        failure = []
-        success = []
-        controlled = []
+    failure = []
+    success = []
+    controlled = []
 
+    if not verbose:
+        # Pull out just the tag and description
         tags_descriptions = set()
 
         for tag_data in ret['Failure']:
@@ -105,9 +111,23 @@ def audit(data_list, tags, verbose=False):
                 controlled.append({tag: description})
                 control_reasons.add((tag, description, control_reason))
 
-        ret['Controlled'] = controlled
-        ret['Success'] = success
-        ret['Failure'] = failure
+    else:
+        # Format verbose output as single-key dictionaries with tag as key
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            failure.append({tag: tag_data})
+
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            success.append({tag: tag_data})
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            controlled.append({tag: tag_data})
+
+    ret['Controlled'] = controlled
+    ret['Success'] = success
+    ret['Failure'] = failure
 
     if not ret['Controlled']:
         ret.pop('Controlled')
@@ -115,7 +135,7 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _merge_yaml(ret, data):
+def _merge_yaml(ret, data, profile=None):
     '''
     Merge two yaml dicts together at the secedit:blacklist and
     secedit:whitelist level
@@ -127,6 +147,8 @@ def _merge_yaml(ret, data):
             if topkey not in ret[__virtualname__]:
                 ret[__virtualname__][topkey] = []
             for key, val in data[__virtualname__][topkey].iteritems():
+                if profile and isinstance(val, dict):
+                    val['nova_profile'] = profile
                 ret[__virtualname__][topkey].append({key: val})
     return ret
 

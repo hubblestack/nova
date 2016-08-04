@@ -70,11 +70,6 @@ grep:
             match_output: nodev
             pattern: /dev/shm
             tag: CIS-1.1.14
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: nodev
-            pattern: /dev/shm
-            tag: CIS-2.14
       description: Add nodev Option to /dev/shm Partition (Scored)
     fstab_dev_shm_partition_noexec:
       data:
@@ -83,11 +78,6 @@ grep:
             match_output: noexec
             pattern: /dev/shm
             tag: CIS-1.1.16
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: noexec
-            pattern: /dev/shm
-            tag: CIS-2.16
       description: Add noexec Option to /dev/shm Partition (Scored)
     fstab_dev_shm_partition_nosuid:
       data:
@@ -96,11 +86,6 @@ grep:
             match_output: nosuid
             pattern: /dev/shm
             tag: CIS-1.1.15
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: nosuid
-            pattern: /dev/shm
-            tag: CIS-2.15
       description: Add nosuid Option to /dev/shm Partition (Scored)
     fstab_home_partition:
       data:
@@ -108,10 +93,6 @@ grep:
         - /etc/fstab:
             pattern: /home
             tag: CIS-1.1.9
-        Ubuntu-14.04:
-        - /etc/fstab:
-            pattern: /home
-            tag: CIS-2.9
       description: Create Separate Partition for /home (Scored)
     fstab_home_partition_nodev:
       data:
@@ -120,11 +101,6 @@ grep:
             match_output: nodev
             pattern: /home
             tag: CIS-1.1.10
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: nodev
-            pattern: /home
-            tag: CIS-2.10
       description: Add nodev Option to /home (Scored)
     fstab_tmp_partition:
       data:
@@ -132,10 +108,6 @@ grep:
         - /etc/fstab:
             pattern: /tmp
             tag: CIS-1.1.1
-        Ubuntu-14.04:
-        - /etc/fstab:
-            pattern: /tmp
-            tag: CIS-2.1
       description: Create Separate Partition for /tmp (Scored)
     fstab_tmp_partition_nodev:
       data:
@@ -144,11 +116,6 @@ grep:
             match_output: nodev
             pattern: /tmp
             tag: CIS-1.1.2
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: nodev
-            pattern: /tmp
-            tag: CIS-2.2
       description: Set nodev option for /tmp Partition (Scored)
     fstab_tmp_partition_noexec:
       data:
@@ -157,11 +124,6 @@ grep:
             match_output: noexec
             pattern: /tmp
             tag: CIS-1.1.4
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: nosuid
-            pattern: /tmp
-            tag: CIS-2.4
       description: Set noexec option for /tmp Partition (Scored)
     fstab_tmp_partition_nosuid:
       data:
@@ -170,11 +132,6 @@ grep:
             match_output: nosuid
             pattern: /tmp
             tag: CIS-1.1.3
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: nosuid
-            pattern: /tmp
-            tag: CIS-2.3
       description: Set nosuid option for /tmp Partition (Scored)
     fstab_var_log_audit_partition:
       data:
@@ -182,10 +139,6 @@ grep:
         - /etc/fstab:
             pattern: /var/log/audit
             tag: CIS-1.1.8
-        Ubuntu-14.04:
-        - /etc/fstab:
-            pattern: /var/log/audit
-            tag: CIS-2.8
       description: Create Separate Partition for /var/log/audit (Scored)
     fstab_var_log_partition:
       data:
@@ -193,10 +146,6 @@ grep:
         - /etc/fstab:
             pattern: /var/log
             tag: CIS-1.1.7
-        Ubuntu-14.04:
-        - /etc/fstab:
-            pattern: /var/log
-            tag: CIS-2.7
       description: Create Separate Partition for /var/log (Scored)
     fstab_var_partition:
       data:
@@ -204,10 +153,6 @@ grep:
         - /etc/fstab:
             pattern: /var
             tag: CIS-1.1.5
-        Ubuntu-14.04:
-        - /etc/fstab:
-            pattern: /var
-            tag: CIS-2.5
       description: Create Separate Partition for /var (Scored)
     fstab_var_tmp_bind_mount:
       data:
@@ -216,11 +161,6 @@ grep:
             match_output: /var/tmp
             pattern: /tmp
             tag: CIS-1.1.6
-        Ubuntu-14.04:
-        - /etc/fstab:
-            match_output: /var/tmp
-            pattern: /var
-            tag: CIS-2.6
       description: Bind Mount the /var/tmp directory to /tmp (Scored)
     limit_password_reuse:
       data:

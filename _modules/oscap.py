@@ -2,38 +2,24 @@
 '''
 OpenSCAP scanner execution module.
 
-:maintainer: Christer Edwards (christer.edwards@gmail.com)
-:maturity: 20160430
-:platform: Linux
+:maintainer: HubbleStack / cedwards
+:maturity: 2016.7.0
+:platform: RedHat
 :requires: SaltStack
-
 :upstream: http://open-scap.org
 
 This execution module uses the openSCAP scanner utility and an argument of an
 XML guide. The returned data should be a dictionary of the cmd output.
 
-On CentOS the packages are: openscap-scanner openscap
+The packages are: openscap-scanner openscap
 
 Configurable options would be:
   show_success: True/False
 
-This version requires the file be stored in /root/ (because I'm being lazy).
-Afterwards the command is run as:
+.. code-block:: yaml
 
-.. code-block:: shell
+    cve_scan: https://www.redhat.com/security/data/oval/com.redhat.rhsa-RHEL7.xml
 
-    wget http://www.redhat.com/security/data/oval/com.redhat.rhsa-RHELX.xml
-
-    salt centos\* oscap.scan salt://com.redhat.rhsa-RHELX.xml
-
-
-Roadmap:
-  * top.nova mapping for feed profiles
-  * performance improvements
-  * feed-type via args (oval vs xccdf) / autodetection
-  * support ubuntu, debian, centos, rhel, suse
-    * support already exists for FreeBSD (via pkg audit)
-  * cmd output or results.xml parsing and custom reporting
 '''
 from __future__ import absolute_import
 

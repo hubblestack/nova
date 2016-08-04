@@ -4,7 +4,7 @@ HubbleStack Nova
 This directory structure is a collection of platform-compatible audit modules
 and YAML-based "profiles". All contents of this directory are synced to
 targeted minions using the `hubble.sync` command (or automatically synced based
-on the `hubblestack.nova.autosync` configuration setting). Audits can then be
+on the `hubblestack:nova:autosync` configuration setting). Audits can then be
 targeted by module name or "tag".
 
 Profile Compatibility

@@ -2,14 +2,15 @@
 '''
 Hubble Nova plugin for using iptables to verify firewall rules
 
-:maintainer: HubbleStack
-:maturity: 20160503
+:maintainer: HubbleStack / avb76
+:maturity: 2016.7.0
 :platform: Linux
 :requires: SaltStack
 
-This audit module requires yaml data to execute. Running hubble.audit will search the local
-directory for any .yaml files and it will pass all the data to this module.
-If this module find a top-level 'firewall' key, it will use the data under that key.
+This audit module requires yaml data to execute. Running hubble.audit will
+search the local directory for any .yaml files and it will pass all the data to
+this module.  If this module find a top-level 'firewall' key, it will use the
+data under that key.
 
 Sample YAML data used by firewall.py, with inline comments:
 
@@ -43,7 +44,8 @@ The elements in the rule dictionary will be used to build the iptables rule.
 Note: table, chain and family are not required under the rule key.
 Note: iptables.build_rule does not verify the syntax of the iptables rules.
 
-Here is a list of accepted iptables rules elements, based on the iptables.build_rule source code:
+Here is a list of accepted iptables rules elements, based on the
+iptables.build_rule source code:
     - command
     - position
     - full
@@ -65,15 +67,15 @@ Here is a list of accepted iptables rules elements, based on the iptables.build_
     - if it's the case, jump arguments can be passed -- see more details bellow
 
 Jump arguments
-    (comments inside the iptables.build_rule source code)
-    # All jump arguments as extracted from man iptables-extensions, man iptables,
-    # man xtables-addons and http://www.iptables.info/en/iptables-targets-and-jumps.html
+  (comments inside the iptables.build_rule source code)
+  # All jump arguments as extracted from man iptables-extensions, man iptables,
+  # man xtables-addons and http://www.iptables.info/en/iptables-targets-and-jumps.html
 
 Check the following links for more details:
-    - iptables.build_rule SaltStack documentation
-    (https://docs.saltstack.com/en/latest/ref/modules/all/salt.modules.iptables.html#salt.modules.iptables.build_rule)
-    - iptables salt execution module source code (search for the build_rule function inside):
-    (https://github.com/saltstack/salt/blob/develop/salt/modules/iptables.py)
+  - iptables.build_rule SaltStack documentation
+  (https://docs.saltstack.com/en/latest/ref/modules/all/salt.modules.iptables.html#salt.modules.iptables.build_rule)
+  - iptables salt execution module source code (search for the build_rule function inside):
+  (https://github.com/saltstack/salt/blob/develop/salt/modules/iptables.py)
 '''
 
 from __future__ import absolute_import
@@ -97,16 +99,20 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
     __data__ = {}
-    for data in data_list:
-        _merge_yaml(__data__, data)
+    for profile, data in data_list:
+        if show_profile:
+            _merge_yaml(__data__, data, profile)
+        else:
+            _merge_yaml(__data__, data)
     __tags__ = _get_tags(__data__)
 
-    log.trace('service audit __data__:')
-    log.trace(__data__)
-    log.trace('service audit __tags__:')
-    log.trace(__tags__)
+    if debug:
+        log.debug('service audit __data__:')
+        log.debug(__data__)
+        log.debug('service audit __tags__:')
+        log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
@@ -157,11 +163,12 @@ def audit(data_list, tags, verbose=False):
                 else:
                     ret['Failure'].append(tag_data)
 
-    if not verbose:
-        failure = []
-        success = []
-        controlled = []
+    failure = []
+    success = []
+    controlled = []
 
+    if not verbose:
+        # Pull out just the tag and description
         tags_descriptions = set()
 
         for tag_data in ret['Failure']:
@@ -192,9 +199,23 @@ def audit(data_list, tags, verbose=False):
                 controlled.append({tag: tag_dict})
                 control_reasons.add((tag, description, control_reason))
 
-        ret['Controlled'] = controlled
-        ret['Success'] = success
-        ret['Failure'] = failure
+    else:
+        # Format verbose output as single-key dictionaries with tag as key
+        for tag_data in ret['Failure']:
+            tag = tag_data['tag']
+            failure.append({tag: tag_data})
+
+        for tag_data in ret['Success']:
+            tag = tag_data['tag']
+            success.append({tag: tag_data})
+
+        for tag_data in ret['Controlled']:
+            tag = tag_data['tag']
+            controlled.append({tag: tag_data})
+
+    ret['Controlled'] = controlled
+    ret['Success'] = success
+    ret['Failure'] = failure
 
     if not ret['Controlled']:
         ret.pop('Controlled')
@@ -202,7 +223,7 @@ def audit(data_list, tags, verbose=False):
     return ret
 
 
-def _merge_yaml(ret, data):
+def _merge_yaml(ret, data, profile=None):
     '''
     Merge two yaml dicts together at the pkg:blacklist and pkg:whitelist level
     '''
@@ -213,6 +234,8 @@ def _merge_yaml(ret, data):
             if topkey not in ret['firewall']:
                 ret['firewall'][topkey] = []
             for key, val in data['firewall'][topkey].iteritems():
+                if profile and isinstance(val, dict):
+                    val['nova_profile'] = profile
                 ret['firewall'][topkey].append({key: val})
     return ret
 
