@@ -201,6 +201,8 @@ In order to run the audits once daily, you can use the following schedule:
         function: hubble.top
         seconds: 86400
 
+Configuration
+=============
 
 Under the Hood
 ==============
