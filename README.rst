@@ -1,13 +1,13 @@
-HubbleStack Nova
-================
+Introduction
+============
 
 Nova is designed to audit the compliance and security level of a system. It is
 composed of multiple modules, which ingest YAML configuration profiles to run a
 single or series of audits against a system.
 
-Two different methods are outlined below. The first method is more stable
-(and therefore recommended). This method uses Salt's package manager to track
-versioned, packaged updates to Hubble's components.
+Two different installation methods are outlined below. The first method is more
+stable (and therefore recommended). This method uses Salt's package manager to
+track versioned, packaged updates to Hubble's components.
 
 The second method installs directly from git. It should be considered bleeding
 edge and possibly unstable.
@@ -32,7 +32,7 @@ Ensure that this path is defined in your Salt Master's `file_roots`:
 
 .. note:: This should be the default value. To verify run: `salt-call config.get file_roots`
 
-.. note:: Remember to restart the Salt Master after making this change to the configuration.
+.. tip:: Remember to restart the Salt Master after making this change to the configuration.
 
 Installation (Packages)
 -----------------------
