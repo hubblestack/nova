@@ -1,4 +1,4 @@
-# NOTE: This CIS Profile only includes Level 1 Scored Items for Windows 2012
+# NOTE: This CIS Profile only includes Level 1 Scored Items for Windows 2008
 # NOTE: Within this file, there are a few sections that should be tailored to your
 #       organization's specific policy.  Search for '# NOTE: ' comments throughout the file
 # NOTE: The value_types are as follows:
@@ -14,7 +14,7 @@ win_secedit:
   whitelist:
     password_history_size:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'PasswordHistorySize':
               tag: CIS-1.1.1
               match_output: '23'
@@ -22,7 +22,7 @@ win_secedit:
       description: 'Encorce password history must be set to 24 or more'
     maximum_password_age:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'MaximumPasswordAge':
               tag: CIS-1.1.2
               match_output: '61'
@@ -30,7 +30,7 @@ win_secedit:
       description: 'Set Maximum password age to 60 or fewer days but not 0'
     minimum_password_age:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'MinimumPasswordAge':
               tag: CIS-1.1.3
               match_output: '1'
@@ -38,7 +38,7 @@ win_secedit:
       description: 'Minimum password age must be set to 1 or more'
     minimum_password_length:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'MinimumPasswordLength':
               tag: CIS-1.1.4
               match_output: '14'
@@ -46,7 +46,7 @@ win_secedit:
       description: 'Minimum password length must be set to 14 or more'
     password_complexity:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'PasswordComplexity':
               tag: CIS-1.1.5
               match_output: '1'
@@ -54,7 +54,7 @@ win_secedit:
       description: 'Password complexity requirements must be set to Enabled'
     reversible_encryption:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'ClearTextPassword':
               tag: CIS-1.1.6
               match_output: '0'
@@ -62,7 +62,7 @@ win_secedit:
       description: 'Store passwords using reversible encryption must be set to Disabled'
     lockout_duration:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'LockoutDuration':
               tag: CIS-1.2.1
               match_output: '14'
@@ -70,7 +70,7 @@ win_secedit:
       description: 'Account lockout duration must be set to 15 or more'
     lockout_threshold:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'LockoutBadCount':
               tag: CIS-1.2.2
               match_output: '11'
@@ -78,7 +78,7 @@ win_secedit:
       description: 'Account lockout threshold must be set to 10 or less'
     reset_lockout_counter:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'ResetLockoutCount':
               tag: CIS-1.2.3
               match_output: '14'
@@ -86,7 +86,7 @@ win_secedit:
       description: 'Reset account lockout counter after must be set to 15 or more'
     access_from_network:
       data:
-        'Microsoft Windows Server 2012 R2 Standard':
+        'Microsoft Windows Server 2008 R2 Standard':
           - 'SeNetworkLogonRight':
               tag: CIS-2.2.2
               match_output: 'Administrators, Authenticated Users'
