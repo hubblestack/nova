@@ -245,9 +245,9 @@ def _find_option_value_in_reg(reg_hive, reg_key, reg_value):
             reg_key.replace('<SID>', sid)
             reg_result = __salt__['reg.read_value'](reg_hive, reg_key, reg_value)
             if reg_result['success']:
-                ret_list.append = reg_result['vdata']
+                ret_list.append(reg_result['vdata'])
             else:
-                ret_list.append = False
+                ret_list.append(False)
         if False in ret_list:
             return False
         else:
