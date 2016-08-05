@@ -213,8 +213,6 @@ def _get_gp_templates():
         return False
     else:
         domain_check = domain_check['Domain']
-    log.error('**********')
-    log.error(domain_check)
     list = __salt__['cmd.run']('Get-ChildItem //{0}/SYSVOL/{0}/Policies/PolicyDefinitions | Format-List '
                                '-Property Name, SID'.format(domain_check), shell='powershell', python_shell=True)
     return list
