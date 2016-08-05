@@ -60,7 +60,7 @@ Skip to [Usage].
 Installation (Manual)
 ---------------------
 
-Place `hubble.py <_modules/hubble.py>`_ in your ``_modules/`` directory in your Salt
+Place `hubble.py <_modules/hubble.py>` in your ``_modules/`` directory in your Salt
 fileserver (whether roots or gitfs) and sync it to the minion(s).
 
 .. code-block:: shell
