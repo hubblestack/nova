@@ -40,6 +40,7 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
         log.debug('registry audit __data__:')
         log.debug(__data__)
         log.debug('registry audit __tags__:')
+        log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
     for tag in __tags__:
