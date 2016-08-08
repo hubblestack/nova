@@ -105,7 +105,9 @@ def audit(configs=None,
     if configs is None:
         return top(verbose=verbose,
                    show_success=show_success,
-                   show_compliance=show_compliance)
+                   show_compliance=show_compliance,
+                   show_profile=show_profile,
+                   debug=debug)
 
     if __salt__['config.get']('hubblestack:nova:autoload', True):
         load()
@@ -260,7 +262,9 @@ def audit(configs=None,
 def top(topfile='top.nova',
         verbose=None,
         show_success=None,
-        show_compliance=None):
+        show_compliance=None,
+        show_profile=None,
+        debug=None):
     '''
     Compile and run all yaml data from the specified nova topfile.
 
@@ -313,6 +317,16 @@ def top(topfile='top.nova',
         by total checks). Defaults to True. Configurable via
         `hubblestack:nova:show_compliance` in minion config/pillar.
 
+    show_profile
+        Whether to add the profile path to the verbose output for audits.
+        Defaults to False. Configurable via `hubblestack:nova:show_profile`
+        in minion config/pillar.
+
+    debug
+        Whether to log additional information to help debug nova. Defaults to
+        False. Configurable via `hubblestack:nova:debug` in minion
+        config/pillar.
+
     CLI Examples:
 
     .. code-block:: bash
@@ -332,6 +346,10 @@ def top(topfile='top.nova',
         show_success = __salt__['config.get']('hubblestack:nova:show_success', True)
     if show_compliance is None:
         show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
+    if show_profile is None:
+        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', False)
+    if debug is None:
+        debug = __salt__['config.get']('hubblestack:nova:debug', False)
 
     results = {}
 
@@ -367,7 +385,9 @@ def top(topfile='top.nova',
                     verbose=verbose,
                     show_success=True,
                     show_compliance=False,
-                    called_from_top=True)
+                    show_profile=show_profile,
+                    called_from_top=True,
+                    debug=debug)
 
         # Merge in the results
         for key, val in ret.iteritems():
