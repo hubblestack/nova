@@ -200,6 +200,11 @@ In order to run the audits once daily, you can use the following schedule:
       nova_day:
         function: hubble.top
         seconds: 86400
+        kwargs:
+          verbose: True
+          show_profile: True
+        returner: splunk_nova_return
+        return_job: False
 
 Configuration
 =============
