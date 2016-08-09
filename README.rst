@@ -53,7 +53,7 @@ You should now be able to sync the new modules to your minion(s) using the
 
     salt \* saltutil.sync_modules
 
-Once these modules are synced you are ready to run a HubbleStack Nova audit. 
+Once these modules are synced you are ready to run a HubbleStack Nova audit.
 
 Skip to [Usage].
 
@@ -80,7 +80,7 @@ Usage
 There are four primary functions in the hubble.py module:
 
 1. ``hubble.sync`` will sync the ``hubblestack_nova/`` directory to the minion(s).
-2. ``hubble.load`` will load the synced audit modules and their yaml configuration files. 
+2. ``hubble.load`` will load the synced audit modules and their yaml configuration files.
 3. ``hubble.audit`` will audit the minion(s) using the YAML profile(s) you provide as comma-separated arguments
 4. ``hubble.top`` will audit the minion(s) using the ``top.nova`` configuration.
 
@@ -200,6 +200,11 @@ In order to run the audits once daily, you can use the following schedule:
       nova_day:
         function: hubble.top
         seconds: 86400
+        kwargs:
+          verbose: True
+          show_profile: True
+        returner: splunk_nova_return
+        return_job: False
 
 Configuration
 =============
