@@ -1,3 +1,5 @@
+.. _nova_introduction:
+
 Introduction
 ============
 
@@ -12,12 +14,16 @@ track versioned, packaged updates to Hubble's components.
 The second method installs directly from git. It should be considered bleeding
 edge and possibly unstable.
 
+.. _nova_installation:
+
 Installation
 ============
 
 Each of the four HubbleStack components have been packaged for use with Salt's
 Package Manager (SPM). Note that all SPM installation commands should be done
 on the *Salt Master*.
+
+.. _nova_installation_config:
 
 **Required Configuration**
 
@@ -33,6 +39,8 @@ Ensure that this path is defined in your Salt Master's ``file_roots``:
 .. note:: This should be the default value. To verify run: ``salt-call config.get file_roots``
 
 .. tip:: Remember to restart the Salt Master after making this change to the configuration.
+
+.. _nova_installation_packages:
 
 Installation (Packages)
 -----------------------
@@ -55,7 +63,9 @@ You should now be able to sync the new modules to your minion(s) using the
 
 Once these modules are synced you are ready to run a HubbleStack Nova audit.
 
-Skip to [Usage].
+Skip to :ref:`Usage <nova_usage>`.
+
+.. _nova_installation_manual:
 
 Installation (Manual)
 ---------------------
@@ -73,6 +83,10 @@ it to the minions.
 
     salt \* saltutil.sync_modules
     salt \* hubble.sync
+
+.. _nova_usage:
+
+Skip to :ref:`Usage <nova_usage>`.
 
 Usage
 =====
@@ -110,6 +124,7 @@ Here are some example calls:
     # with "CIS"
     salt \* hubble.audit foo,bar tags='CIS*'
 
+.. _nova_usage_topfile:
 
 Nova Topfiles
 -------------
@@ -148,6 +163,7 @@ Examples:
     salt '*' hubble.top foo/bar/top.nova
     salt '*' hubble.top foo/bar.nova verbose=True
 
+.. _nova_usage_control:
 
 Compensating Control Configuration
 ----------------------------------
@@ -188,6 +204,7 @@ still run, but if any of the controlled checks fail, they will be removed from
 ``Failure`` and added to ``Controlled``, and will be treated as a Success for
 the purposes of compliance percentage.
 
+.. _nova_usage_schedule:
 
 Schedule
 --------
@@ -206,8 +223,12 @@ In order to run the audits once daily, you can use the following schedule:
         returner: splunk_nova_return
         return_job: False
 
+.. _nova_configuration:
+
 Configuration
 =============
+
+.. _nova_under_the_hood:
 
 Under the Hood
 ==============
@@ -235,11 +256,15 @@ shown, change to False to disable behaviors):
         autosync: True
         autoload: True
 
+.. _nova_development:
+
 Development
 ===========
 
 If you're interested in contributing to this project this section outlines the
 structure and requirements for Nova audit module development.
+
+.. _nova_development_anatomy:
 
 Anatomy of a Nova audit module
 ------------------------------
@@ -261,7 +286,6 @@ Anatomy of a Nova audit module
 
 All Nova plugins should include the above header, expanding the docstring to
 include full documentation
-
 
 .. code-block:: python
 
@@ -319,6 +343,8 @@ The return value should be a dictionary, with optional keys "Success",
 one-key dictionaries in the form of ``{<tag>: <string_description>}``, or a
 list of one-key dictionaries in the form of ``{<tag>: <data_dict>}`` (in the
 case of ``verbose``).
+
+.. _nova_contribute:
 
 Contribute
 ==========
