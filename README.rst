@@ -1,61 +1,110 @@
-Nova
-====
+.. _nova_introduction:
 
-Nova is designed to audit the compliance and security level of an existing
-system. It is composed of multiple modules, which ingest YAML configuration
-files to run a series of audits on a system.
+Introduction
+============
+
+Nova is designed to audit the compliance and security level of a system. It is
+composed of multiple modules, which ingest YAML configuration profiles to run a
+single or series of audits against a system.
+
+Two different installation methods are outlined below. The first method is more
+stable (and therefore recommended). This method uses Salt's package manager to
+track versioned, packaged updates to Hubble's components.
+
+The second method installs directly from git. It should be considered bleeding
+edge and possibly unstable.
+
+.. _nova_installation:
 
 Installation
 ============
 
-Place `hubble.py <_modules/hubble.py>`_ in your ``_modules/`` directory in your Salt
-fileserver (whether roots or gitfs) and sync it to the minion.
+Each of the four HubbleStack components have been packaged for use with Salt's
+Package Manager (SPM). Note that all SPM installation commands should be done
+on the *Salt Master*.
 
-Create a ``hubblestack_nova`` directory in the root of your Salt fileserver's
-``base`` environment. Inside of this directory, create a directory tree to
-organize your audit modules. Place any desired audit modules into this
-directory tree, along with any supporting files (yaml files, etc). Nova audits
-are targeted via this directory structure, with an optional filter on tags
+.. _nova_installation_config:
 
-The directory/environment in which nova searches for audit modules are
-configurable via pillar. The defaults are shown below:
+**Required Configuration**
+
+Salt's Package Manager (SPM) installs files into ``/srv/spm/{salt,pillar}``.
+Ensure that this path is defined in your Salt Master's ``file_roots``:
 
 .. code-block:: yaml
 
-    hubblestack.nova.dir: salt://hubblestack_nova
-    hubblestack.nova.saltenv: base
+    file_roots:
+      - /srv/salt
+      - /srv/spm/salt
+
+.. note:: This should be the default value. To verify run: ``salt-call config.get file_roots``
+
+.. tip:: Remember to restart the Salt Master after making this change to the configuration.
+
+.. _nova_installation_packages:
+
+Installation (Packages)
+-----------------------
+
+Installation is as easy as downloading and installing a package. (Note: in
+future releases you'll be able to subscribe directly to our HubbleStack SPM
+repo for updates and bugfixes!)
+
+.. code-block:: shell
+
+    wget https://spm.hubblestack.io/2016.7.1/hubblestack_nova-2016.7.1-1.spm
+    spm local install hubblestack_nova-2016.7.1-1.spm
+
+You should now be able to sync the new modules to your minion(s) using the
+``sync_modules`` Salt utility:
+
+.. code-block:: shell
+
+    salt \* saltutil.sync_modules
+
+Once these modules are synced you are ready to run a HubbleStack Nova audit.
+
+Skip to :ref:`Usage <nova_usage>`.
+
+.. _nova_installation_manual:
+
+Installation (Manual)
+---------------------
+
+Place ``_modules/hubble.py`` into your ``salt/_modules/`` directory, and sync
+it to the minions.
+
+.. code-block:: shell
+
+    git clone https://github.com/hubblestack/nova.git hubblestack-nova.git
+    cd hubblestack-nova.git
+    mkdir -p /srv/salt/_modules/
+    cp _modules/hubble.py /srv/salt/_modules/
+    cp -a hubblestack_nova /srv/salt/
+
+    salt \* saltutil.sync_modules
+    salt \* hubble.sync
+
+.. _nova_usage:
+
+Skip to :ref:`Usage <nova_usage>`.
 
 Usage
 =====
 
-There are three functions in the hubble.py module. ``hubble.sync`` will sync the
-configured ``hubblestack_nova/`` directory to the minion. ``hubble.load`` will
-load the synced audit modules and their yaml configuration files.  Finally,
-``hubble.audit`` will run the audits.
+There are four primary functions in the hubble.py module:
 
-By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
-``hubble.sync``) (in order to ensure that it is auditing with the most up-to-date
-information. These operations are fairly fast, but if you want to avoid the
-additional overhead, you can disable these behaviors via pillar (defaults are
-shown, change to False to disable behaviors):
-
-.. code-block:: yaml
-
-    hubblestack.nova.autosync: True
-    hubblestack.nova.autoload: True
+1. ``hubble.sync`` will sync the ``hubblestack_nova/`` directory to the minion(s).
+2. ``hubble.load`` will load the synced audit modules and their yaml configuration files.
+3. ``hubble.audit`` will audit the minion(s) using the YAML profile(s) you provide as comma-separated arguments
+4. ``hubble.top`` will audit the minion(s) using the ``top.nova`` configuration.
 
 ``hubble.audit`` takes two optional arguments. The first is a comma-separated
-list of paths.  These paths can be files or directories. If a path is a
-directory, all modules below that directory will be run. If it is a file, that
-file will be run.
+list of paths.  These paths can be files or directories within the
+``hubblestack_nova`` directory. The second argument allows for toggling Nova
+configuration, such as verbosity, level of detail, etc.
 
 If ``hubble.audit`` is run without targeting any audit configs or directories,
 it will instead run ``hubble.top`` with no arguments.
-
-The second argument is a glob pattern, against which audit tags will be
-matched. All audits have an accompanying tag. Nova modules are designed to take
-this argument, compare it to each tag that module handles, and only run those
-which match the argument (using ``fnmatch``).
 
 ``hubble.audit`` will return a list of audits which were successful, and a list
 of audits which failed.
@@ -64,18 +113,18 @@ Here are some example calls:
 
 .. code-block:: bash
 
-    # Run hubble.top with the default topfile (top.nova)
-    salt '*' hubble.audit
+    # Run the cve scanner and the CIS profile:
+    salt \* hubble.audit cve.scan-v2,cis.centos-7-level-1-scored-v1
 
-    # Run all yaml configs and tags under salt://hubblestack_nova/foo/
-    # Will also run salt://hubblestack_nova/foo.yaml if it exists
-    salt '*' hubble.audit foo
+    # Run hubble.top with the default topfile (top.nova)
+    salt \* hubble.top
 
     # Run all yaml configs and tags under salt://hubblestack_nova/foo/ and
     # salt://hubblestack_nova/bar, but only run audits with tags starting
     # with "CIS"
-    salt '*' hubble.audit foo,bar tags='CIS*'
+    salt \* hubble.audit foo,bar tags='CIS*'
 
+.. _nova_usage_topfile:
 
 Nova Topfiles
 -------------
@@ -87,16 +136,15 @@ key is always ``nova``, as nova doesn't have environments.
 
     nova:
       '*':
-        - cve_scan
-        - cis_gen
+        - cve.scan-v2
+        - network.ssh
+        - network.smtp
       'web*':
-        - firewall
-        - cis-centos-7-l2-scored
-        - cis-centos-7-apache24-l1-scored
+        - cis.centos-7-level-1-scored-v1
+        - cis.centos-7-level-2-scored-v1
       'G@os_family:debian':
-        - netstat
-        - cis-debian-7-l2-scored: 'CIS*'
-        - cis-debian-7-mysql57-l1-scored: 'CIS 2.1.2'
+        - network.ssh
+        - cis.debian-7-level-1-scored: 'CIS*'
 
 Additionally, all nova topfile matches are compound matches, so you never
 need to define a match type like you do in saltstack topfiles.
@@ -115,6 +163,7 @@ Examples:
     salt '*' hubble.top foo/bar/top.nova
     salt '*' hubble.top foo/bar.nova verbose=True
 
+.. _nova_usage_control:
 
 Compensating Control Configuration
 ----------------------------------
@@ -128,8 +177,8 @@ itself. This key should be added at the same level as ``description`` and
 output under the ``Controlled`` results key.
 
 Nova also supports separate control profiles, for more fine-grained control
-using topfiles. You can use a separate yaml top-level key called ``control``.
-Generally, you'll put this top-level key inside of a separate yaml file and
+using topfiles. You can use a separate YAML top-level key called ``control``.
+Generally, you'll put this top-level key inside of a separate YAML file and
 only include it in the top-data for the hosts for which it is relevant.
 
 For these separate control configs, the audits will always run, whether they
@@ -155,12 +204,67 @@ still run, but if any of the controlled checks fail, they will be removed from
 ``Failure`` and added to ``Controlled``, and will be treated as a Success for
 the purposes of compliance percentage.
 
+.. _nova_usage_schedule:
+
+Schedule
+--------
+
+In order to run the audits once daily, you can use the following schedule:
+
+.. code-block:: yaml
+
+    schedule:
+      nova_day:
+        function: hubble.top
+        seconds: 86400
+        kwargs:
+          verbose: True
+          show_profile: True
+        returner: splunk_nova_return
+        return_job: False
+
+.. _nova_configuration:
+
+Configuration
+=============
+
+.. _nova_under_the_hood:
+
+Under the Hood
+==============
+
+1. The directory/environment in which nova searches for audit modules are
+configurable via pillar. The defaults are shown below:
+
+.. code-block:: yaml
+
+    hubblestack:
+      nova:
+        saltenv: base
+        dir: salt://hubblestack_nova
+
+2. By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
+``hubble.sync``) in order to ensure that it is auditing with the most up-to-date
+information. These operations are fairly fast, but if you want to avoid the
+additional overhead, you can disable these behaviors via pillar (defaults are
+shown, change to False to disable behaviors):
+
+.. code-block:: yaml
+
+    hubblestack:
+      nova:
+        autosync: True
+        autoload: True
+
+.. _nova_development:
 
 Development
 ===========
 
 If you're interested in contributing to this project this section outlines the
 structure and requirements for Nova audit module development.
+
+.. _nova_development_anatomy:
 
 Anatomy of a Nova audit module
 ------------------------------
@@ -183,7 +287,6 @@ Anatomy of a Nova audit module
 All Nova plugins should include the above header, expanding the docstring to
 include full documentation
 
-
 .. code-block:: python
 
     import fnmatch
@@ -195,14 +298,17 @@ include full documentation
         return True
 
 
-    def audit(data_list, tag, verbose=False):
+    def audit(data_list, tag, verbose=False, show_profile=False, debug=False):
         __tags__ = []
-        for data in data_list:
+        for profile, data in data_list:
             # This is where you process the dictionaries passed in by hubble.py,
             # searching for data pertaining to this audit module. Modules which
             # require no data should use yaml which is empty except for a
             # top-level key, and should only do work if the top-level key is
             # found in the data
+
+            # if show_profile is True, then we need to also inject the profile
+            # in the data for each check so that it appears in verbose output
             pass
 
         ret = {'Success': [], 'Failure': []}
@@ -218,17 +324,31 @@ All Nova plugins require a ``__virtual__()`` function to determine module
 compatibility, and an ``audit()`` function to perform the actual audit
 functionality
 
-The ``audit()`` function must take three arguments, ``data_list``, ``tag`` and
-``verbose``. The ``data_list`` argument is a list of dictionaries passed in by
-``hubble.py``. ``hubble.py`` gets this data from loading the specified yaml for
-the audit run. Your audit module should only run if it finds its own data in
-this list. The ``tag`` argument is a glob expression for which tags the audit
-function should run. It is the job of the audit module to compare the ``tag``
-glob with all tags supported by this module and only run the audits which
-match. The ``verbose`` argument defines whether additional information should
-be returned for audits, such as description and remediation instructions.
+The ``audit()`` function must take four arguments, ``data_list``, ``tag``,
+``verbose``, ``show_profile``, and ``debug``. The ``data_list`` argument is a
+list of dictionaries passed in by ``hubble.py``. ``hubble.py`` gets this data
+from loading the specified yaml for the audit run. Your audit module should
+only run if it finds its own data in this list. The ``tag`` argument is a glob
+expression for which tags the audit function should run. It is the job of the
+audit module to compare the ``tag`` glob with all tags supported by this module
+and only run the audits which match. The ``verbose`` argument defines whether
+additional information should be returned for audits, such as description and
+remediation instructions. The ``show_profile`` argument tells whether the
+profile should be injected into the verbose data for each check. The ``debug``
+argument tells whether the module should log additional debugging information
+at debug log level.
 
-The return value should be a dictionary, with two keys, "Success" and
-"Failure".  The values for these keys should be a list of tags as strings, or a
-list of dictionaries containing tags and other information for the audit (in
-the case of ``verbose``).
+The return value should be a dictionary, with optional keys "Success",
+"Failure", and "Controlled". The values for these keys should be a list of
+one-key dictionaries in the form of ``{<tag>: <string_description>}``, or a
+list of one-key dictionaries in the form of ``{<tag>: <data_dict>}`` (in the
+case of ``verbose``).
+
+.. _nova_contribute:
+
+Contribute
+==========
+
+If you are interested in contributing or offering feedback to this project feel
+free to submit an issue or a pull request. We're very open to community
+contribution.

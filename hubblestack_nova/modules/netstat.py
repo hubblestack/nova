@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 '''
-Hubble Nova plugin for FreeBSD pkgng audit
+HubbleStack Nova module for auditing open ports.
 
-:maintainer: HubbleStack
-:maturity: 20160623
+:maintainer: HubbleStack / basepi
+:maturity: 2016.7.0
 :platform: Unix
 :requires: SaltStack
 
@@ -36,19 +36,21 @@ def __virtual__():
     return False, 'No network.netstat function found'
 
 
-def audit(data_list, tags, verbose=False):
+def audit(data_list, tags, verbose=False, show_profile=False, debug=True):
     '''
     Run the network.netstat command
     '''
     ret = {'Success': [], 'Failure': []}
 
     __tags__ = {}
-    for data in data_list:
+    for profile, data in data_list:
         if 'netstat' in data:
             for check, check_args in data['netstat'].iteritems():
                 if 'address' in check_args:
                     tag_args = copy.deepcopy(check_args)
                     tag_args['id'] = check
+                    if show_profile:
+                        tag_args['nova_profile'] = profile
                     if isinstance(check_args['address'], list):
                         for address in check_args['address']:
                             __tags__[address] = tag_args
@@ -78,6 +80,7 @@ def audit(data_list, tags, verbose=False):
                 failure_data = {address: {'program': address_data['program']}}
                 failure_data[address].update(address_data)
                 failure_data[address]['description'] = address_data['program']
+                failure_data[address]['nova_profile'] = 'netstat'
             ret['Failure'].append(failure_data)
 
     return ret
