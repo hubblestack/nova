@@ -3,6 +3,11 @@
 Hubble Nova plugin for running arbitrary commands and checking the output of
 those commands
 
+This module is deprecated, and must be explicitly enabled in pillar/minion
+config via the hubblestack:nova:enable_command_module (should be set to True
+to enable this module). This allows nova to run arbitrary commands via yaml
+profiles.
+
 :maintainer: HubbleStack / basepi
 :maturity: 2016.7.0
 :platform: All
@@ -101,6 +106,14 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
         log.debug(__tags__)
 
     ret = {'Success': [], 'Failure': [], 'Controlled': []}
+
+    if __tags__ and not __salt__['config.get']('hubblestack:nova:enable_command_module',
+                                               False):
+        ret['Error'] = ['command module has not been explicitly enabled in '
+                        'config. Please set hubblestack:nova:enable_command_module '
+                        'to True in pillar or minion config to allow this module.']
+        return ret
+
     for tag in __tags__:
         if fnmatch.fnmatch(tag, tags):
             for tag_data in __tags__[tag]:
