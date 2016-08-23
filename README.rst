@@ -79,7 +79,8 @@ it to the minions.
     cd hubblestack-nova.git
     mkdir -p /srv/salt/_modules/
     cp _modules/hubble.py /srv/salt/_modules/
-    cp -a hubblestack_nova /srv/salt/
+    cp -a hubblestack_nova_profiles /srv/salt/
+    cp -a hubblestack_nova_modules /srv/salt/
 
     salt \* saltutil.sync_modules
     salt \* hubble.sync
@@ -93,15 +94,15 @@ Usage
 
 There are four primary functions in the hubble.py module:
 
-1. ``hubble.sync`` will sync the ``hubblestack_nova/`` directory to the minion(s).
+1. ``hubble.sync`` will sync the ``hubblestack_nova_profiles/`` and ``hubblestack_nova_modules/`` directories to the minion(s).
 2. ``hubble.load`` will load the synced audit modules and their yaml configuration files.
 3. ``hubble.audit`` will audit the minion(s) using the YAML profile(s) you provide as comma-separated arguments
 4. ``hubble.top`` will audit the minion(s) using the ``top.nova`` configuration.
 
 ``hubble.audit`` takes two optional arguments. The first is a comma-separated
 list of paths.  These paths can be files or directories within the
-``hubblestack_nova`` directory. The second argument allows for toggling Nova
-configuration, such as verbosity, level of detail, etc.
+``hubblestack_nova_profiles`` directory. The second argument allows for
+toggling Nova configuration, such as verbosity, level of detail, etc.
 
 If ``hubble.audit`` is run without targeting any audit configs or directories,
 it will instead run ``hubble.top`` with no arguments.
@@ -119,9 +120,9 @@ Here are some example calls:
     # Run hubble.top with the default topfile (top.nova)
     salt \* hubble.top
 
-    # Run all yaml configs and tags under salt://hubblestack_nova/foo/ and
-    # salt://hubblestack_nova/bar, but only run audits with tags starting
-    # with "CIS"
+    # Run all yaml configs and tags under salt://hubblestack_nova_profiles/foo/
+    # and salt://hubblestack_nova_profiles/bar, but only run audits with tags
+    # starting with "CIS"
     salt \* hubble.audit foo,bar tags='CIS*'
 
 .. _nova_usage_topfile:
@@ -241,7 +242,8 @@ configurable via pillar. The defaults are shown below:
     hubblestack:
       nova:
         saltenv: base
-        dir: salt://hubblestack_nova
+        module_dir: salt://hubblestack_nova_modules
+        profile_dir: salt://hubblestack_nova_profiles
 
 2. By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
 ``hubble.sync``) in order to ensure that it is auditing with the most up-to-date
