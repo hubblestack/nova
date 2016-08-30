@@ -223,6 +223,7 @@ In order to run the audits once daily, you can use the following schedule:
           show_profile: True
         returner: splunk_nova_return
         return_job: False
+        run_on_start: False
 
 .. _nova_configuration:
 

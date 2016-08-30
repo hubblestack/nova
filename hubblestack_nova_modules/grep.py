@@ -113,9 +113,9 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
                 if isinstance(grep_args, str):
                     grep_args = [grep_args]
 
-                grep_ret = __salt__['file.grep'](name,
-                                                 tag_data['pattern'],
-                                                 *grep_args).get('stdout')
+                grep_ret = _grep(name,
+                                 tag_data['pattern'],
+                                 *grep_args).get('stdout')
 
                 found = False
                 if grep_ret:
@@ -277,4 +277,62 @@ def _get_tags(data):
                         formatted_data.update(audit_data)
                         formatted_data.pop('data')
                         ret[tag].append(formatted_data)
+    return ret
+
+
+def _grep(path,
+          pattern,
+          *opts):
+    '''
+    Grep for a string in the specified file
+
+    .. note::
+        This function's return value is slated for refinement in future
+        versions of Salt
+
+    path
+        Path to the file to be searched
+
+        .. note::
+            Globbing is supported (i.e. ``/var/log/foo/*.log``, but if globbing
+            is being used then the path should be quoted to keep the shell from
+            attempting to expand the glob expression.
+
+    pattern
+        Pattern to match. For example: ``test``, or ``a[0-5]``
+
+    opts
+        Additional command-line flags to pass to the grep command. For example:
+        ``-v``, or ``-i -B2``
+
+        .. note::
+            The options should come after a double-dash (as shown in the
+            examples below) to keep Salt's own argument parser from
+            interpreting them.
+
+    CLI Example:
+
+    .. code-block:: bash
+
+        salt '*' file.grep /etc/passwd nobody
+        salt '*' file.grep /etc/sysconfig/network-scripts/ifcfg-eth0 ipaddr -- -i
+        salt '*' file.grep /etc/sysconfig/network-scripts/ifcfg-eth0 ipaddr -- -i -B2
+        salt '*' file.grep "/etc/sysconfig/network-scripts/*" ipaddr -- -i -l
+    '''
+    path = os.path.expanduser(path)
+
+    split_opts = []
+    for opt in opts:
+        try:
+            opt = salt.utils.shlex_split(opt)
+        except AttributeError:
+            opt = salt.utils.shlex_split(str(opt))
+        split_opts.extend(opt)
+
+    cmd = ['grep'] + split_opts + [pattern, path]
+    try:
+        ret = __salt__['cmd.run_all'](cmd, python_shell=False, ignore_retcode=True)
+    except (IOError, OSError) as exc:
+        raise CommandExecutionError(exc.strerror)
+
     return ret
