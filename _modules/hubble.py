@@ -415,7 +415,7 @@ def top(topfile='top.nova',
     return results
 
 
-def sync():
+def sync(clean=False):
     '''
     Sync the nova audit modules and profiles from the saltstack fileserver.
 
@@ -433,8 +433,9 @@ def sync():
 
     Returns a boolean representing success
 
-    NOTE: This function will also clean out existing files at the cached
-    location, as cp.cache_dir doesn't clean out old files
+    NOTE: This function will optionally clean out existing files at the cached
+    location, as cp.cache_dir doesn't clean out old files. Pass ``clean=True``
+    to enable this behavior
 
     CLI Examples:
 
@@ -451,8 +452,9 @@ def sync():
     saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
 
     # Clean previously synced files
-    for nova_dir in _hubble_dir():
-        __salt__['file.remove'](nova_dir)
+    if clean:
+        for nova_dir in _hubble_dir():
+            __salt__['file.remove'](nova_dir)
 
     synced = []
     for i, nova_dir in enumerate((nova_module_dir, nova_profile_dir)):
