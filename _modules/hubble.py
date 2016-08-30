@@ -10,7 +10,8 @@ Loader and primary interface for nova modules
 See README for documentation
 
 Configuration:
-    - hubblestack:nova:dir
+    - hubblestack:nova:module_dir
+    - hubblestack:nova:profile_dir
     - hubblestack:nova:saltenv
     - hubblestack:nova:autoload
     - hubblestack:nova:autosync
@@ -299,7 +300,8 @@ def top(topfile='top.nova',
     Arguments:
 
     topfile
-        The path of the topfile, relative to your hubblestack_nova directory.
+        The path of the topfile, relative to your hubblestack_nova_profiles
+        directory.
 
     verbose
         Whether to show additional information about audits, including
@@ -413,21 +415,27 @@ def top(topfile='top.nova',
     return results
 
 
-def sync():
+def sync(clean=False):
     '''
-    Sync the nova audit modules from the saltstack fileserver.
+    Sync the nova audit modules and profiles from the saltstack fileserver.
 
     The modules should be stored in the salt fileserver. By default nova will
-    search the base environment for a top level ``hubblestack_nova`` directory,
-    unless otherwise specified via pillar or minion config
-    (``hubblestack:nova:dir``)
+    search the base environment for a top level ``hubblestack_nova_modules``
+    directory, unless otherwise specified via pillar or minion config
+    (``hubblestack:nova:module_dir``)
 
-    Modules will just be cached in the normal minion cachedir
+    The profiles should be stored in the salt fileserver. By default nova will
+    search the base environment for a top level ``hubblestack_nova_profiles``
+    directory, unless otherwise specified via pillar or minion config
+    (``hubblestack:nova:profile_dir``)
 
-    Returns the minion's path to the cached directory
+    Modules and profiles will be cached in the normal minion cachedir
 
-    NOTE: This function will also clean out existing files at the cached
-    location, as cp.cache_dir doesn't clean out old files
+    Returns a boolean representing success
+
+    NOTE: This function will optionally clean out existing files at the cached
+    location, as cp.cache_dir doesn't clean out old files. Pass ``clean=True``
+    to enable this behavior
 
     CLI Examples:
 
@@ -437,35 +445,44 @@ def sync():
         salt '*' nova.sync saltenv=hubble
     '''
     log.debug('syncing nova modules')
-    nova_dir = __salt__['config.get']('hubblestack:nova:dir', 'salt://hubblestack_nova')
+    nova_profile_dir = __salt__['config.get']('hubblestack:nova:profile_dir',
+                                              'salt://hubblestack_nova_profiles')
+    nova_module_dir = __salt__['config.get']('hubblestack:nova:module_dir',
+                                             'salt://hubblestack_nova_modules')
     saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
 
-    # Support optional salt:// in config
-    if 'salt://' in nova_dir:
-        path = nova_dir
-        _, _, nova_dir = nova_dir.partition('salt://')
-    else:
-        path = 'salt://{0}'.format(nova_dir)
-
     # Clean previously synced files
-    __salt__['file.remove'](_hubble_dir())
-    # Sync the files
-    cached = __salt__['cp.cache_dir'](path, saltenv=saltenv)
+    if clean:
+        for nova_dir in _hubble_dir():
+            __salt__['file.remove'](nova_dir)
 
-    if cached and isinstance(cached, list):
-        # Success! Trim the paths
-        cachedir = _hubble_dir()
-        ret = [relative.partition(cachedir)[2] for relative in cached]
-        return ret
-    else:
-        if isinstance(cached, list):
-            # Nothing was found
-            return cached
+    synced = []
+    for i, nova_dir in enumerate((nova_module_dir, nova_profile_dir)):
+        # Support optional salt:// in config
+        if 'salt://' in nova_dir:
+            path = nova_dir
+            _, _, nova_dir = nova_dir.partition('salt://')
         else:
-            # Something went wrong, there's likely a stacktrace in the output
-            # of cache_dir
-            raise CommandExecutionError('An error occurred while syncing: {0}'
-                                        .format(cached))
+            path = 'salt://{0}'.format(nova_dir)
+
+        # Sync the files
+        cached = __salt__['cp.cache_dir'](path, saltenv=saltenv)
+
+        if cached and isinstance(cached, list):
+            # Success! Trim the paths
+            cachedir = os.path.dirname(_hubble_dir()[i])
+            ret = [relative.partition(cachedir)[2] for relative in cached]
+            synced.extend(ret)
+        else:
+            if isinstance(cached, list):
+                # Nothing was found
+                synced.extend(cached)
+            else:
+                # Something went wrong, there's likely a stacktrace in the output
+                # of cache_dir
+                raise CommandExecutionError('An error occurred while syncing: {0}'
+                                            .format(cached))
+    return synced
 
 
 def load():
@@ -474,8 +491,10 @@ def load():
     '''
     if __salt__['config.get']('hubblestack:nova:autosync', True):
         sync()
-    if not os.path.isdir(_hubble_dir()):
-        return False, 'No synced nova modules found'
+
+    for nova_dir in _hubble_dir():
+        if not os.path.isdir(nova_dir):
+            return False, 'No synced nova modules/profiles found'
 
     log.debug('loading nova modules')
 
@@ -491,18 +510,28 @@ def load():
 
 def _hubble_dir():
     '''
-    Generate the local minion directory to which nova modules are synced
+    Generate the local minion directories to which nova modules and profiles
+    are synced
+
+    Returns a tuple of two paths, the first for nova modules, the second for
+    nova profiles
     '''
-    nova_dir = __salt__['config.get']('hubblestack:nova:dir', 'hubblestack_nova')
+    nova_profile_dir = __salt__['config.get']('hubblestack:nova:profile_dir',
+                                              'salt://hubblestack_nova_profiles')
+    nova_module_dir = __salt__['config.get']('hubblestack:nova:module_dir',
+                                             'salt://hubblestack_nova_modules')
+    dirs = []
     # Support optional salt:// in config
-    if 'salt://' in nova_dir:
-        _, _, nova_dir = nova_dir.partition('salt://')
-    saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
-    cachedir = os.path.join(__opts__.get('cachedir'),
-                            'files',
-                            saltenv,
-                            nova_dir)
-    return cachedir
+    for nova_dir in (nova_module_dir, nova_profile_dir):
+        if 'salt://' in nova_dir:
+            _, _, nova_dir = nova_dir.partition('salt://')
+        saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
+        cachedir = os.path.join(__opts__.get('cachedir'),
+                                'files',
+                                saltenv,
+                                nova_dir)
+        dirs.append(cachedir)
+    return tuple(dirs)
 
 
 def _calculate_compliance(results):
@@ -526,7 +555,7 @@ def _get_top_data(topfile):
     '''
     Helper method to retrieve and parse the nova topfile
     '''
-    topfile = os.path.join(_hubble_dir(), topfile)
+    topfile = os.path.join(_hubble_dir()[1], topfile)
 
     try:
         with open(topfile) as handle:
@@ -558,7 +587,7 @@ class NovaLazyLoader(LazyLoader):
     '''
 
     def __init__(self):
-        super(NovaLazyLoader, self).__init__([_hubble_dir()],
+        super(NovaLazyLoader, self).__init__(_hubble_dir(),
                                              opts=__opts__,
                                              tag='nova')
         self.__data__ = {}
@@ -596,6 +625,14 @@ class NovaLazyLoader(LazyLoader):
                         f_withext = fpath.partition(mod_dir)[-1]
                         # Nova only supports .py and .yaml
                         if ext not in ['.py', '.yaml']:
+                            continue
+                        # Python only in the modules directory, yaml only
+                        # in the profiles directory. This is hacky but was a
+                        # quick fix.
+                        nova_module_cache, nova_profile_cache = _hubble_dir()
+                        if ext == '.py' and fpath.startswith(nova_profile_cache):
+                            continue
+                        if ext == '.yaml' and fpath.startswith(nova_module_cache):
                             continue
                         if f_withext in self.disabled:
                             #log.trace(

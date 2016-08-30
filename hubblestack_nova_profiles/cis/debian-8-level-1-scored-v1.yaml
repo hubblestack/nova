@@ -41,7 +41,7 @@ grep:
           - '/etc/fstab':
               tag: 'CIS-2.4'
               pattern: '/tmp'
-              match_output: 'nosuid'
+              match_output: 'noexec'
       description: 'Set noexec option for /tmp Partition (Scored)'
 
     fstab_var_partition:
