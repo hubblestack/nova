@@ -336,7 +336,7 @@ stat:
         - '/etc/group':
             tag: 'CIS-9.1.5'
             mode: 644
-    description: '/etc/group must have permissions 644'
+    description: '/etc/group must have permissions 000'
 
   group_own:
     data:
@@ -375,7 +375,7 @@ sysctl:
       - net.ipv4.conf.default.accept_redirects:
           match_output: '0'
           tag: CIS-4.2.2
-    description: Disable ICMP Redirect Acceptance (Scored)
+    description: Disable ICMP Redirect Acceptance
   ignore_broadcast_requests:
     data:
       CentOS-6:
@@ -637,7 +637,6 @@ grep:
               match_output: 'X11Forwarding no'
       description: 'Disable SSH X11 Forwarding (Scored)'
 
-    # NOTE: Need to update this entry to reflect your organization's password policy
     sshd_max_auth_retries:
       data:
         'CentOS-6':
@@ -748,13 +747,12 @@ grep:
           - '/etc/pam.d/su':
               tag: 'CIS-6.5'
               pattern: "pam_wheel.so"
-              match_output: "use_uid"
+              match_output: "use_uid"  # number of passwords to remember
           - '/etc/group':
               tag: 'CIS-6.5'
               pattern: "wheel"
       description: 'Limit su command access (Scored)'
 
-    # NOTE: Need to update this entry to reflect your organization's password policy
     passwd_expiration_days:
       data:
         'CentOS-6':
@@ -764,7 +762,6 @@ grep:
               match_output: "90"
       description: 'Set Password Expiration Days (Scored)'
 
-    # NOTE: Need to update this entry to reflect your organization's password policy
     passwd_change_min_days:
       data:
         'CentOS-6':
@@ -774,7 +771,6 @@ grep:
               match_output: "7"
       description: 'Set Password Change Minimum Number of Days (Scored)'
 
-    # NOTE: Need to update this entry to reflect your organization's password policy
     passwd_expiry_warning:
       data:
         'CentOS-6':
@@ -819,3 +815,4 @@ grep:
               tag: 'CIS-9.2.4'
               pattern: "^+:"
       description: 'Verify No Legacy "+" Entries Exist in /etc/group (Scored)'
+
