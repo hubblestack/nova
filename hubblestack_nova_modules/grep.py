@@ -282,7 +282,7 @@ def _get_tags(data):
 
 def _grep(path,
           pattern,
-          *opts):
+          *args):
     '''
     Grep for a string in the specified file
 
@@ -321,15 +321,19 @@ def _grep(path,
     '''
     path = os.path.expanduser(path)
 
-    split_opts = []
-    for opt in opts:
-        try:
-            opt = salt.utils.shlex_split(opt)
-        except AttributeError:
-            opt = salt.utils.shlex_split(str(opt))
-        split_opts.extend(opt)
+    if args:
+        options = ' '.join(args)
+    else:
+        options = ''
+    cmd = (
+        r'''grep  {options} {pattern} {path}'''
+        .format(
+            options=options,
+            pattern=pattern,
+            path=path,
+        )
+    )
 
-    cmd = ['grep'] + split_opts + [pattern, path]
     try:
         ret = __salt__['cmd.run_all'](cmd, python_shell=False, ignore_retcode=True)
     except (IOError, OSError) as exc:
