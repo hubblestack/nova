@@ -53,12 +53,14 @@ Nova packages have been divided into modules and profiles. This way we can
 iterate policy changes separate from the code.
 
 **Nova Modules**
+
 .. code-block:: shell
 
     wget http://spm.hubblestack.io/nova/hubblestack_nova_modules-2016.9.1-1.spm
     spm local install hubblestack_nova_modules-2016.9.1-1.spm
 
 **Nova Profiles**
+
 .. code-block:: shell
 
     wget http://spm.hubblestack.io/nova/hubblestack_nova_profiles-20160909-1.spm
