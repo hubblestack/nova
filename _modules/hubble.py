@@ -420,7 +420,7 @@ def sync(clean=False):
     Sync the nova audit modules and profiles from the saltstack fileserver.
 
     The modules should be stored in the salt fileserver. By default nova will
-    search the base environment for a top level ``hubblestack_nova_modules``
+    search the base environment for a top level ``hubblestack_nova``
     directory, unless otherwise specified via pillar or minion config
     (``hubblestack:nova:module_dir``)
 
@@ -448,7 +448,7 @@ def sync(clean=False):
     nova_profile_dir = __salt__['config.get']('hubblestack:nova:profile_dir',
                                               'salt://hubblestack_nova_profiles')
     nova_module_dir = __salt__['config.get']('hubblestack:nova:module_dir',
-                                             'salt://hubblestack_nova_modules')
+                                             'salt://hubblestack_nova')
     saltenv = __salt__['config.get']('hubblestack:nova:saltenv', 'base')
 
     # Clean previously synced files
@@ -519,7 +519,7 @@ def _hubble_dir():
     nova_profile_dir = __salt__['config.get']('hubblestack:nova:profile_dir',
                                               'salt://hubblestack_nova_profiles')
     nova_module_dir = __salt__['config.get']('hubblestack:nova:module_dir',
-                                             'salt://hubblestack_nova_modules')
+                                             'salt://hubblestack_nova')
     dirs = []
     # Support optional salt:// in config
     for nova_dir in (nova_module_dir, nova_profile_dir):
@@ -630,6 +630,8 @@ class NovaLazyLoader(LazyLoader):
                         # in the profiles directory. This is hacky but was a
                         # quick fix.
                         nova_module_cache, nova_profile_cache = _hubble_dir()
+                        nova_module_cache = os.path.join(nova_module_cache, '')
+                        nova_profile_cache = os.path.join(nova_profile_cache, '')
                         if ext == '.py' and fpath.startswith(nova_profile_cache):
                             continue
                         if ext == '.yaml' and fpath.startswith(nova_module_cache):
