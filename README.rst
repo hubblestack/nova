@@ -56,8 +56,8 @@ iterate policy changes separate from the code.
 
 .. code-block:: shell
 
-    wget http://spm.hubblestack.io/nova/hubblestack_nova_modules-2016.9.1-1.spm
-    spm local install hubblestack_nova_modules-2016.9.1-1.spm
+    wget http://spm.hubblestack.io/nova/hubblestack_nova-2016.9.2.spm
+    spm local install hubblestack_nova-2016.9.2.spm
 
 **Nova Profiles**
 
@@ -92,7 +92,7 @@ it to the minions.
     mkdir -p /srv/salt/_modules/
     cp _modules/hubble.py /srv/salt/_modules/
     cp -a hubblestack_nova_profiles /srv/salt/
-    cp -a hubblestack_nova_modules /srv/salt/
+    cp -a hubblestack_nova /srv/salt/
 
     salt \* saltutil.sync_modules
     salt \* hubble.sync
@@ -127,7 +127,7 @@ Usage
 
 There are four primary functions in the hubble.py module:
 
-1. ``hubble.sync`` will sync the ``hubblestack_nova_profiles/`` and ``hubblestack_nova_modules/`` directories to the minion(s).
+1. ``hubble.sync`` will sync the ``hubblestack_nova_profiles/`` and ``hubblestack_nova/`` directories to the minion(s).
 2. ``hubble.load`` will load the synced audit modules and their yaml configuration files.
 3. ``hubble.audit`` will audit the minion(s) using the YAML profile(s) you provide as comma-separated arguments
 4. ``hubble.top`` will audit the minion(s) using the ``top.nova`` configuration.
@@ -276,7 +276,7 @@ configurable via pillar. The defaults are shown below:
     hubblestack:
       nova:
         saltenv: base
-        module_dir: salt://hubblestack_nova_modules
+        module_dir: salt://hubblestack_nova
         profile_dir: salt://hubblestack_nova_profiles
 
 2. By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
