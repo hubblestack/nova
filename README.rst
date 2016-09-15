@@ -45,14 +45,26 @@ Ensure that this path is defined in your Salt Master's ``file_roots``:
 Installation (Packages)
 -----------------------
 
-Installation is as easy as downloading and installing a package. (Note: in
+Installation is as easy as downloading and installing packages. (Note: in
 future releases you'll be able to subscribe directly to our HubbleStack SPM
 repo for updates and bugfixes!)
 
+Nova packages have been divided into modules and profiles. This way we can
+iterate policy changes separate from the code.
+
+**Nova Modules**
+
 .. code-block:: shell
 
-    wget https://spm.hubblestack.io/2016.7.1/hubblestack_nova-2016.7.1-1.spm
-    spm local install hubblestack_nova-2016.7.1-1.spm
+    wget http://spm.hubblestack.io/nova/hubblestack_nova-2016.9.2.spm
+    spm local install hubblestack_nova-2016.9.2.spm
+
+**Nova Profiles**
+
+.. code-block:: shell
+
+    wget http://spm.hubblestack.io/nova/hubblestack_nova_profiles-20160909-1.spm
+    spm local install hubblestack_nova_profiles-20160909-1.spm
 
 You should now be able to sync the new modules to your minion(s) using the
 ``sync_modules`` Salt utility:
@@ -80,10 +92,31 @@ it to the minions.
     mkdir -p /srv/salt/_modules/
     cp _modules/hubble.py /srv/salt/_modules/
     cp -a hubblestack_nova_profiles /srv/salt/
-    cp -a hubblestack_nova_modules /srv/salt/
+    cp -a hubblestack_nova /srv/salt/
 
     salt \* saltutil.sync_modules
     salt \* hubble.sync
+
+.. _nova_installation_gitfs:
+
+Installation (GitFS)
+--------------------
+
+This installation method subscribes directly to our GitHub repository, pinning
+to a tag or branch. This method requires no package installation or manual
+checkouts.
+
+Requirements: GitFS support on your Salt Master.
+
+**/etc/salt/master.d/hubblestack-nova.conf**
+
+.. code-block:: diff
+
+    gitfs_remotes:
+      - https://github.com/hubblestack/nova:
+        - base: v2016.9.1
+
+.. tip:: Remember to restart the Salt Master after applying this change.
 
 .. _nova_usage:
 
@@ -94,7 +127,7 @@ Usage
 
 There are four primary functions in the hubble.py module:
 
-1. ``hubble.sync`` will sync the ``hubblestack_nova_profiles/`` and ``hubblestack_nova_modules/`` directories to the minion(s).
+1. ``hubble.sync`` will sync the ``hubblestack_nova_profiles/`` and ``hubblestack_nova/`` directories to the minion(s).
 2. ``hubble.load`` will load the synced audit modules and their yaml configuration files.
 3. ``hubble.audit`` will audit the minion(s) using the YAML profile(s) you provide as comma-separated arguments
 4. ``hubble.top`` will audit the minion(s) using the ``top.nova`` configuration.
@@ -243,7 +276,7 @@ configurable via pillar. The defaults are shown below:
     hubblestack:
       nova:
         saltenv: base
-        module_dir: salt://hubblestack_nova_modules
+        module_dir: salt://hubblestack_nova
         profile_dir: salt://hubblestack_nova_profiles
 
 2. By default, ``hubble.audit`` will call ``hubble.load`` (which in turn calls
