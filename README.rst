@@ -56,15 +56,15 @@ iterate policy changes separate from the code.
 
 .. code-block:: shell
 
-    wget http://spm.hubblestack.io/nova/hubblestack_nova-2016.9.2.spm
-    spm local install hubblestack_nova-2016.9.2.spm
+    wget https://spm.hubblestack.io/nova/hubblestack_nova-2016.9.2-1.spm
+    spm local install hubblestack_nova-2016.9.2-1.spm
 
 **Nova Profiles**
 
 .. code-block:: shell
 
-    wget http://spm.hubblestack.io/nova/hubblestack_nova_profiles-20160909-1.spm
-    spm local install hubblestack_nova_profiles-20160909-1.spm
+    wget https://spm.hubblestack.io/nova/hubblestack_nova_profiles-20160914-1.spm
+    spm local install hubblestack_nova_profiles-20160914-1.spm
 
 You should now be able to sync the new modules to your minion(s) using the
 ``sync_modules`` Salt utility:
