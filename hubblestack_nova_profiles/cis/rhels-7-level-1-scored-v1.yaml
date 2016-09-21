@@ -443,7 +443,7 @@ grep:
         - /etc/default/useradd:
             pattern: INACTIVE=30
             tag: CIS-5.4.1.4
-      decription:  Ensure inactive password lock is '30' days (or less) (Scored)
+      description:  Ensure inactive password lock is '30' days (or less) (Scored)
     restrict_core_dumps:
       data:
         Red Hat Enterprise Linux Server-7:
