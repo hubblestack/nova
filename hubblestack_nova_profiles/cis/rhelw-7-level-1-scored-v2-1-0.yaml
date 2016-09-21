@@ -140,7 +140,7 @@ grep:
             pattern: ^inet_interfaces
             match_output: localhost
             tag: CIS-2.2.15
-      description: Ensure mail transfer agent is configured for local-only mode 
+      description: Ensure mail transfer agent is configured for local-only mode
     default_umask:
       data:
         Red Hat Enterprise Linux Workstation-7:
@@ -161,7 +161,7 @@ grep:
         - /etc/modprobe.d:
             match_output: /bin/true
             pattern: cramfs
-            grep_args: 
+            grep_args:
               - '-r'
             tag: CIS-1.1.1.1
       description: Ensure mounting of cramfs filesystems is disabled
@@ -433,7 +433,7 @@ grep:
         - /etc/default/useradd:
             pattern: INACTIVE=30
             tag: CIS-5.4.1.4
-      decription: Ensure inactive password lock is 30 days or less
+      description: Ensure inactive password lock is 30 days or less
     restrict_core_dumps:
       data:
         Red Hat Enterprise Linux Workstation-7:
