@@ -503,7 +503,7 @@ stat:
   cron_hourly:
     data:
       CentOS Linux-7:
-      - etc/cron.hourly:
+      - /etc/cron.hourly:
           gid: 0
           group: root
           mode: 700

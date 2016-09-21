@@ -223,7 +223,7 @@ stat:
   cron_hourly:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - 'etc/cron.hourly':
+        - '/etc/cron.hourly':
             tag: 'CIS-6.1.5'
             mode: 700
             user: 'root'
@@ -231,7 +231,7 @@ stat:
             group: 'root'
             gid: 0
       'CentOS Linux-7':
-        - 'etc/cron.hourly':
+        - '/etc/cron.hourly':
             tag: 'CIS-6.1.5'
             mode: 700
             user: 'root'
