@@ -314,7 +314,7 @@ grep:
         Debian-8:
           - '/etc/login.defs':
               tag: 'CIS-10.1.3'
-              pattern: "PASS_WARN_DAYS"
+              pattern: "PASS_WARN_AGE"
               match_output: "7"
       description: Set Password Expiring Warning Days
 

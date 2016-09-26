@@ -1213,12 +1213,12 @@ grep:
         'Red Hat Enterprise Linux Server-6':
           - '/etc/login.defs':
               tag: 'CIS-7.1.3'
-              pattern: "PASS_WARN_DAYS"
+              pattern: "PASS_WARN_AGE"
               match_output: "7"
         CentOS Linux-7:
           - '/etc/login.defs':
               tag: 'CIS-7.1.3'
-              pattern: "PASS_WARN_DAYS"
+              pattern: "PASS_WARN_AGE"
               match_output: "7"
       description: 'Set Password Expiring Warning Days (Scored)'
 

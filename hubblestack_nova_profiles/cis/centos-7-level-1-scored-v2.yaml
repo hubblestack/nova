@@ -434,7 +434,7 @@ grep:
         CentOS Linux-7:
         - /etc/login.defs:
             match_output: '7'
-            pattern: PASS_WARN_DAYS
+            pattern: PASS_WARN_AGE
             tag: CIS-5.4.1.3
       description: Set Password Expiring Warning Days (Scored)
     passwd_inactive:
