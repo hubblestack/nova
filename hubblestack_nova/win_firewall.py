@@ -232,6 +232,7 @@ def _import_firewall():
         for val in vals:
             if val:
                 v = val.split(':')
+                if len(v) < 2: continue
                 temp_vals[v[0].strip()] = v[1].strip()
         dict_return[temp_vals['Name']] = temp_vals
     return dict_return
