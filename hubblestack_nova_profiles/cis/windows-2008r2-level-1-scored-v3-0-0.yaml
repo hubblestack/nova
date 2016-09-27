@@ -1443,7 +1443,7 @@ win_reg:
     Disable IPv6 :
       data:
         'Microsoft Windows Server 2008*':
-          - 'HKEY_LOCAL_MACHHKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters\DisabledComponents':
+          - 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters\DisabledComponents':
               tag: CIS-18.4.18.2.1
               match_output: '255'
               value_type: 'equal'
@@ -1826,8 +1826,7 @@ win_reg:
               match_output: 'Disabled'
               value_type: 'equal'
       description: 'Ensure WDigest Authentication is set to Disabled'
-    Include command line in process creation events :
-    Ensure Include command line in process creation events :
+    Ensure Include command line in process creation events is Disabled:
       data:
         'Microsoft Windows Server 2008*':
           - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\ProcessCreationIncludeCmdLine_Enabled':
