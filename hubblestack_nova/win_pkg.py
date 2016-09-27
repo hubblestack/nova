@@ -34,7 +34,7 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
     try:
         __pkgdata__ = __salt__['pkg.list_pkgs']()
     except CommandExecutionError:
-        __salt__['pkg.refresh_db']
+        __salt__['pkg.refresh_db']()
         __pkgdata__ = __salt__['pkg.list_pkgs']()
     for profile, data in data_list:
         if show_profile:
