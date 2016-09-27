@@ -364,7 +364,7 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/pam.d/password-auth:
-            pattern: "'^password+*pam_unix.so'"
+            pattern: '"^password\s+\w+\s+pam_unix\.so"'
             match_output: sha512
             grep_args:
               - '-E'
