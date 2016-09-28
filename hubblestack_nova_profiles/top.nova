@@ -23,5 +23,11 @@ nova:
     - cis.windows-2008r2-level-1-scored-v3-0-0
   'G@osfullname:Microsoft*Windows*Server*2012*':
     - cis.windows-2012r2-level-1-scored-v2-0-0
+  'G@osfinger:Amazon*Linux*2014*':
+    - cis.amazon-201409-level-1-scored-v1-0-0
+  'G@osfinger:Amazon*Linux*2015*':
+    - cis.amazon-level-1-scored-v1-0-0
+  'G@osfinger:Amazon*Linux*2016*':
+    - cis.amazon-level-1-scored-v1-0-0
   #'*':
   #  - misc
