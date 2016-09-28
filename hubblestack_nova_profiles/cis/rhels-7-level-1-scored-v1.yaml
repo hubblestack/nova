@@ -356,8 +356,10 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/pam.d/system-auth:
+            pattern: '"^password\s+sufficient\s+pam_unix\.so.*"'
             match_output: remember=5
-            pattern: pam_unix.so
+            grep_args:
+              - '-E'
             tag: CIS-5.3.3
       description: PAM Password Reuse (Scored)
     password_hash:
@@ -586,8 +588,16 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/pam.d/system-auth:
-            pattern: pam_faillock.so
+            pattern: '"^auth\s+required\s+pam_faillock\.so.*"'
             match_output: deny=5
+            grep_args:
+              - '-E'
+            tag: CIS-5.3.2
+        - /etc/pam.d/password-auth:
+            pattern: '"^auth\s+required\s+pam_faillock\.so.*"'
+            match_output: deny=5
+            grep_args:
+              - '-E'
             tag: CIS-5.3.2
       description: Ensure lockout for failed password attempts is configured (Scored)
 pkg:
