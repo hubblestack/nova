@@ -82,9 +82,11 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
                         if secret:
                             ret['Success'].append(tag_data)
                         else:
+                            tag_data['value_found'] = current
                             ret['Failure'].append(tag_data)
 
                     else:
+                        tag_data['value_found'] = None
                         ret['Failure'].append(tag_data)
 
 
@@ -211,7 +213,7 @@ def _get_tags(data):
                             ret[tag] = []
                         formatted_data = {'name': name,
                                           'tag': tag,
-                                          'module': 'win_auditpol',
+                                          'module': 'win_reg',
                                           'type': toplist}
                         formatted_data.update(tag_data)
                         formatted_data.update(audit_data)
