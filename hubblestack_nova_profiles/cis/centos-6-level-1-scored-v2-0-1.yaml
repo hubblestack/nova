@@ -737,8 +737,8 @@ grep:
               match_output: "ClientAliveInterval 300"
           - '/etc/ssh/sshd_config':
               tag: CIS-5.2.13
-              pattern: "^ClientAliveCountMatch"
-              match_output: "ClientAliveCountMatch 0"
+              pattern: "^ClientAliveCountMax"
+              match_output: "ClientAliveCountMax 0"
       description: Ensure SSH Idle Timeout Interval is configured
 
     sshd_limit_access:
