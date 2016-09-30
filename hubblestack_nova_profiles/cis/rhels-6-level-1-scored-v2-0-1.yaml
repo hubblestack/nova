@@ -298,8 +298,8 @@ grep:
             pattern: ^ClientAliveInterval
             tag: CIS-5.2.13
         - /etc/ssh/sshd_config:
-            match_output: ClientAliveCountMatch 0
-            pattern: ^ClientAliveCountMatch
+            match_output: ClientAliveCountMax 0
+            pattern: ^ClientAliveCountMax
             tag: CIS-5.2.13
       description: Ensure SSH Idle Timeout Interval is configured
     sshd_ignore_rhosts:
