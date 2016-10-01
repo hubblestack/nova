@@ -1489,7 +1489,7 @@ win_reg:
         'Microsoft Windows Server 2012*':
           - 'HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Network Connections\NC_StdDomainUserSetLocation':
               tag: CIS-18.4.10.3
-              match_output: ' is set to '
+              match_output: 'Enabled'
               value_type: 'equal'
       description: (l1) ensure 'require domain users to elevate when setting a network's location' is set to 'enabled'
     Hardened UNC Paths :
