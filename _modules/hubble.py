@@ -35,6 +35,7 @@ from salt.exceptions import CommandExecutionError
 from salt.loader import LazyLoader
 
 __nova__ = {}
+__version__ = 'v2016.9.2'
 
 
 def audit(configs=None,
@@ -506,6 +507,13 @@ def load():
            'data': __nova__.__data__.keys(),
            'missing_data': __nova__.__missing_data__}
     return ret
+
+
+def version():
+    '''
+    Report the version of this module
+    '''
+    return __version__
 
 
 def _hubble_dir():
