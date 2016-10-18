@@ -35,7 +35,7 @@ from salt.exceptions import CommandExecutionError
 from salt.loader import LazyLoader
 
 __nova__ = {}
-__version__ = 'v2016.9.2'
+__version__ = 'v2016.10.1'
 
 
 def audit(configs=None,
