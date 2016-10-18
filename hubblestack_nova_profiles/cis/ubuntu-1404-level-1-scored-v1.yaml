@@ -345,7 +345,7 @@ grep:
       data:
         Ubuntu-14.04:
         - /etc/login.defs:
-            pattern: PASS_WARN_DAYS
+            pattern: PASS_WARN_AGE
             match_output: '7'
             tag: CIS-10.1.3
       description: Set Password Expiring Warning Days (Scored)

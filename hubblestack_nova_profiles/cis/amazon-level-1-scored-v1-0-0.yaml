@@ -1,4 +1,4 @@
-# NOTE: This CIS Profile only includes Level 1 Scored Items for CentOS6.
+# NOTE: This CIS Profile only includes Level 1 Scored Items for Amazon Linux*.
 # NOTE: Within this file, there are a few sections that should be tailored to your
 #       organization's specific policy.  Search for '# NOTE: ' comments through the file.
 
@@ -9,48 +9,48 @@ pkg:
 
     telnet:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - 'telnet-server': 'CIS-2.1.1'
           - 'telnet': 'CIS-2.1.2'
       description: 'Remove telnet and telnet-server'
 
     rsh:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - 'rsh-server': 'CIS-2.1.3'
           - 'rsh': 'CIS-2.1.4'
       description: 'Remove rsh and rsh-server'
 
     nis:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - 'ypbind': 'CIS-2.1.5'
           - 'ypserv': 'CIS-2.1.6'
       description: 'Remove nis client and nis server'
 
     tftp:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - 'tftp': 'CIS-2.1.7'
           - 'tftp-server': 'CIS-2.1.8'
       description: 'Remove tftp and tftp-server'
 
     talk:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - 'talk': 'CIS-2.1.9'
           - 'talk-server': 'CIS-2.1.10'
       description: 'Remove talk and talk-server'
 
     xinetd:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - 'xinetd': 'CIS-2.1.11'
       description: 'Remove xinetd'
 
     dhcp:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - 'dhcp': 'CIS-3.5'
       description: 'Remove DHCP server'
 
@@ -58,13 +58,13 @@ pkg:
 
     rsyslog:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           'rsyslog': 'CIS-5.1.1'
       description: 'Install rsyslog'
 
     anacron:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           'cronie-anacron': 'CIS-6.1.1'
       description: 'Enable anacron Daemon'
 
@@ -73,7 +73,7 @@ pkg:
 stat:
   grub_conf_own:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/grub.conf':
             tag: 'CIS-1.5.1'
             user: 'root'
@@ -84,7 +84,7 @@ stat:
 
   grub_conf_perm:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/grub.conf':
             tag: 'CIS-1.5.2'
             mode: 600
@@ -92,23 +92,23 @@ stat:
 
   hosts_allow:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/hosts.allow':
-            tag: 'CIS-4.5.3'
+            tag: 'CIS-4.4.3'
             mode: 644
     description: '/etc/hosts.allow must have permissions 644'
 
   hosts_deny:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/hosts.deny':
-            tag: 'CIS-4.5.5'
+            tag: 'CIS-4.4.5'
             mode: 644
     description: '/etc/hosts.deny must have persmissions 644'
 
   anacrontab:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/anacrontab':
             tag: 'CIS-6.1.3'
             mode: 600
@@ -120,7 +120,7 @@ stat:
 
   crontab:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/crontab':
             tag: 'CIS-6.1.4'
             mode: 600
@@ -132,7 +132,7 @@ stat:
 
   cron_hourly:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/cron.hourly':
             tag: 'CIS-6.1.5'
             mode: 700
@@ -144,7 +144,7 @@ stat:
 
   cron_daily:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/cron.daily':
             tag: 'CIS-6.1.6'
             mode: 700
@@ -156,7 +156,7 @@ stat:
 
   cron_weekly:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/cron.weekly':
             tag: 'CIS-6.1.7'
             mode: 700
@@ -168,7 +168,7 @@ stat:
 
   cron_monthly:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/cron.monthly':
             tag: 'CIS-6.1.8'
             mode: 700
@@ -180,7 +180,7 @@ stat:
 
   cron_d:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/cron.d':
             tag: 'CIS-6.1.9'
             mode: 700
@@ -192,7 +192,7 @@ stat:
 
   at_allow:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/at.allow':
             tag: 'CIS-6.1.10'
             mode: 600
@@ -204,7 +204,7 @@ stat:
 
   at_cron_allow:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/cron.deny':
             tag: 'CIS-6.1.11'
             mode: null
@@ -237,7 +237,7 @@ stat:
 
   sshd_config:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/ssh/sshd_config':
             tag: 'CIS-6.2.3'
             mode: 600
@@ -249,7 +249,7 @@ stat:
 
   warning_banner:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/motd':
             tag: 'CIS-8.1'
             mode: 644
@@ -275,7 +275,7 @@ stat:
 
   passwd_perm:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/passwd':
             tag: 'CIS-9.1.2'
             mode: 644
@@ -283,7 +283,7 @@ stat:
 
   passwd_own:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/passwd':
             tag: 'CIS-9.1.6'
             user: 'root'
@@ -294,7 +294,7 @@ stat:
 
   shadow_perm:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/shadow':
             tag: 'CIS-9.1.3'
             mode: 0
@@ -302,7 +302,7 @@ stat:
 
   shadow_own:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/shadow':
             tag: 'CIS-9.1.7'
             user: 'root'
@@ -313,7 +313,7 @@ stat:
 
   gshadow_perm:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/gshadow':
             tag: 'CIS-9.1.4'
             mode: 0
@@ -321,7 +321,7 @@ stat:
 
   gshadow_own:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/gshadow':
             tag: 'CIS-9.1.8'
             user: 'root'
@@ -332,7 +332,7 @@ stat:
 
   group_perm:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/group':
             tag: 'CIS-9.1.5'
             mode: 644
@@ -340,7 +340,7 @@ stat:
 
   group_own:
     data:
-      'CentOS-6':
+      'Amazon Linux*':
         - '/etc/group':
             tag: 'CIS-9.1.9'
             user: 'root'
@@ -354,21 +354,14 @@ stat:
 sysctl:
   bad_error_message_protection:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.icmp_ignore_bogus_error_responses:
           match_output: '1'
           tag: CIS-4.2.6
     description: Enable Bad Error Message Protection (Scored)
-  exec_shield:
-    data:
-      CentOS-6:
-      - kernel.exec-shield:
-          match_output: '1'
-          tag: CIS-1.6.2
-    description: Configure ExecShield (Scored)
   icmp_redirect_acceptance:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.conf.all.accept_redirects:
           match_output: '0'
           tag: CIS-4.2.2
@@ -378,21 +371,21 @@ sysctl:
     description: Disable ICMP Redirect Acceptance (Scored)
   ignore_broadcast_requests:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.icmp_echo_ignore_broadcasts:
           match_output: '1'
           tag: CIS-4.2.5
     description: Enable Ignore Broadcast Requests (Scored)
   ip_forwarding:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.ip_forward:
           match_output: '0'
           tag: CIS-4.1.1
     description: Disable IP Forwarding (Scored)
   log_suspicious_packets:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.conf.all.log_martians:
           match_output: '1'
           tag: CIS-4.2.4
@@ -402,14 +395,14 @@ sysctl:
     description: Log Suspicious Activity (Scored)
   randomize_va_space:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - kernel.randomize_va_space:
           match_output: '2'
-          tag: CIS-1.6.3
+          tag: CIS-1.6.2
     description: Enable Randomized Virtual Memory Region Placement (Scored)
   send_packet_redirect:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.conf.all.send_redirects:
           match_output: '0'
           tag: CIS-4.1.2
@@ -419,7 +412,7 @@ sysctl:
     description: Disable Send Packet Redirect (Scored)
   source_routed_packet_acceptance:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.conf.all.accept_source_route:
           match_output: '0'
           tag: CIS-4.2.1
@@ -429,7 +422,7 @@ sysctl:
     description: Disable Source Routed Packet Acceptance (Scored)
   tcp_syn_cookies:
     data:
-      CentOS-6:
+      Amazon Linux*:
       - net.ipv4.tcp_syncookies:
           match_output: '1'
           tag: CIS-4.2.8
@@ -441,7 +434,7 @@ grep:
 
     fstab_tmp_partition:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.1'
               pattern: '/tmp'
@@ -449,7 +442,7 @@ grep:
 
     fstab_tmp_partition_nodev:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.2'
               pattern: '/tmp'
@@ -458,7 +451,7 @@ grep:
 
     fstab_tmp_partition_nosuid:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.3'
               pattern: '/tmp'
@@ -467,7 +460,7 @@ grep:
 
     fstab_tmp_partition_noexec:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.4'
               pattern: '/tmp'
@@ -476,7 +469,7 @@ grep:
 
     fstab_var_partition:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.5'
               pattern: '/var'
@@ -484,7 +477,7 @@ grep:
 
     fstab_var_tmp_bind_mount:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.6'
               pattern: '/tmp'
@@ -493,7 +486,7 @@ grep:
 
     fstab_var_log_partition:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.7'
               pattern: '/var/log'
@@ -501,7 +494,7 @@ grep:
 
     fstab_var_log_audit_partition:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.8'
               pattern: '/var/log/audit'
@@ -509,7 +502,7 @@ grep:
 
     fstab_home_partition:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.9'
               pattern: '/home'
@@ -517,7 +510,7 @@ grep:
 
     fstab_home_partition_nodev:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.10'
               pattern: '/home'
@@ -526,7 +519,7 @@ grep:
 
     fstab_dev_shm_partition_nodev:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.14'
               pattern: '/dev/shm'
@@ -535,7 +528,7 @@ grep:
 
     fstab_dev_shm_partition_nosuid:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.15'
               pattern: '/dev/shm'
@@ -544,7 +537,7 @@ grep:
 
     fstab_dev_shm_partition_noexec:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/fstab':
               tag: 'CIS-1.1.16'
               pattern: '/dev/shm'
@@ -553,7 +546,7 @@ grep:
 
     activate_gpg_check:
       data:
-        CentOS-6:
+        Amazon Linux*:
           - '/etc/yum.conf':
               tag: 'CIS-1.2.2'
               pattern: 'gpgcheck'
@@ -562,7 +555,7 @@ grep:
 
     boot_loader_passwd:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/grub.conf':
               tag: 'CIS-1.5.3'
               pattern: '^password'
@@ -570,7 +563,7 @@ grep:
 
     restrict_core_dumps:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/security/limits.conf':
               tag: 'CIS-1.6.1'
               pattern: 'hard core'
@@ -578,7 +571,7 @@ grep:
 
     set_daemon_umask:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/sysconfig/init':
               tag: 'CIS-3.1'
               pattern: 'umask'
@@ -587,7 +580,7 @@ grep:
 
     configure_ntp:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ntp.conf':
               tag: 'CIS-3.6'
               pattern: 'restrict default'
@@ -604,7 +597,7 @@ grep:
 
     rsyslog_remote_logging:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/rsyslog.conf':
               tag: 'CIS-5.1.5'
               pattern: "^*.*[^I][^I]*@"
@@ -612,7 +605,7 @@ grep:
 
     sshd_protocol_2:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.1'
               pattern: "^Protocol"
@@ -621,7 +614,7 @@ grep:
 
     sshd_loglevel_info:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.2'
               pattern: "^LogLevel"
@@ -630,7 +623,7 @@ grep:
 
     sshd_x11_forwarding:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.4'
               pattern: "^X11Forwarding"
@@ -640,7 +633,7 @@ grep:
     # NOTE: Need to update this entry to reflect your organization's password policy
     sshd_max_auth_retries:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.5'
               pattern: "^MaxAuthTries"
@@ -649,7 +642,7 @@ grep:
 
     sshd_ignore_rhosts:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.6'
               pattern: "^IgnoreRhosts"
@@ -658,7 +651,7 @@ grep:
 
     sshd_hostbased_auth:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.7'
               pattern: "^HostbasedAuthentication"
@@ -667,7 +660,7 @@ grep:
 
     sshd_disable_root_login:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.8'
               pattern: "^PermitRootLogin"
@@ -676,7 +669,7 @@ grep:
 
     sshd_permit_empty_passwords:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.9'
               pattern: "^PermitEmptyPasswords"
@@ -685,7 +678,7 @@ grep:
 
     sshd_permit_user_environment:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.10'
               pattern: "^PermitUserEnvironment"
@@ -694,7 +687,7 @@ grep:
 
     sshd_approved_cipher:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.11'
               pattern: "Ciphers"
@@ -703,7 +696,7 @@ grep:
 
     sshd_idle_timeout:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.12'
               pattern: "^ClientAliveInterval"
@@ -716,7 +709,7 @@ grep:
 
     sshd_limit_access:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.13'
               pattern: '(^AllowUsers)|(^AllowGroups)|(^DenyUsers)|(^DenyGroups)'
@@ -726,7 +719,7 @@ grep:
 
     sshd_banner:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.14'
               pattern: "^Banner"
@@ -735,7 +728,7 @@ grep:
     # NOTE: Need to update this entry to reflect your organization's password policy
     limit_password_reuse:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/pam.d/system-auth':
               tag: 'CIS-6.3.4'
               pattern: "pam_unix.so"
@@ -744,7 +737,7 @@ grep:
 
     limit_su_command_access:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/pam.d/su':
               tag: 'CIS-6.5'
               pattern: "pam_wheel.so"
@@ -757,7 +750,7 @@ grep:
     # NOTE: Need to update this entry to reflect your organization's password policy
     passwd_expiration_days:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/login.defs':
               tag: 'CIS-7.1.1'
               pattern: "PASS_MAX_DAYS"
@@ -767,7 +760,7 @@ grep:
     # NOTE: Need to update this entry to reflect your organization's password policy
     passwd_change_min_days:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/login.defs':
               tag: 'CIS-7.1.2'
               pattern: "PASS_MIN_DAYS"
@@ -777,7 +770,7 @@ grep:
     # NOTE: Need to update this entry to reflect your organization's password policy
     passwd_expiry_warning:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/login.defs':
               tag: 'CIS-7.1.3'
               pattern: "PASS_WARN_AGE"
@@ -786,7 +779,7 @@ grep:
 
     default_umask:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/bashrc':
               tag: 'CIS-7.4'
               pattern: "^umask 077"
@@ -798,7 +791,7 @@ grep:
   blacklist:
     legacy_passwd_entries_passwd:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/passwd':
               tag: 'CIS-9.2.2'
               pattern: "^+:"
@@ -806,7 +799,7 @@ grep:
 
     legacy_passwd_entries_shadow:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/shadow':
               tag: 'CIS-9.2.3'
               pattern: "^+:"
@@ -814,7 +807,7 @@ grep:
 
     legacy_passwd_entries_group:
       data:
-        'CentOS-6':
+        'Amazon Linux*':
           - '/etc/group':
               tag: 'CIS-9.2.4'
               pattern: "^+:"

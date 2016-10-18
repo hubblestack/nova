@@ -254,8 +254,8 @@ grep:
               match_output: "ClientAliveInterval 300"
           - '/etc/ssh/sshd_config':
               tag: 'CIS-9.3.12'
-              pattern: "^ClientAliveCountMatch"
-              match_output: "ClientAliveCountMatch 0"
+              pattern: "^ClientAliveCountMax"
+              match_output: "ClientAliveCountMax 0"
       description: 'Set Idle Timeout Interval for User Login (Scored)'
 
     sshd_limit_access:
@@ -314,7 +314,7 @@ grep:
         Debian-8:
           - '/etc/login.defs':
               tag: 'CIS-10.1.3'
-              pattern: "PASS_WARN_DAYS"
+              pattern: "PASS_WARN_AGE"
               match_output: "7"
       description: 'Set Password Expiring Warning Days (Scored)'
 
@@ -366,7 +366,7 @@ stat:
   cron_hourly:
     data:
       Debian-8:
-        - 'etc/cron.hourly':
+        - '/etc/cron.hourly':
             tag: 'CIS-9.1.3'
             mode: 700
             user: 'root'

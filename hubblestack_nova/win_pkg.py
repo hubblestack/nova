@@ -13,6 +13,7 @@ import copy
 import fnmatch
 import logging
 import salt.utils
+from salt.exceptions import CommandExecutionError
 
 
 log = logging.getLogger(__name__)
@@ -30,7 +31,11 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
     with the CIS yaml processed by __virtual__
     '''
     __data__ = {}
-    __pkgdata__ = __salt__['pkg.list_pkgs']()
+    try:
+        __pkgdata__ = __salt__['pkg.list_pkgs']()
+    except CommandExecutionError:
+        __salt__['pkg.refresh_db']()
+        __pkgdata__ = __salt__['pkg.list_pkgs']()
     for profile, data in data_list:
         if show_profile:
             _merge_yaml(__data__, data, profile)

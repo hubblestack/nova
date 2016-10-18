@@ -223,7 +223,7 @@ stat:
   cron_hourly:
     data:
       'Red Hat Enterprise Linux Server-6':
-        - 'etc/cron.hourly':
+        - '/etc/cron.hourly':
             tag: 'CIS-6.1.5'
             mode: 700
             user: 'root'
@@ -231,7 +231,7 @@ stat:
             group: 'root'
             gid: 0
       'CentOS Linux-7':
-        - 'etc/cron.hourly':
+        - '/etc/cron.hourly':
             tag: 'CIS-6.1.5'
             mode: 700
             user: 'root'
@@ -1213,12 +1213,12 @@ grep:
         'Red Hat Enterprise Linux Server-6':
           - '/etc/login.defs':
               tag: 'CIS-7.1.3'
-              pattern: "PASS_WARN_DAYS"
+              pattern: "PASS_WARN_AGE"
               match_output: "7"
         CentOS Linux-7:
           - '/etc/login.defs':
               tag: 'CIS-7.1.3'
-              pattern: "PASS_WARN_DAYS"
+              pattern: "PASS_WARN_AGE"
               match_output: "7"
       description: 'Set Password Expiring Warning Days (Scored)'
 

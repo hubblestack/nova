@@ -140,7 +140,7 @@ grep:
             pattern: ^inet_interfaces
             match_output: localhost
             tag: CIS-2.2.15
-      description: Ensure mail transfer agent is configured for local-only mode 
+      description: Ensure mail transfer agent is configured for local-only mode
     default_umask:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -161,7 +161,7 @@ grep:
         - /etc/modprobe.d:
             match_output: /bin/true
             pattern: cramfs
-            grep_args: 
+            grep_args:
               - '-r'
             tag: CIS-1.1.1.1
       description: Ensure mounting of cramfs filesystems is disabled
@@ -356,15 +356,17 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/pam.d/system-auth:
+            pattern: '"^password\s+sufficient\s+pam_unix\.so.*"'
             match_output: remember=5
-            pattern: pam_unix.so
+            grep_args:
+              - '-E'
             tag: CIS-5.3.3
       description: Ensure password reuse is limited
     password_hash:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/pam.d/password-auth:
-            pattern: "'^password+*pam_unix.so'"
+            pattern: '"^password\s+\w+\s+pam_unix\.so"'
             match_output: sha512
             grep_args:
               - '-E'
@@ -434,7 +436,7 @@ grep:
         Red Hat Enterprise Linux Server-7:
         - /etc/login.defs:
             match_output: '7'
-            pattern: PASS_WARN_DAYS
+            pattern: PASS_WARN_AGE
             tag: CIS-5.4.1.3
       description: Ensure password expiration warning days is 7 or more
     passwd_inactive:
@@ -443,7 +445,7 @@ grep:
         - /etc/default/useradd:
             pattern: INACTIVE=30
             tag: CIS-5.4.1.4
-      decription: Ensure inactive password lock is 30 days or less
+      description: Ensure inactive password lock is 30 days or less
     restrict_core_dumps:
       data:
         Red Hat Enterprise Linux Server-7:
@@ -586,8 +588,16 @@ grep:
       data:
         Red Hat Enterprise Linux Server-7:
         - /etc/pam.d/system-auth:
-            pattern: pam_faillock.so
+            pattern: '"^auth\s+required\s+pam_faillock\.so.*"'
             match_output: deny=5
+            grep_args:
+              - '-E'
+            tag: CIS-5.3.2
+        - /etc/pam.d/password-auth:
+            pattern: '"^auth\s+required\s+pam_faillock\.so.*"'
+            match_output: deny=5
+            grep_args:
+              - '-E'
             tag: CIS-5.3.2
       description: Ensure lockout for failed password attempts is configured
 pkg:
@@ -866,7 +876,7 @@ stat:
   cron_hourly:
     data:
       Red Hat Enterprise Linux Server-7:
-      - etc/cron.hourly:
+      - /etc/cron.hourly:
           gid: 0
           group: root
           mode: 700
