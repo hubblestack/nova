@@ -905,7 +905,9 @@ stat:
     data:
       CentOS Linux-7:
       - /etc/passwd:
+          gid: 0
           group: root
+          mode: 644
           tag: CIS-6.1.2
           uid: 0
           user: root
@@ -947,7 +949,9 @@ stat:
     data:
       CentOS Linux-7:
       - /etc/passwd-:
+          gid: 0
           group: root
+          mode: 644
           tag: CIS-6.1.6
           uid: 0
           user: root
