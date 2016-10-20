@@ -225,7 +225,7 @@ grep:
               - '-r'
             tag: CIS-1.1.1.7
       description: Disable mounting udf filesystems (Scored).
-    disble_mount_far:
+    disble_mount_fat:
       data:
         CentOS Linux-7:
         - /etc/modprobe.d:
