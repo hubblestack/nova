@@ -243,20 +243,14 @@ the purposes of compliance percentage.
 Schedule
 --------
 
-In order to run the audits once daily, you can use the following schedule:
+In order to run the audits once daily, you can use the following cron job:
 
+**/etc/cron.d/hubble**
 .. code-block:: yaml
 
-    schedule:
-      nova_day:
-        function: hubble.top
-        seconds: 86400
-        kwargs:
-          verbose: True
-          show_profile: True
-        returner: splunk_nova_return
-        return_job: False
-        run_on_start: False
+    MAILTO=""
+    SHELL=/bin/bash
+    @daily       root /usr/bin/salt '*' hubble.top verbose=True,show_profile=True --return splunk_nova_return
 
 .. _nova_configuration:
 
