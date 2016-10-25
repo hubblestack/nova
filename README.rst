@@ -246,6 +246,7 @@ Schedule
 In order to run the audits once daily, you can use the following cron job:
 
 **/etc/cron.d/hubble**
+
 .. code-block:: yaml
 
     MAILTO=""
