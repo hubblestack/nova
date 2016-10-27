@@ -28,7 +28,7 @@ grep:
         - /etc/yum.conf:
             match_output: gpgcheck=1
             pattern: gpgcheck
-            tag: CIS-1.2.2
+            tag: CIS-1.2.3
       description: Ensure gpgcheck is globally activated
     boot_loader_passwd:
       data:
@@ -37,6 +37,19 @@ grep:
             pattern: ^password
             tag: CIS-1.5.3
       description: Set boot loader password
+    sulogin_required:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - /etc/inittab:
+            pattern: sulogin
+            tag: CIS-1.5.4
+      description: Require authentication for single-user mode
+    disable_interactive_boot:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - /etc/sysconfig/init:
+            pattern: ^PROMPT=
+            tag: CIS-1.5.5
     configure_ntp:
       data:
         Red Hat Enterprise Linux Server-5:
@@ -46,12 +59,12 @@ grep:
         - /etc/ntp.conf:
             pattern: restrict -6 default
             tag: CIS-3.6
-        - '/etc/ntp.conf':
-            tag: 'CIS-3.6'
-            pattern: '^server'
-        - '/etc/sysconfig/ntpd':
-            tag: 'CIS-3.6'
-            pattern: 'ntp:ntp'
+        - /etc/ntp.conf:
+            tag: CIS-3.6
+            pattern: ^server
+        - /etc/sysconfig/ntpd:
+            tag: CIS-3.6
+            pattern: ntp:ntp
       description: Ensure ntp is configured
     default_umask:
       data:
@@ -244,13 +257,13 @@ grep:
             pattern: hard core
             tag: CIS-1.6.1
       description: Restrict core dumps
-    rsyslog_remote_logging:
+    syslog_remote_logging:
       data:
         Red Hat Enterprise Linux Server-5:
-        - /etc/rsyslog.conf:
+        - /etc/syslog.conf:
             pattern: ^*.*[^I][^I]*@
-            tag: CIS-5.2.5
-      description: Ensure rsyslog is configured to send logs to a remote log host
+            tag: CIS-5.1.3
+      description: Ensure syslog is configured to send logs to a remote log host
     set_daemon_umask:
       data:
         Red Hat Enterprise Linux Server-5:
@@ -288,7 +301,7 @@ grep:
         - /etc/ssh/sshd_config:
             match_output: HostbasedAuthentication no
             pattern: ^HostbasedAuthentication
-            tag: CIS-6.2.6
+            tag: CIS-6.2.7
       description: Ensure SSH HostbasedAuthentication is disabled
     sshd_idle_timeout:
       data:
@@ -376,6 +389,10 @@ grep:
       description: Ensure SSH X11 forwarding is disabled
 pkg:
   blacklist:
+    gpg-pubkey:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - gpg-pubkey: CIS-1.2.2
     avahi-daemon:
       data:
         Red Hat Enterprise Linux Server-5:
@@ -482,6 +499,47 @@ service:
         Red Hat Enterprise Linux Server-5:
         - iptables: CIS-4.7
       description: iptables should be running
+  blacklist:
+    yum_updatesd:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - yum-updatesd: CIS-1.2.5
+      description: yum-updatesd should be disabled
+    chargen-dgram:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - chargen-dgram: CIS-2.1.12
+      description: Disable chargen-dgram
+    chargen-stream:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - chargen-dgram: CIS-2.1.13
+      description: Disable chargen-stream
+    daytime-dgram:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - daytime-dgram: CIS-2.1.14
+      description: Disable daytime-dgram
+    daytime-stream:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - daytime-stream: CIS-2.1.15
+      description: Disable daytime-stream
+    echo-dgram:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - echo-dgram: CIS-2.1.16
+      description: Disable echo-dgram
+    echo-stream:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - echo-stream: CIS-2.1.17
+      description: Disable echo-stream
+    tcpmux-server:
+      data:
+        Red Hat Enterprise Linux Server-5:
+        - tcpmux-server: CIS-2.1.18
+      description: Disable tcpmux-server
 stat:
   anacrontab:
     data:
@@ -732,6 +790,15 @@ stat:
           user: root
     description: Ensure permissions on /etc/issue are configured
 sysctl:
+  net_ipv4_conf_all_rp_filter:
+    data:
+      Red Hat Enterprise Linux Server-5:
+      - net.ipv4.conf.all.rp_filter:
+          match_output: 1
+          tag: CIS-4.2.7
+      - net.ipv4.conf.default.rp_filter:
+          match_output: 1
+          tag: CIS-4.2.7
   bad_error_message_protection:
     data:
       Red Hat Enterprise Linux Server-5:
