@@ -46,7 +46,7 @@ grep:
             pattern: password
             tag: CIS-1.4.2
       description: Set Boot Loader Password (Scored)
-    chargen_diabled:
+    chargen_disabled:
       data:
         Red Hat Enterprise Server-7:
         - /etc/xinetd.d/chargen-dgram:
@@ -70,7 +70,7 @@ grep:
             match_output: yes
             tag: CIS-2.1.2
       description: Ensure that daytime service in not enabled (Scored)
-    discard_diabled:
+    discard_disabled:
       data:
         Red Hat Enterprise Server-7:
         - /etc/xinetd.d/discard-dgram:
@@ -82,7 +82,7 @@ grep:
             match_output: yes
             tag: CIS-2.1.3
       description: Ensure that discard service in not enabled (Scored)
-    echo_diabled:
+    echo_disabled:
       data:
         Red Hat Enterprise Server-7:
         - /etc/xinetd.d/echo-dgram:
@@ -94,7 +94,7 @@ grep:
             match_output: yes
             tag: CIS-2.1.4
       description: Ensure that echo service in not enabled (Scored)
-    time_diabled:
+    time_disabled:
       data:
         Red Hat Enterprise Server-7:
         - /etc/xinetd.d/time-dgram:
@@ -155,7 +155,7 @@ grep:
               - '-r'
             tag: CIS-5.4.4
       description: Set Default umask for Users (Scored)
-    disble_mount_cramfs:
+    disable_mount_cramfs:
       data:
         Red Hat Enterprise Linux Workstation-7:
         - /etc/modprobe.d:
@@ -165,7 +165,7 @@ grep:
               - '-r'
             tag: CIS-1.1.1.1
       description: Disable mounting cramfs filesystems (Scored).
-    disble_mount_freevxfs:
+    disable_mount_freevxfs:
       data:
         Red Hat Enterprise Linux Workstation-7:
         - /etc/modprobe.d:
@@ -175,7 +175,7 @@ grep:
               - '-r'
             tag: CIS-1.1.1.2
       description: Disable mounting freevxfs filesystems (Scored).
-    disble_mount_jffs2:
+    disable_mount_jffs2:
       data:
         Red Hat Enterprise Linux Workstation-7:
         - /etc/modprobe.d:
@@ -185,7 +185,7 @@ grep:
               - '-r'
             tag: CIS-1.1.1.3
       description: Disable mounting jffs2 filesystems (Scored).
-    disble_mount_hfs:
+    disable_mount_hfs:
       data:
         Red Hat Enterprise Linux Workstation-7:
         - /etc/modprobe.d:
@@ -195,7 +195,7 @@ grep:
               - '-r'
             tag: CIS-1.1.1.4
       description: Disable mounting hfs filesystems (Scored).
-    disble_mount_hfsplus:
+    disable_mount_hfsplus:
       data:
         Red Hat Enterprise Linux Workstation-7:
         - /etc/modprobe.d:
@@ -205,7 +205,7 @@ grep:
               - '-r'
             tag: CIS-1.1.1.5
       description: Disable mounting hfsplus filesystems (Scored).
-    disble_mount_squashfs:
+    disable_mount_squashfs:
       data:
         Red Hat Enterprise Linux Workstation-7:
         - /etc/modprobe.d:
@@ -215,7 +215,7 @@ grep:
               - '-r'
             tag: CIS-1.1.1.6
       description: Disable mounting squashfs filesystems (Scored).
-    disble_mount_udf:
+    disable_mount_udf:
       data:
         Red Hat Enterprise Linux Workstation-7:
         - /etc/modprobe.d:
@@ -884,7 +884,9 @@ stat:
     data:
       Red Hat Enterprise Linux Workstation-7:
       - /etc/passwd:
+          gid: 0
           group: root
+          mode: 644
           tag: CIS-6.1.2
           uid: 0
           user: root
@@ -926,7 +928,9 @@ stat:
     data:
       Red Hat Enterprise Linux Workstation-7:
       - /etc/passwd-:
+          gid: 0
           group: root
+          mode: 644
           tag: CIS-6.1.6
           uid: 0
           user: root

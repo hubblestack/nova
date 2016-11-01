@@ -264,11 +264,13 @@ def _secedit_import(inf_file):
 def _get_account_sid():
     '''This helper function will get all the users and groups on the computer
     and return a dictionary'''
-    win32 = __salt__['cmd.run']('Get-WmiObject win32_useraccount | Format-List -Property '
-                                'Name, SID', shell='powershell', python_shell=True)
+    win32 = __salt__['cmd.run']('Get-WmiObject win32_useraccount -Filter "localaccount=\'True\'"'
+                                ' | Format-List -Property Name, SID', shell='powershell', 
+                                python_shell=True)
     win32 += '\n'
-    win32 += __salt__['cmd.run']('Get-WmiObject win32_group | Format-List -Property Name, '
-                                 'SID', shell='powershell', python_shell=True)
+    win32 += __salt__['cmd.run']('Get-WmiObject win32_group -Filter "localaccount=\'True\'" | '
+                                 'Format-List -Property Name, SID', shell='powershell',
+                                 python_shell=True)
     if win32:
 
         dict_return = {}
@@ -278,7 +280,7 @@ def _get_account_sid():
             lines.remove('local:')
         for line in lines:
             line = line.strip()
-            if line != '':
+            if line != '' and ' : ' in line:
                 k, v = line.split(' : ')
                 if k.lower() == 'name':
                     key = v
