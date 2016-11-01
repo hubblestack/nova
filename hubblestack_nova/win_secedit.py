@@ -280,7 +280,7 @@ def _get_account_sid():
             lines.remove('local:')
         for line in lines:
             line = line.strip()
-            if line != '':
+            if line != '' and ' : ' in line:
                 k, v = line.split(' : ')
                 if k.lower() == 'name':
                     key = v

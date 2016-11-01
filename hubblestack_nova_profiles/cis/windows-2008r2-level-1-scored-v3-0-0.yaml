@@ -903,248 +903,248 @@ win_secedit:
               value_type: 'account'
       description: (l1) ensure 'synchronize directory service data' is set to 'no one' (dc only)
 
-win_firewall:
-  whitelist:
-    windows_firewall_domain_firewall_state :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'Enabled':
-              tag: CIS-9.1.1
-              match_output: 'True'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - firewall state' is set to 'on (recommended)'
-    windows_firewall_domain_inbound_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'DefaultInboundAction':
-              tag: CIS-9.1.2
-              match_output: 'Block'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - inbound connections' is set to 'block (default)'
-    windows_firewall_domain_outbound_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'DefaultOutboundAction':
-              tag: CIS-9.1.3
-              match_output: 'Allow'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - outbound connections' is set to 'allow (default)'
-    windows_firewall_domain_settings_display_a_notification :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'NotifyOnListen':
-              tag: CIS-9.1.4
-              match_output: 'False'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - settings - display a notification' is set to 'no'
-    windows_firewall_domain_settings_apply_local_firewall_rules :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'AllowLocalFirewallRules':
-              tag: CIS-9.1.5
-              match_output: 'True'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - settings - apply local firewall rules' is set to 'yes (default)'
-    windows_firewall_domain_settings_apply_local_connection_security_rules :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'AllowLocalIPsecRules':
-              tag: CIS-9.1.6
-              match_output: 'True'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - settings - apply local connection security rules' is set to 'yes (default)'
-    windows_firewall_domain_logging_name :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogFileName':
-              tag: CIS-9.1.7
-              match_output: '%SYSTEMROOT%\System32\logfiles\firewall\domainfw.log'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - logging - name' is set to '%systemroot%\system32\logfiles\firewall\domainfw.log'
-    windows_firewall_domain_logging_size_limit :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogMaxSizeKilobytes':
-              tag: CIS-9.1.8
-              match_output: '16384'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - logging - size limit (kb)' is set to '16,384 kb or greater'
-    windows_firewall_domain_logging_log_dropped_packets :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogBlocked':
-              tag: CIS-9.1.9
-              match_output: 'True'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - logging - log dropped packets' is set to 'yes'
-    windows_firewall_domain_logging_log_successful_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogAllowed':
-              tag: CIS-9.1.10
-              match_output: 'True'
-              value_type: 'domain'
-      description: (l1) ensure 'windows firewall - domain - logging - log successful connections' is set to 'yes'
-    windows_firewall_private_firewall_state :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'Enabled':
-              tag: CIS-9.2.1
-              match_output: 'True'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - firewall state' is set to 'on (recommended)'
-    windows_firewall_private_inbound_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'DefaultInboundAction':
-              tag: CIS-9.2.2
-              match_output: 'Block'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - inbound connections' is set to 'block (default)'
-    windows_firewall_private_outbound_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'DefaultOutboundAction':
-              tag: CIS-9.2.3
-              match_output: 'Allow'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - outbound connections' is set to 'allow (default)'
-    windows_firewall_private_settings_display_a_notification :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'NotifyOnListen':
-              tag: CIS-9.2.4
-              match_output: 'False'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - settings - display a notification' is set to 'no'
-    windows_firewall_private_settings_apply_local_firewall_rules :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'AllowLocalFirewallRules':
-              tag: CIS-9.2.5
-              match_output: 'True'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - settings - apply local firewall rules' is set to 'yes (default)'
-    windows_firewall_private_settings_apply_local_connection_security_rules :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'AllowLocalIPsecRules':
-              tag: CIS-9.2.6
-              match_output: 'True'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - settings - apply local connection security rules' is set to 'yes (default)'
-    windows_firewall_private_logging_name :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogFileName':
-              tag: CIS-9.2.7
-              match_output: '%SYSTEMROOT%\System32\logfiles\firewall\privatefw.log'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - logging - name' is set to '%systemroot%\system32\logfiles\firewall\privatefw.log'
-    windows_firewall_private_logging_size_limit :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogMaxSizeKilobytes':
-              tag: CIS-9.2.8
-              match_output: '16384'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - logging - size limit (kb)' is set to '16,384 kb or greater'
-    windows_firewall_private_logging_log_dropped_packets :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogBlocked':
-              tag: CIS-9.2.9
-              match_output: 'True'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - logging - log dropped packets' is set to 'yes'
-    windows_firewall_private_logging_log_successful_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogAllowed':
-              tag: CIS-9.2.10
-              match_output: 'True'
-              value_type: 'private'
-      description: (l1) ensure 'windows firewall - private - logging - log successful connections' is set to 'yes'
-    windows_firewall_public_firewall_state :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'Enabled':
-              tag: CIS-9.3.1
-              match_output: 'True'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - firewall state' is set to 'on (recommended)'
-    windows_firewall_public_inbound_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'DefaultInboundAction':
-              tag: CIS-9.3.2
-              match_output: 'Block'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - inbound connections' is set to 'block (default)'
-    windows_firewall_public_outbound_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'DefaultOutboundAction':
-              tag: CIS-9.3.3
-              match_output: 'Allow'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - outbound connections' is set to 'allow (default)'
-    windows_firewall_public_settings_display_a_notification :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'NotifyOnListen':
-              tag: CIS-9.3.4
-              match_output: 'True'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - settings - display a notification' is set to 'yes'
-    windows_firewall_public_settings_apply_local_firewall_rules :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'AllowLocalFirewallRules':
-              tag: CIS-9.3.5
-              match_output: 'False'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - settings - apply local firewall rules' is set to 'no'
-    windows_firewall_public_settings_apply_local_connection_security_rules :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'AllowLocalIPsecRules':
-              tag: CIS-9.3.6
-              match_output: 'False'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - settings - apply local connection security rules' is set to 'no'
-    windows_firewall_public_logging_name :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogFileName':
-              tag: CIS-9.3.7
-              match_output: '%SYSTEMROOT%\System32\logfiles\firewall\publicfw.log'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - logging - name' is set to '%systemroot%\system32\logfiles\firewall\publicfw.log'
-    windows_firewall_public_logging_size_limit_(kb :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogMaxSizeKilobytes':
-              tag: CIS-9.3.8
-              match_output: '16384'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - logging - size limit (kb)' is set to '16,384 kb or greater'
-    windows_firewall_public_logging_log_dropped_packets :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogBlocked':
-              tag: CIS-9.3.9
-              match_output: 'True'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - logging - log dropped packets' is set to 'yes'
-    windows_firewall_public_logging_log_successful_connections :
-      data:
-        'Microsoft Windows Server 2008*':
-          - 'LogAllowed':
-              tag: CIS-9.3.10
-              match_output: 'True'
-              value_type: 'public'
-      description: (l1) ensure 'windows firewall - public - logging - log successful connections' is set to 'yes'
+#win_firewall:
+#  whitelist:
+#    windows_firewall_domain_firewall_state :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'Enabled':
+#              tag: CIS-9.1.1
+#              match_output: 'True'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - firewall state' is set to 'on (recommended)'
+#    windows_firewall_domain_inbound_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'DefaultInboundAction':
+#              tag: CIS-9.1.2
+#              match_output: 'Block'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - inbound connections' is set to 'block (default)'
+#    windows_firewall_domain_outbound_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'DefaultOutboundAction':
+#              tag: CIS-9.1.3
+#              match_output: 'Allow'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - outbound connections' is set to 'allow (default)'
+#    windows_firewall_domain_settings_display_a_notification :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'NotifyOnListen':
+#              tag: CIS-9.1.4
+#              match_output: 'False'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - settings - display a notification' is set to 'no'
+#    windows_firewall_domain_settings_apply_local_firewall_rules :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'AllowLocalFirewallRules':
+#              tag: CIS-9.1.5
+#              match_output: 'True'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - settings - apply local firewall rules' is set to 'yes (default)'
+#    windows_firewall_domain_settings_apply_local_connection_security_rules :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'AllowLocalIPsecRules':
+#              tag: CIS-9.1.6
+#              match_output: 'True'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - settings - apply local connection security rules' is set to 'yes (default)'
+#    windows_firewall_domain_logging_name :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogFileName':
+#              tag: CIS-9.1.7
+#              match_output: '%SYSTEMROOT%\System32\logfiles\firewall\domainfw.log'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - logging - name' is set to '%systemroot%\system32\logfiles\firewall\domainfw.log'
+#    windows_firewall_domain_logging_size_limit :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogMaxSizeKilobytes':
+#              tag: CIS-9.1.8
+#              match_output: '16384'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - logging - size limit (kb)' is set to '16,384 kb or greater'
+#    windows_firewall_domain_logging_log_dropped_packets :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogBlocked':
+#              tag: CIS-9.1.9
+#              match_output: 'True'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - logging - log dropped packets' is set to 'yes'
+#    windows_firewall_domain_logging_log_successful_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogAllowed':
+#              tag: CIS-9.1.10
+#              match_output: 'True'
+#              value_type: 'domain'
+#      description: (l1) ensure 'windows firewall - domain - logging - log successful connections' is set to 'yes'
+#    windows_firewall_private_firewall_state :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'Enabled':
+#              tag: CIS-9.2.1
+#              match_output: 'True'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - firewall state' is set to 'on (recommended)'
+#    windows_firewall_private_inbound_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'DefaultInboundAction':
+#              tag: CIS-9.2.2
+#              match_output: 'Block'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - inbound connections' is set to 'block (default)'
+#    windows_firewall_private_outbound_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'DefaultOutboundAction':
+#              tag: CIS-9.2.3
+#              match_output: 'Allow'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - outbound connections' is set to 'allow (default)'
+#    windows_firewall_private_settings_display_a_notification :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'NotifyOnListen':
+#              tag: CIS-9.2.4
+#              match_output: 'False'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - settings - display a notification' is set to 'no'
+#    windows_firewall_private_settings_apply_local_firewall_rules :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'AllowLocalFirewallRules':
+#              tag: CIS-9.2.5
+#              match_output: 'True'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - settings - apply local firewall rules' is set to 'yes (default)'
+#    windows_firewall_private_settings_apply_local_connection_security_rules :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'AllowLocalIPsecRules':
+#              tag: CIS-9.2.6
+#              match_output: 'True'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - settings - apply local connection security rules' is set to 'yes (default)'
+#    windows_firewall_private_logging_name :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogFileName':
+#              tag: CIS-9.2.7
+#              match_output: '%SYSTEMROOT%\System32\logfiles\firewall\privatefw.log'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - logging - name' is set to '%systemroot%\system32\logfiles\firewall\privatefw.log'
+#    windows_firewall_private_logging_size_limit :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogMaxSizeKilobytes':
+#              tag: CIS-9.2.8
+#              match_output: '16384'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - logging - size limit (kb)' is set to '16,384 kb or greater'
+#    windows_firewall_private_logging_log_dropped_packets :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogBlocked':
+#              tag: CIS-9.2.9
+#              match_output: 'True'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - logging - log dropped packets' is set to 'yes'
+#    windows_firewall_private_logging_log_successful_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogAllowed':
+#              tag: CIS-9.2.10
+#              match_output: 'True'
+#              value_type: 'private'
+#      description: (l1) ensure 'windows firewall - private - logging - log successful connections' is set to 'yes'
+#    windows_firewall_public_firewall_state :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'Enabled':
+#              tag: CIS-9.3.1
+#              match_output: 'True'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - firewall state' is set to 'on (recommended)'
+#    windows_firewall_public_inbound_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'DefaultInboundAction':
+#              tag: CIS-9.3.2
+#              match_output: 'Block'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - inbound connections' is set to 'block (default)'
+#    windows_firewall_public_outbound_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'DefaultOutboundAction':
+#              tag: CIS-9.3.3
+#              match_output: 'Allow'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - outbound connections' is set to 'allow (default)'
+#    windows_firewall_public_settings_display_a_notification :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'NotifyOnListen':
+#              tag: CIS-9.3.4
+#              match_output: 'True'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - settings - display a notification' is set to 'yes'
+#    windows_firewall_public_settings_apply_local_firewall_rules :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'AllowLocalFirewallRules':
+#              tag: CIS-9.3.5
+#              match_output: 'False'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - settings - apply local firewall rules' is set to 'no'
+#    windows_firewall_public_settings_apply_local_connection_security_rules :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'AllowLocalIPsecRules':
+#              tag: CIS-9.3.6
+#              match_output: 'False'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - settings - apply local connection security rules' is set to 'no'
+#    windows_firewall_public_logging_name :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogFileName':
+#              tag: CIS-9.3.7
+#              match_output: '%SYSTEMROOT%\System32\logfiles\firewall\publicfw.log'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - logging - name' is set to '%systemroot%\system32\logfiles\firewall\publicfw.log'
+#    windows_firewall_public_logging_size_limit_(kb :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogMaxSizeKilobytes':
+#              tag: CIS-9.3.8
+#              match_output: '16384'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - logging - size limit (kb)' is set to '16,384 kb or greater'
+#    windows_firewall_public_logging_log_dropped_packets :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogBlocked':
+#              tag: CIS-9.3.9
+#              match_output: 'True'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - logging - log dropped packets' is set to 'yes'
+#    windows_firewall_public_logging_log_successful_connections :
+#      data:
+#        'Microsoft Windows Server 2008*':
+#          - 'LogAllowed':
+#              tag: CIS-9.3.10
+#              match_output: 'True'
+#              value_type: 'public'
+#      description: (l1) ensure 'windows firewall - public - logging - log successful connections' is set to 'yes'
 
 win_auditpol:
   whitelist:
@@ -1475,7 +1475,7 @@ win_reg:
     Do not display network selection UI :
       data:
         'Microsoft Windows Server 2008*':
-          - ' HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\LogonType':
+          - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System\LogonType':
               tag: CIS-18.8.24.1
               match_output: 'Enabled'
               value_type: 'equal'
@@ -1523,7 +1523,7 @@ win_reg:
     Turn off desktop gadgets :
       data:
         'Microsoft Windows Server 2008*':
-          - ' HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Windows\Sidebar\TurnOffSideb':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Windows\Sidebar\TurnOffSideb':
               tag: CIS-18.9.16.1
               match_output: 'Enabled'
               value_type: 'equal'
@@ -1531,7 +1531,7 @@ win_reg:
     Turn off user-installed desktop gadgets :
       data:
         'Microsoft Windows Server 2008*':
-          - ' HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Windows\Sidebar\TurnOffUserInstalledGadget':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Windows\Sidebar\TurnOffUserInstalledGadget':
               tag: CIS-18.9.16.2
               match_output: 'Enabled'
               value_type: 'equal'
@@ -1837,7 +1837,7 @@ win_reg:
     Allow remote access to the Plug and Play interface :
       data:
         'Microsoft Windows Server 2008*':
-          - ' HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Settings\AllowRemoteRPC':
+          - 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Settings\AllowRemoteRPC':
               tag: CIS-18.8.5.2
               match_output: 'Disabled'
               value_type: 'equal'
