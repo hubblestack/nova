@@ -1056,8 +1056,8 @@ grep:
               match_output: "ClientAliveInterval 300"
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.12'
-              pattern: "^ClientAliveCountMatch"
-              match_output: "ClientAliveCountMatch 0"
+              pattern: "^ClientAliveCountMax"
+              match_output: "ClientAliveCountMax 0"
         CentOS Linux-7:
           - '/etc/ssh/sshd_config':
               tag: 'CIS-6.2.12'
