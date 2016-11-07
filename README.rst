@@ -56,15 +56,15 @@ iterate policy changes separate from the code.
 
 .. code-block:: shell
 
-    wget https://spm.hubblestack.io/nova/hubblestack_nova-2016.9.2-1.spm
-    spm local install hubblestack_nova-2016.9.2-1.spm
+    wget https://spm.hubblestack.io/nova/hubblestack_nova-2016.10.2-1.spm
+    spm local install hubblestack_nova-2016.10.2-1.spm
 
 **Nova Profiles**
 
 .. code-block:: shell
 
-    wget https://spm.hubblestack.io/nova/hubblestack_nova_profiles-20160914-1.spm
-    spm local install hubblestack_nova_profiles-20160914-1.spm
+    wget https://spm.hubblestack.io/nova/hubblestack_nova_profiles-20161101-1.spm
+    spm local install hubblestack_nova_profiles-20161101-1.spm
 
 You should now be able to sync the new modules to your minion(s) using the
 ``sync_modules`` Salt utility:
@@ -114,7 +114,7 @@ Requirements: GitFS support on your Salt Master.
 
     gitfs_remotes:
       - https://github.com/hubblestack/nova:
-        - base: v2016.9.1
+        - base: v2016.10.2
 
 .. tip:: Remember to restart the Salt Master after applying this change.
 

@@ -1,7 +1,7 @@
 name: hubblestack_nova
 os: RedHat, CentOS, Debian, Ubuntu
 os_family: RedHat, Debian
-version: 2016.10.1
+version: 2016.10.2
 release: 1
 summary: HubbleStack Nova
 description: HubbleStack Nova
