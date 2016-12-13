@@ -728,6 +728,15 @@ grep:
               match_output: "Ciphers aes128-ctr,aes192-ctr,aes256-ctr"
       description: Ensure only approved ciphers are used
 
+    sshd_approved_mac:
+      data:
+        'CentOS-6':
+          - '/etc/ssh/sshd_config':
+              tag: CIS-5.2.12
+              pattern: "MACs"
+              match_output: "MACs hmac-sha2-512,hmac-sha2-256"
+      description: Ensure only approved MAC algorithms are used
+
     sshd_idle_timeout:
       data:
         'CentOS-6':
@@ -740,6 +749,15 @@ grep:
               pattern: "^ClientAliveCountMax"
               match_output: "ClientAliveCountMax 0"
       description: Ensure SSH Idle Timeout Interval is configured
+
+    sshd_login_grace:
+      data:
+        'CentOS-6':
+          - '/etc/ssh/sshd_config':
+              tag: CIS-5.2.14
+              pattern: "LoginGraceTime"
+              match_output: "LoginGraceTime 60"
+      description: Ensure SSH LoginGraceTime is set to one minute or less
 
     sshd_limit_access:
       data:
