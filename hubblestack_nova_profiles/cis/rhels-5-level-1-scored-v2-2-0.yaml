@@ -276,7 +276,7 @@ grep:
       data:
         Red Hat Enterprise Linux Server-5:
         - /etc/ssh/sshd_config:
-            match_output: 'Ciphers aes128-ctr,aes192-ctr,aes256-ctr '
+            match_output: 'Ciphers aes128-ctr,aes192-ctr,aes256-ctr'
             pattern: Ciphers
             tag: CIS-6.2.11
       description: Ensure only approved ciphers are used
