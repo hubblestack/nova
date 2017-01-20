@@ -234,7 +234,7 @@ grep:
       data:
         CentOS Linux-7:
         - /etc/ssh/sshd_config:
-            match_output: 'Ciphers aes128-ctr,aes192-ctr,aes256-ctr '
+            match_output: 'Ciphers aes128-ctr,aes192-ctr,aes256-ctr'
             pattern: Ciphers
             tag: CIS-6.2.11
       description: Use Only Approved Cipher in Counter Mode (Scored)

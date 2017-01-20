@@ -3,7 +3,7 @@
 Loader and primary interface for nova modules
 
 :maintainer: HubbleStack / basepi
-:maturity: 2016.7.0
+:maturity: 2016.10.2
 :platform: All
 :requires: SaltStack
 
@@ -35,7 +35,7 @@ from salt.exceptions import CommandExecutionError
 from salt.loader import LazyLoader
 
 __nova__ = {}
-__version__ = 'v2016.10.1'
+__version__ = 'v2017.1.0'
 
 
 def audit(configs=None,
@@ -84,7 +84,7 @@ def audit(configs=None,
 
     show_profile
         Whether to add the profile path to the verbose output for audits.
-        Defaults to False. Configurable via `hubblestack:nova:show_profile`
+        Defaults to True. Configurable via `hubblestack:nova:show_profile`
         in minion config/pillar.
 
     called_from_top
@@ -123,7 +123,7 @@ def audit(configs=None,
     if show_compliance is None:
         show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
     if show_profile is None:
-        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', False)
+        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', True)
     if debug is None:
         debug = __salt__['config.get']('hubblestack:nova:debug', False)
 
@@ -322,7 +322,7 @@ def top(topfile='top.nova',
 
     show_profile
         Whether to add the profile path to the verbose output for audits.
-        Defaults to False. Configurable via `hubblestack:nova:show_profile`
+        Defaults to True. Configurable via `hubblestack:nova:show_profile`
         in minion config/pillar.
 
     debug
@@ -350,7 +350,7 @@ def top(topfile='top.nova',
     if show_compliance is None:
         show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
     if show_profile is None:
-        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', False)
+        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', True)
     if debug is None:
         debug = __salt__['config.get']('hubblestack:nova:debug', False)
 
