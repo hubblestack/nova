@@ -114,7 +114,7 @@ Requirements: GitFS support on your Salt Master.
 
     gitfs_remotes:
       - https://github.com/hubblestack/nova:
-        - base: v2016.10.2
+        - base: v2017.1.0
 
 .. tip:: Remember to restart the Salt Master after applying this change.
 
