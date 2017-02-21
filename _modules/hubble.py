@@ -143,19 +143,90 @@ def audit(configs=None,
         show_profile=show_profile
     )
 
+    terse_results = {}
+    verbose_results = {}
+
+    # Pull out just the tag and description
+    terse_results['Failure'] = []
+    tags_descriptions = set()
+
+    for tag_data in ret.get('Failure', []):
+        tag = tag_data['tag']
+        description = tag_data.get('description')
+        if (tag, description) not in tags_descriptions:
+            terse_results['Failure'].append({tag: description})
+            tags_descriptions.add((tag, description))
+
+    terse_results['Success'] = []
+    tags_descriptions = set()
+
+    for tag_data in ret.get('Success', []):
+        tag = tag_data['tag']
+        description = tag_data.get('description')
+        if (tag, description) not in tags_descriptions:
+            terse_results['Success'].append({tag: description})
+            tags_descriptions.add((tag, description))
+
+    terse_results['Controlled'] = []
+    control_reasons = set()
+
+    for tag_data in ret.get('Controlled', []):
+        tag = tag_data['tag']
+        control_reason = tag_data.get('control', '')
+        description = tag_data.get('description')
+        if (tag, description, control_reason) not in control_reasons:
+            terse_results['Controlled'].append({tag: control_reason})
+            control_reasons.add((tag, description, control_reason))
+
+    # Calculate compliance level
     if show_compliance:
-        compliance = _calculate_compliance(results)
-        if compliance:
-            results['Compliance'] = compliance
+        compliance = _calculate_compliance(terse_results)
+    else:
+        compliance = False
+
+    if not show_success and 'Success' in terse_results:
+        terse_results.pop('Success')
+
+    if not terse_results['Controlled']:
+        terse_results.pop('Controlled')
+
+    # Format verbose output as single-key dictionaries with tag as key
+    if verbose:
+        verbose_results['Failure'] = []
+
+        for tag_data in ret.get('Failure', []):
+            tag = tag_data['tag']
+            verbose_results['Failure'].append({tag: tag_data})
+
+        verbose_results['Success'] = []
+
+        for tag_data in ret.get('Success', []):
+            tag = tag_data['tag']
+            verbose_results['Success'].append({tag: tag_data})
+
+        if not show_success and 'Success' in verbose_results:
+            verbose_results.pop('Success')
+
+        verbose_results['Controlled'] = []
+
+        for tag_data in ret.get('Controlled', []):
+            tag = tag_data['tag']
+            verbose_results['Controlled'].append({tag: tag_data})
+
+        if not verbose_results['Controlled']:
+            verbose_results.pop('Controlled')
+
+        results = verbose_results
+    else:
+        results = terse_results
+
+    if compliance:
+        results['Compliance'] = compliance
 
     if not called_from_top and not results:
         results['Messages'] = 'No audits matched this host in the specified profiles.'
 
-    if not show_success and 'Success' in results:
-        results.pop('Success')
-
-    return ret
-
+    return results
 
 def _run_audit(configs, tags, verbose, debug, show_profile):
 
@@ -246,21 +317,15 @@ def _run_audit(configs, tags, verbose, debug, show_profile):
     # Look through the failed results to find audits which match our control config
     failures_to_remove = []
     for i, failure in enumerate(results.get('Failure', [])):
-        if isinstance(failure, str):
-            if failure in processed_controls:
-                failures_to_remove.append(i)
-                if 'Controlled' not in results:
-                    results['Controlled'] = []
-                results['Controlled'].append(
-                        {failure: processed_controls[failure].get('reason')})
-        else:  # dict
-            for failure_tag in failure:
-                if failure_tag in processed_controls:
-                    failures_to_remove.append(i)
-                    if 'Controlled' not in results:
-                        results['Controlled'] = []
-                    results['Controlled'].append(
-                            {failure_tag: processed_controls[failure_tag].get('reason')})
+        failure_tag = failure['tag']
+        if failure_tag in processed_controls:
+            failures_to_remove.append(i)
+            if 'Controlled' not in results:
+                results['Controlled'] = []
+            failure.update({
+                'control': processed_controls[failure_tag].get('reason')
+            })
+            results['Controlled'].append(failure)
 
     # Remove controlled failures from results['Failure']
     if failures_to_remove:

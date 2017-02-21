@@ -383,21 +383,16 @@ class VulnerablePkg:
         '''
         Return the dictionary of what should be reported in failures, based on verbose.
         '''
-        uid = self.pkg + '-' + self.pkg_version
-        if verbose:
-            report = {
-                'href': self.href,
-                'affected_version': self.pkg_version,
-                'reporter': self.reporter,
-                'score': self.score,
-                'cve_list': self.cve_list,
-                'affected_pkg': self.pkg,
-                'local_version': self.oudated_version,
-                'description': self.title
-            }
-            if show_profile:
-                report['nova_profile'] = profile
-        else:
-            report = self.title
-        return {uid: report}
+        return {
+            'tag': self.pkg + '-' + self.pkg_version,
+            'href': self.href,
+            'affected_version': self.pkg_version,
+            'reporter': self.reporter,
+            'score': self.score,
+            'cve_list': self.cve_list,
+            'affected_pkg': self.pkg,
+            'local_version': self.oudated_version,
+            'description': self.title,
+            'nova_profile': profile
+        }
 
