@@ -1074,7 +1074,7 @@ sysctl:
       - net.ipv4.icmp_ignore_bogus_error_responses:
           match_output: '1'
           tag: CIS-3.2.6
-      description: Ensure bogus ICMP responses are ignored
+    description: Ensure bogus ICMP responses are ignored
   icmp_redirect_acceptance:
     data:
       CentOS Linux-7:
