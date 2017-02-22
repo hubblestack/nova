@@ -92,7 +92,7 @@ def __virtual__():
     return not salt.utils.is_windows()
 
 
-def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+def audit(data_list, tags, debug=False):
     '''
     Main audit function. See module docstring for more information on usage.
     '''
@@ -224,9 +224,9 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
                                     vulnerable = affected_obj
                 if vulnerable:
                     if vulnerable.score < min_score:
-                        ret['Controlled'].append(vulnerable.get_report(verbose, show_profile, profile))
+                        ret['Controlled'].append(vulnerable.get_report(profile))
                     else:
-                        ret['Failure'].append(vulnerable.get_report(verbose, show_profile, profile))
+                        ret['Failure'].append(vulnerable.get_report(profile))
 
     if tags != '*':
         log.debug("tags: %s", tags)
@@ -379,7 +379,7 @@ class VulnerablePkg:
         self.oudated_version = None
 
 
-    def get_report(self, verbose, show_profile, profile):
+    def get_report(self, profile):
         '''
         Return the dictionary of what should be reported in failures, based on verbose.
         '''

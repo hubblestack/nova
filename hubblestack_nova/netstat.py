@@ -36,7 +36,7 @@ def __virtual__():
     return False, 'No network.netstat function found'
 
 
-def audit(data_list, tags, verbose=False, show_profile=False, debug=True):
+def audit(data_list, tags, debug=True):
     '''
     Run the network.netstat command
     '''
@@ -49,8 +49,7 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=True):
                 if 'address' in check_args:
                     tag_args = copy.deepcopy(check_args)
                     tag_args['id'] = check
-                    if show_profile:
-                        tag_args['nova_profile'] = profile
+                    tag_args['nova_profile'] = profile
                     if isinstance(check_args['address'], list):
                         for address in check_args['address']:
                             __tags__[address] = tag_args

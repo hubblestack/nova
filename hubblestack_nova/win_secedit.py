@@ -30,7 +30,7 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+def audit(data_list, tags, debug=False):
     '''
     Runs secedit on the local machine and audits the return data
     with the CIS yaml processed by __virtual__
@@ -39,10 +39,7 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
     __secdata__ = _secedit_export()
     __sidaccounts__ = _get_account_sid()
     for profile, data in data_list:
-        if show_profile:
-            _merge_yaml(__data__, data, profile)
-        else:
-            _merge_yaml(__data__, data)
+        _merge_yaml(__data__, data, profile)
     __tags__ = _get_tags(__data__)
     if debug:
         log.debug('secedit audit __data__:')

@@ -25,7 +25,7 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+def audit(data_list, tags, debug=False):
     '''
     Runs auditpol on the local machine and audits the return data
     with the CIS yaml processed by __virtual__
@@ -33,10 +33,7 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
     __data__ = {}
     __auditdata__ = _auditpol_import()
     for profile, data in data_list:
-        if show_profile:
-            _merge_yaml(__data__, data, profile)
-        else:
-            _merge_yaml(__data__, data)
+        _merge_yaml(__data__, data, profile)
     __tags__ = _get_tags(__data__)
     if debug:
         log.debug('auditpol audit __data__:')

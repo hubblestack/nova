@@ -25,7 +25,7 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+def audit(data_list, tags, debug=False):
     '''
     Runs auditpol on the local machine and audits the return data
     with the CIS yaml processed by __virtual__
@@ -37,10 +37,7 @@ def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
         __salt__['pkg.refresh_db']()
         __pkgdata__ = __salt__['pkg.list_pkgs']()
     for profile, data in data_list:
-        if show_profile:
-            _merge_yaml(__data__, data, profile)
-        else:
-            _merge_yaml(__data__, data)
+        _merge_yaml(__data__, data, profile)
     __tags__ = _get_tags(__data__)
     if debug:
         log.debug('package audit __data__:')

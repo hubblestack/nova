@@ -135,13 +135,7 @@ def audit(configs=None,
     configs = [os.path.join(os.path.sep, os.path.join(*(con.split('.yaml')[0]).split('.')))
                for con in configs]
 
-    ret = _run_audit(
-        configs,
-        tags,
-        verbose=verbose,
-        debug=debug,
-        show_profile=show_profile
-    )
+    ret = _run_audit(configs, tags, debug=debug)
 
     terse_results = {}
     verbose_results = {}
@@ -228,7 +222,7 @@ def audit(configs=None,
 
     return results
 
-def _run_audit(configs, tags, verbose, debug, show_profile):
+def _run_audit(configs, tags, debug):
 
     results = {}
 
@@ -269,11 +263,7 @@ def _run_audit(configs, tags, verbose, debug, show_profile):
     # We can revisit if this ever becomes a big bottleneck
     for key, func in __nova__._dict.iteritems():
         try:
-            ret = func(data_list,
-                       tags,
-                       verbose=verbose,
-                       show_profile=show_profile,
-                       debug=debug)
+            ret = func(data_list, tags, debug=debug)
         except Exception as exc:
             log.error('Exception occurred in nova module:')
             log.error(traceback.format_exc())

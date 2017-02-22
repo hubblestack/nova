@@ -57,16 +57,13 @@ def __virtual__():
     return True
 
 
-def audit(data_list, tags, verbose=False, show_profile=False, debug=False):
+def audit(data_list, tags, debug=False):
     '''
     Run the stat audits contained in the YAML files processed by __virtual__
     '''
     __data__ = {}
     for profile, data in data_list:
-        if show_profile:
-            _merge_yaml(__data__, data, profile)
-        else:
-            _merge_yaml(__data__, data)
+        _merge_yaml(__data__, data, profile)
     __tags__ = _get_tags(__data__)
 
     if debug:
