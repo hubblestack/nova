@@ -83,9 +83,7 @@ def audit(configs=None,
         `hubblestack:nova:show_compliance` in minion config/pillar.
 
     show_profile
-        Whether to add the profile path to the verbose output for audits.
-        Defaults to True. Configurable via `hubblestack:nova:show_profile`
-        in minion config/pillar.
+        DEPRECATED
 
     called_from_top
         Ignore this argument. It is used for distinguishing between user-calls
@@ -107,9 +105,7 @@ def audit(configs=None,
     if configs is None:
         return top(verbose=verbose,
                    show_success=show_success,
-                   show_compliance=show_compliance,
-                   show_profile=show_profile,
-                   debug=debug)
+                   show_compliance=show_compliance)
 
     if __salt__['config.get']('hubblestack:nova:autoload', True):
         load()
@@ -122,8 +118,10 @@ def audit(configs=None,
         show_success = __salt__['config.get']('hubblestack:nova:show_success', True)
     if show_compliance is None:
         show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
-    if show_profile is None:
-        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', True)
+    if show_profile is not None:
+        log.warning(
+            'Keyword argument \'show_profile\' is no longer supported'
+        )
     if debug is None:
         debug = __salt__['config.get']('hubblestack:nova:debug', False)
 
@@ -389,9 +387,7 @@ def top(topfile='top.nova',
         `hubblestack:nova:show_compliance` in minion config/pillar.
 
     show_profile
-        Whether to add the profile path to the verbose output for audits.
-        Defaults to True. Configurable via `hubblestack:nova:show_profile`
-        in minion config/pillar.
+        DEPRECATED
 
     debug
         Whether to log additional information to help debug nova. Defaults to
@@ -417,8 +413,10 @@ def top(topfile='top.nova',
         show_success = __salt__['config.get']('hubblestack:nova:show_success', True)
     if show_compliance is None:
         show_compliance = __salt__['config.get']('hubblestack:nova:show_compliance', True)
-    if show_profile is None:
-        show_profile = __salt__['config.get']('hubblestack:nova:show_profile', True)
+    if show_profile is not None:
+        log.warning(
+            'Keyword argument \'show_profile\' is no longer supported'
+        )
     if debug is None:
         debug = __salt__['config.get']('hubblestack:nova:debug', False)
 
@@ -456,9 +454,7 @@ def top(topfile='top.nova',
                     verbose=verbose,
                     show_success=True,
                     show_compliance=False,
-                    show_profile=show_profile,
-                    called_from_top=True,
-                    debug=debug)
+                    called_from_top=True)
 
         # Merge in the results
         for key, val in ret.iteritems():
