@@ -590,7 +590,7 @@ grep:
           - '/etc/ntp.conf':
               tag: 'CIS-3.6'
               pattern: '^server'
-          - '/etc/sysconfig/ntpd':
+          - '/etc/init.d/ntpd':
               tag: 'CIS-3.6'
               pattern: 'ntp:ntp'
       description: 'Configure Network Time Protocol (NTP) (Scored)'
