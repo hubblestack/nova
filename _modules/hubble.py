@@ -135,6 +135,30 @@ def audit(configs=None,
     configs = [os.path.join(os.path.sep, os.path.join(*(con.split('.yaml')[0]).split('.')))
                for con in configs]
 
+    ret = _run_audit(
+        configs,
+        tags,
+        verbose=verbose,
+        debug=debug,
+        show_profile=show_profile
+    )
+
+    if show_compliance:
+        compliance = _calculate_compliance(results)
+        if compliance:
+            results['Compliance'] = compliance
+
+    if not called_from_top and not results:
+        results['Messages'] = 'No audits matched this host in the specified profiles.'
+
+    if not show_success and 'Success' in results:
+        results.pop('Success')
+
+    return ret
+
+
+def _run_audit(configs, tags, verbose, debug, show_profile):
+
     results = {}
 
     # Compile a list of audit data sets which we need to run
@@ -243,20 +267,9 @@ def audit(configs=None,
         for failure_index in reversed(sorted(set(failures_to_remove))):
             results['Failure'].pop(failure_index)
 
-    if show_compliance:
-        compliance = _calculate_compliance(results)
-        if compliance:
-            results['Compliance'] = compliance
-
     for key in results.keys():
         if not results[key]:
             results.pop(key)
-
-    if not called_from_top and not results:
-        results['Messages'] = 'No audits matched this host in the specified profiles.'
-
-    if not show_success and 'Success' in results:
-        results.pop('Success')
 
     return results
 
