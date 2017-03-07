@@ -1,3 +1,5 @@
+THIS REPO IS DEPRECATED. PLEASE USE https://github.com/hubblestack/hubble-salt
+
 .. _nova_introduction:
 
 Introduction
